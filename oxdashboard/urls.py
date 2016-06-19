@@ -15,17 +15,19 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from dashboard import views
 
 urlpatterns = [
-    url(r'^$', 'dashboard.views.home', name="home"),
-    url(r'^president/', 'dashboard.views.president', name="president"),
-    url(r'^vice-president/', 'dashboard.views.v_president', name="v_president"),
-    url(r'^treasurer/', 'dashboard.views.treasurer', name="treasurer"),
-    url(r'^secretary/', 'dashboard.views.secretary', name="secretary"),
-    url(r'^recruitment-chair/', 'dashboard.views.recruitment_c', name="recruitment_c"),
-    url(r'^scholarship-chair/', 'dashboard.views.scholarship_c', name="scholarship_c"),
-    url(r'^service-chair/', 'dashboard.views.service_c', name="service_c"),
-    url(r'^philanthropy-chair/', 'dashboard.views.philanthropy_c', name="philanthropy_c"),
-    url(r'^detail-manager/', 'dashboard.views.detail_m', name="detail_m"),
+    url(r'^$', views.home, name="home"),
+    url(r'^brother/', views.brother, name="brother"),
+    url(r'^president/', views.president, name="president"),
+    url(r'^vice-president/', views.v_president, name="v_president"),
+    url(r'^treasurer/', views.treasurer, name="treasurer"),
+    url(r'^secretary/', views.secretary, name="secretary"),
+    url(r'^recruitment-chair/', views.recruitment_c, name="recruitment_c"),
+    url(r'^scholarship-chair/', views.scholarship_c, name="scholarship_c"),
+    url(r'^service-chair/', views.service_c, name="service_c"),
+    url(r'^philanthropy-chair/', views.philanthropy_c, name="philanthropy_c"),
+    url(r'^detail-manager/', views.detail_m, name="detail_m"),
     url(r'^admin/', include(admin.site.urls)),
 ]

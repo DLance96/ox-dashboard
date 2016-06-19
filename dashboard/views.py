@@ -1,8 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+
 def home(request):
-    return HttpResponse("This will be the homepage")
+    return render(request, 'home.html', {})
+
+
+def brother(request):
+    return HttpResponse("This will be the Brother page")
 
 
 def president(request):
@@ -26,7 +31,7 @@ def scholarship_c(request):
 
 
 def recruitment_c(request):
-    return HttpResponse("This will be the Rectuitment Chair page")
+    return HttpResponse("This will be the Recruitment Chair page")
 
 
 def service_c(request):

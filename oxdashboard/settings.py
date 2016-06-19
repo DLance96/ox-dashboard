@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-with open('/home/david/Documents/ThetaChi/key.txt') as k:
+with open(os.path.join(BASE_DIR, "key.txt")) as k:
     SECRET_KEY = k.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'dashboard',
 )
 
 MIDDLEWARE_CLASSES = (
