@@ -5,6 +5,11 @@
     <title>Title</title>
 </head>
 <body>
-
+    {% for brother in brothers %}
+        {{ brother.first_name }} {{ brother.last_name }} <br>
+        Past Semester GPA: {{ brother.past_semester_gpa }} <br>
+        Cumulative GPA: {{ brother.cumulative_gpa }} <br>
+        <br>
+    {% endfor %}
 </body>
 </html>

@@ -1,5 +1,6 @@
-from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import render
+from .models import Brother
 
 
 def home(request):
@@ -7,7 +8,11 @@ def home(request):
 
 
 def brother(request):
-    return HttpResponse("This will be the Brother page")
+    current_brother = Brother.objects.get(pk=1)
+    context = {
+        "brother": current_brother,
+    }
+    return render(request, "brother.html", context)
 
 
 def president(request):
@@ -27,7 +32,11 @@ def secretary(request):
 
 
 def scholarship_c(request):
-    return HttpResponse("This will be the Scholarship Chair page")
+    brothers = Brother.objects.order_by('last_name')
+    context = {
+        "brothers": brothers,
+    }
+    return render(request, "scholarship-chair.html", context)
 
 
 def recruitment_c(request):

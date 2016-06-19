@@ -62,8 +62,8 @@ class Brother(models.Model):
     # Recruitment Information
 
     # Scholarship Information
-    past_semester_gpa = models.CharField(max_length=4, default="4.0")
-    cumulative_gpa = models.CharField(max_length=4, default="4.0")
+    past_semester_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
+    cumulative_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
     scholarship_plan = models.TextField(default="Scholarship plan has not been setup yet if you past semester GPA "
                                                 "or cum GPA are below 3.0 you should "
                                                 "setup a meeting to have this corrected")
