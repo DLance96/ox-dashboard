@@ -76,3 +76,46 @@ class Brother(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
+
+
+class ServiceEvent(models.Model):
+    name = models.CharField(max_length=200, default="Service Event")
+    description = models.TextField(default="I did the service thing")
+    hours = models.IntegerField(default=0)
+    submitted = models.BooleanField(default=False)
+    date = models.DateField()
+    brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class ChapterEvent(models.Model):
+    name = models.CharField(max_length=200, default="Chapter Event")
+    date_time = models.DateTimeField()
+    mandatory = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
+class EventExcuse(models.Model):
+    event = models.ForeignKey(ChapterEvent, on_delete=models.CASCADE)
+    brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
+    description = models.TextField(("I will not be attending %s because", event.name))
+    response_message = models.TextField(default="Your excuse was not approved because")
+
+    STATUS_CHOICES = (
+        ('0', 'Pending'),
+        ('1', 'Approved'),
+        ('2', 'Denied'),
+    )
+
+    status = models.CharField(
+        max_length=1,
+        choices=STATUS_CHOICES,
+        default='0',
+    )
+
+    def __str__(self):
+        return self.brother.first_name + " " + self.brother.last_name + "- " + self.event.name
