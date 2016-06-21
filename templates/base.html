@@ -1,10 +1,133 @@
+{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Beta Nu of Theta Chi chapter dashboard written in django with bootstrap">
+    <meta name="author" content="David Lance">
 
-</body>
+    <title>Theta Chi Dashboard</title>
+    <!-- Bootstrap core CSS -->
+    <link href={% static "css/bootstrap.min.css" %} rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href={% static "css/navbar-fixed-top.css" %} rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top" >
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href={% url 'dashboard:home' %}>Theta Chi</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="">Brother</a></li>
+            <li><a href="#contact">Events</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Positions <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">President</a></li>
+                <li><a href="#">Vice President</a></li>
+                <li><a href="#">Treasurer</a></li>
+                <li><a href="#">Secretary</a></li>
+                <li><a href="#">Scholarship Chair</a></li>
+                <li><a href="#">Recruitment Chair</a></li>
+                <li><a href="#">Service Chair</a></li>
+                <li><a href="#">Philanthropy Chair</a></li>
+                <li><a href="#">Detail Manager</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="../navbar/">Login</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h1>Navbar example</h1>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus eros metus, facilisis vel sodales at,
+            euismod in nibh. Nunc nunc justo, gravida quis libero nec, bibendum volutpat ex. Vestibulum id libero
+            porttitor, venenatis nibh quis, facilisis felis. Duis pharetra nunc sit amet nisl placerat, quis imperdiet
+            enim viverra. Curabitur rhoncus porttitor vestibulum. Donec tempor massa quam, vel sagittis neque
+            consectetur imperdiet. Sed suscipit hendrerit quam sit amet posuere. Quisque ac elit consectetur, fringilla
+            metus nec, consectetur risus. Etiam iaculis venenatis ligula, non dignissim tellus scelerisque sed. Etiam
+            luctus dui lacus, quis interdum sapien tristique ut. Integer suscipit dui eget justo placerat aliquet. Proin
+            ultricies suscipit dui eget venenatis. Suspendisse finibus risus sed enim iaculis, sit amet vestibulum arcu
+            egestas. Donec ex urna, vestibulum congue pulvinar vitae, porta consequat justo.
+        </p>
+        <p>
+            Morbi scelerisque velit ipsum, quis suscipit lorem porta id. Proin magna massa, laoreet ac libero et,
+            rhoncus rutrum quam. Fusce eleifend massa placerat enim bibendum mollis. Aliquam eleifend purus ornare purus
+            porttitor, id ornare sem facilisis. Aenean pretium sem magna, venenatis pellentesque mauris lobortis eu. Nam
+            tempor volutpat nisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
+            himenaeos. Phasellus ac nulla sed lacus semper feugiat. Nam sagittis mauris non finibus sagittis. Vestibulum
+            a convallis velit, nec pellentesque velit. Vivamus lacus magna, varius in tellus et, scelerisque pulvinar
+            ligula. Phasellus condimentum risus rutrum nisl tempor pellentesque. Nam in nulla et nunc elementum ultrices
+            a vel ante. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+            Donec ut tortor id erat sodales ultrices. Nunc aliquet ante eu magna tincidunt elementum.
+        </p>
+        <p>
+            Pellentesque semper molestie faucibus. Donec dictum interdum augue vitae rhoncus. Vivamus gravida justo ac
+            orci sollicitudin, ac laoreet nisl fringilla. Suspendisse fermentum, metus ut luctus tempor, metus elit
+            rhoncus arcu, sed volutpat neque lorem non orci. Aenean sed turpis tincidunt, facilisis quam quis, efficitur
+            nisl. In in tincidunt nibh. Sed pharetra porta orci. Pellentesque accumsan vitae erat feugiat fermentum.
+        </p>
+        <p>
+            Ut sit amet erat ut enim hendrerit fringilla vel nec arcu. Maecenas id dolor laoreet, finibus mauris quis,
+            porta mauris. Morbi faucibus sapien felis, vel convallis sapien consectetur vitae. In at leo odio. Class
+            aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque suscipit sem
+            mi, id eleifend nibh aliquet eu. Cras tincidunt quam a pellentesque viverra. Sed et faucibus leo. Donec sit
+            amet bibendum ex. Nulla eget nulla nec massa tristique consequat. Duis fringilla urna sed felis maximus
+            faucibus. Mauris suscipit magna ut turpis rhoncus, et sollicitudin justo mollis. Nulla non egestas sapien.
+            Integer porttitor libero quis enim malesuada porta. Proin quis faucibus nunc. Nullam vitae risus leo.
+        </p>
+        <p>
+            Vivamus dui ante, semper sed enim sed, hendrerit consequat libero. Suspendisse potenti. Vivamus mattis
+            mattis nibh, ut tristique enim. Nulla et justo sit amet libero maximus pharetra. Praesent sit amet nisl
+            turpis. Aliquam enim dolor, euismod quis accumsan nec, malesuada ut tellus. Sed ut sagittis nunc. Etiam
+            pretium ante sit amet elit mattis, vitae tristique elit pharetra. Praesent quis semper justo. Suspendisse
+            at rhoncus erat, vel pretium tellus. Nam est sapien, consequat vitae malesuada in, molestie ultrices purus.
+            Pellentesque ac metus vitae ex sodales elementum. Nunc tempus, nisl sit amet mollis vestibulum, magna nunc
+            convallis tortor, et facilisis sem nulla ac quam.
+        </p>
+        <p>To see the difference between static and fixed top navbars, just scroll.</p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs &raquo;</a>
+        </p>
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src={% static 'js/bootstrap.min.js' %}></script>
+  </body>
 </html>

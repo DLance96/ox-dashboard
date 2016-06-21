@@ -6,6 +6,7 @@ class Brother(models.Model):
     # General profile information
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
+    roster_number = models.IntegerField(default=1856)
 
     FRESHMAN = 'FR'
     SOPHOMORE = 'SO'
@@ -102,7 +103,7 @@ class ChapterEvent(models.Model):
 class EventExcuse(models.Model):
     event = models.ForeignKey(ChapterEvent, on_delete=models.CASCADE)
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
-    description = models.TextField(("I will not be attending %s because", event.name))
+    description = models.TextField("Reasoning", default="I will not be attending because")
     response_message = models.TextField(default="Your excuse was not approved because")
 
     STATUS_CHOICES = (
