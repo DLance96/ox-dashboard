@@ -5,9 +5,9 @@ import datetime
 
 class Semester(models.Model):
     SEASON_CHOICES = (
-        ('0', 'Fall'),
-        ('1', 'Spring'),
-        ('2', 'Summer'),
+        ('0', 'Spring'),
+        ('1', 'Summer'),
+        ('2', 'Fall'),
     )
     YEAR_CHOICES = []
     for r in range(2010, (datetime.datetime.now().year + 2)):
