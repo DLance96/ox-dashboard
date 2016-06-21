@@ -1,5 +1,30 @@
 from django.db import models
 from django.core.validators import RegexValidator
+import datetime
+
+
+class Semester(models.Model):
+    SEASON_CHOICES = (
+        ('0', 'Fall'),
+        ('1', 'Spring'),
+        ('2', 'Summer'),
+    )
+    YEAR_CHOICES = []
+    for r in range(2010, (datetime.datetime.now().year + 2)):
+        YEAR_CHOICES.append((r, r))
+
+    season = models.CharField(
+        max_length=1,
+        choices=SEASON_CHOICES,
+        default='0',
+    )
+    year = models.IntegerField(
+        choices=YEAR_CHOICES,
+        default=datetime.datetime.now().year,
+    )
+
+    def __str__(self):
+        return "%s - %s" % (self.year, self.get_season_display())
 
 
 class Brother(models.Model):
@@ -7,6 +32,7 @@ class Brother(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
     roster_number = models.IntegerField(default=1856)
+    semester_joined = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
 
     FRESHMAN = 'FR'
     SOPHOMORE = 'SO'
@@ -79,12 +105,13 @@ class Brother(models.Model):
         return self.first_name + " " + self.last_name
 
 
-class ServiceEvent(models.Model):
+class ServiceSubmission(models.Model):
     name = models.CharField(max_length=200, default="Service Event")
     description = models.TextField(default="I did the service thing")
     hours = models.IntegerField(default=0)
     submitted = models.BooleanField(default=False)
     date = models.DateField()
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -94,7 +121,22 @@ class ServiceEvent(models.Model):
 class ChapterEvent(models.Model):
     name = models.CharField(max_length=200, default="Chapter Event")
     date_time = models.DateTimeField()
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
     mandatory = models.BooleanField(default=True)
+    attendees = models.ManyToManyField(Brother)
+
+    # Refers to different types of events that can be chapter sponsored
+    EVENT_TYPE_CHOICES = (
+        ('0', 'Chapter'),
+        ('1', 'Service'),  # Group service events like the service Rush event
+        ('2', 'Philanthropy'),  # Events for other organizations
+    )
+
+    event_type = models.CharField(
+        max_length=1,
+        choices=EVENT_TYPE_CHOICES,
+        default=0,
+    )
 
     def __str__(self):
         return self.name
@@ -103,6 +145,7 @@ class ChapterEvent(models.Model):
 class EventExcuse(models.Model):
     event = models.ForeignKey(ChapterEvent, on_delete=models.CASCADE)
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
     description = models.TextField("Reasoning", default="I will not be attending because")
     response_message = models.TextField(default="Your excuse was not approved because")
 
@@ -120,3 +163,4 @@ class EventExcuse(models.Model):
 
     def __str__(self):
         return self.brother.first_name + " " + self.brother.last_name + "- " + self.event.name
+
