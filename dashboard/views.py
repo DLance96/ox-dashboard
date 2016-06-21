@@ -17,7 +17,7 @@ def get_semester():
 
 
 def home(request):
-    return render(request, 'base.html', {})
+    return render(request, 'home.html', {})
 
 
 def brother(request):

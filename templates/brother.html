@@ -1,10 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    {{ brother.first_name }}
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h1>{{ brother.first_name }} {{ brother.last_name }}</h1>
+        <p>
+            This is where the brother info would go.
+        </p>
+      </div>
+{% endblock %}

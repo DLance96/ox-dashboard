@@ -29,8 +29,8 @@ class Semester(models.Model):
 
 class Brother(models.Model):
     # General profile information
-    first_name = models.CharField(max_length=200)
-    last_name = models.CharField(max_length=200)
+    first_name = models.CharField(max_length=45)
+    last_name = models.CharField(max_length=45)
     roster_number = models.IntegerField(default=1856)
     semester_joined = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
 
@@ -85,8 +85,10 @@ class Brother(models.Model):
     operational_committee = models.CharField(max_length=200, default="Not assigned")
 
     # Treasurer Information
+    # TODO: Add treasury models
 
     # Recruitment Information
+    # TODO: determine if there are any recruitment models
 
     # Scholarship Information
     past_semester_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
@@ -96,13 +98,32 @@ class Brother(models.Model):
                                                 "setup a meeting to have this corrected")
 
     # Service Chair Information
+    # TODO: determine if there are any service models
 
     # Philanthropy Chair Information
+    # TODO: determine if there are any philanthropy models
 
     # Detail Manager Chair Information
+    # TODO: determine if there are any detail manager models
 
     def __str__(self):
         return self.first_name + " " + self.last_name
+
+
+class PotentialNewMember(models.Model):
+    first_name = models.CharField(max_length=45)
+    last_name = models.CharField(max_length=45, null=True)
+    email = models.EmailField()
+
+    # regex for proper phone number entry
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
+                                 message="Phone number must be entered in the format: "
+                                         "'+999999999'. Up to 15 digits allowed.")
+    phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=15)  # validators should be a list
+
+    primary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, related_name="primary")
+    secondary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, null=True, related_name="secondary")
+    tertiary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, null=True, related_name="tertiary")
 
 
 class ServiceSubmission(models.Model):
@@ -125,18 +146,35 @@ class ChapterEvent(models.Model):
     mandatory = models.BooleanField(default=True)
     attendees = models.ManyToManyField(Brother)
 
-    # Refers to different types of events that can be chapter sponsored
-    EVENT_TYPE_CHOICES = (
-        ('0', 'Chapter'),
-        ('1', 'Service'),  # Group service events like the service Rush event
-        ('2', 'Philanthropy'),  # Events for other organizations
-    )
+    def __str__(self):
+        return self.name
 
-    event_type = models.CharField(
-        max_length=1,
-        choices=EVENT_TYPE_CHOICES,
-        default=0,
-    )
+
+class PhilanthropyEvent(models.Model):
+    name = models.CharField(max_length=200, default="Philanthropy Event")
+    date_time = models.DateTimeField()
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
+    rsvp_brothers = models.ManyToManyField(Brother)
+
+    def __str__(self):
+        return self.name
+
+
+class ServiceEvent(models.Model):
+    name = models.CharField(max_length=200, default="Service Event")
+    date_time = models.DateTimeField()
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
+    rsvp_brothers = models.ManyToManyField(Brother)
+
+    def __str__(self):
+        return self.name
+
+
+class RecruitmentEvent(models.Model):
+    name = models.CharField(max_length=200, default="Recruitment Event")
+    date_time = models.DateTimeField()
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
+    attendees = models.ManyToManyField(PotentialNewMember)
 
     def __str__(self):
         return self.name
@@ -163,4 +201,3 @@ class EventExcuse(models.Model):
 
     def __str__(self):
         return self.brother.first_name + " " + self.brother.last_name + "- " + self.event.name
-
