@@ -110,6 +110,11 @@ class Brother(models.Model):
         return self.first_name + " " + self.last_name
 
 
+class Position(models.Model):
+    title = models.CharField(max_length=45)
+    brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
+
+
 class PotentialNewMember(models.Model):
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45, null=True)

@@ -1,15 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    {% for brother in brothers %}
-        {{ brother.first_name }} {{ brother.last_name }} <br>
-        Past Semester GPA: {{ brother.past_semester_gpa }} <br>
-        Cumulative GPA: {{ brother.cumulative_gpa }} <br>
-        <br>
-    {% endfor %}
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h1>Scholarship Chair</h1>
+        <p>
+            {% for brother in brothers %}
+                {{ brother.first_name }} {{ brother.last_name }} <br>
+                Past Semester GPA: {{ brother.past_semester_gpa }} <br>
+                Cumulative GPA: {{ brother.cumulative_gpa }} <br>
+                <br>
+            {% endfor %}
+        </p>
+      </div>
+{% endblock %}

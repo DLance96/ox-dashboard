@@ -39,20 +39,20 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a href="">Brother</a></li>
+            <li><a href={% url 'dashboard:brother' %}>Brother</a></li>
             <li><a href="#contact">Events</a></li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Positions <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="#">President</a></li>
-                <li><a href="#">Vice President</a></li>
-                <li><a href="#">Treasurer</a></li>
-                <li><a href="#">Secretary</a></li>
-                <li><a href="#">Scholarship Chair</a></li>
-                <li><a href="#">Recruitment Chair</a></li>
-                <li><a href="#">Service Chair</a></li>
-                <li><a href="#">Philanthropy Chair</a></li>
-                <li><a href="#">Detail Manager</a></li>
+                <li><a href={% url 'dashboard:president' %}>President</a></li>
+                <li><a href={% url 'dashboard:v_president' %}>Vice President</a></li>
+                <li><a href={% url 'dashboard:treasurer' %}>Treasurer</a></li>
+                <li><a href={% url 'dashboard:secretary' %}>Secretary</a></li>
+                <li><a href={% url 'dashboard:scholarship_c' %}>Scholarship Chair</a></li>
+                <li><a href={% url 'dashboard:recruitment_c' %}>Recruitment Chair</a></li>
+                <li><a href={% url 'dashboard:service_c' %}>Service Chair</a></li>
+                <li><a href={% url 'dashboard:philanthropy_c' %}>Philanthropy Chair</a></li>
+                <li><a href={% url 'dashboard:detail_m' %}>Detail Manager</a></li>
               </ul>
             </li>
             {% block dropdown %}
