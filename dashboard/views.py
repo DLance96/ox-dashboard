@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import *
 import utils
 
@@ -59,12 +59,11 @@ def secretary_event(request, event_id):
 
 def secretary_excuse(request, excuse_id):
     # TODO: verify that user is Secretary (add a file with secretary verify function)
-    excuse = Excuse.objects.get(pk=excuse_id)
+    excuse = get_object_or_404(Excuse, pk=excuse_id)
+    return render(request, "secretary-excuse.html", context)
     context = {
         'excuse': excuse,
     }
-    # TODO: make secretary-excuse.html
-    return render(request, "secretary-excuse.html", context)
 
 
 def secretary_all_excuses(request):
