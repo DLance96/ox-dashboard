@@ -8,10 +8,10 @@
       <div class="jumbotron">
         <h1>Scholarship Chair</h1>
         <p>
-            {% for brother in brothers %}
-                {{ brother.first_name }} {{ brother.last_name }} <br>
-                Past Semester GPA: {{ brother.past_semester_gpa }} <br>
-                Cumulative GPA: {{ brother.cumulative_gpa }} <br>
+            {% for report in reports %}
+                {{ report.brother.first_name }} {{ report.brother.last_name }} <br>
+                Past Semester GPA: {{ report.past_semester_gpa }} <br>
+                Cumulative GPA: {{ report.cumulative_gpa }} <br>
                 <br>
             {% endfor %}
         </p>

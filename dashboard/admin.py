@@ -4,10 +4,12 @@ from .models import *
 # Register your models here.
 admin.site.register(Brother)
 admin.site.register(ChapterEvent)
-admin.site.register(EventExcuse)
+admin.site.register(Excuse)
 admin.site.register(ServiceEvent)
 admin.site.register(PhilanthropyEvent)
 admin.site.register(RecruitmentEvent)
+admin.site.register(StudyTableEvent)
 admin.site.register(ServiceSubmission)
 admin.site.register(Semester)
+admin.site.register(ScholarshipReport)
 admin.site.register(Position)

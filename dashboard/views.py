@@ -34,11 +34,11 @@ def treasurer(request):
 
 def secretary(request):
     # TODO: verify that user is Secretary
-    excuses = EventExcuse.objects.filter(semester__season=utils.get_season(),
-                                         semester__year=utils.get_year())
-    events = ChapterEvent.objects.filter(date_time__month=utils.get_month(),
-                                         date_time__day=utils.get_day(),
-                                         date_time__year=utils.get_year())
+    excuses = Excuse.objects.filter(event__semester__season=utils.get_season(),
+                                    event__semester__year=utils.get_year(),
+                                    status='0').order_by("event__date_time")
+    events = ChapterEvent.objects.filter(semester__season=utils.get_season(),
+                                         semester__year=utils.get_year()).order_by("date_time")
     context = {
         'excuses': excuses,
         'events': events,
@@ -57,6 +57,26 @@ def secretary_event(request, event_id):
     return render(request, "home.html", context)
 
 
+def secretary_excuse(request, excuse_id):
+    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    excuse = Excuse.objects.get(pk=excuse_id)
+    context = {
+        'excuse': excuse,
+    }
+    # TODO: make secretary-excuse.html
+    return render(request, "secretary-excuse.html", context)
+
+
+def secretary_all_excuses(request):
+    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    excuses = Excuse.objects.order_by("event__date_time")
+    context = {
+        'excuses': excuses,
+    }
+    # TODO: create secretary-excuses-all.html
+    return render(request, "home.html", context)
+
+
 def secretary_add_event(request):
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     context = {}
@@ -70,15 +90,18 @@ def secretary_all_events(request):
     context = {
         'events': events,
     }
-    return render(request, "home.html", context)
     # Reminder to use a for loop for all the years and then have Spring Semester first in secretary-all-events.html
+    # TODO: make secretary-all-events.html
+    return render(request, "home.html", context)
 
 
 def scholarship_c(request):
     # TODO: verify that user is Scholarship chair (add a file with scholarship verify function)
-    brothers = Brother.objects.filter(brother_status='1').order_by('last_name')
+    reports = ScholarshipReport.objects.filter(semester__season=utils.get_season(),
+                                               semester__year=utils.get_year())\
+        .order_by("past_semester_gpa")
     context = {
-        'brothers': brothers,
+        'reports': reports,
     }
     return render(request, "scholarship-chair.html", context)
 
@@ -86,7 +109,7 @@ def scholarship_c(request):
 def recruitment_c(request):
     # TODO: verify that user is Recruitment Chair
     current_season = utils.get_season()
-    if current_season is 0:
+    if current_season is '0':
         semester_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year())
         semester_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year())
     else:

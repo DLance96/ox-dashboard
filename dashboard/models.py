@@ -1,4 +1,5 @@
 from django.db import models
+import django.utils.timezone
 from django.core.validators import RegexValidator
 import datetime
 
@@ -32,7 +33,7 @@ class Brother(models.Model):
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45)
     roster_number = models.IntegerField(default=1856)
-    semester_joined = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
+    semester_joined = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
 
     FRESHMAN = 'FR'
     SOPHOMORE = 'SO'
@@ -68,7 +69,7 @@ class Brother(models.Model):
     )
 
     # Secretary Information
-    case_ID = models.CharField(max_length=200)
+    case_ID = models.CharField(max_length=10)
     birthday = models.DateField()
     hometown = models.CharField(max_length=200, default="Cleveland, OH")
 
@@ -90,13 +91,6 @@ class Brother(models.Model):
     # Recruitment Information
     # TODO: determine if there are any recruitment models
 
-    # Scholarship Information
-    past_semester_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
-    cumulative_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
-    scholarship_plan = models.TextField(default="Scholarship plan has not been setup yet if you past semester GPA "
-                                                "or cum GPA are below 3.0 you should "
-                                                "setup a meeting to have this corrected")
-
     # Service Chair Information
     # TODO: determine if there are any service models
 
@@ -112,12 +106,15 @@ class Brother(models.Model):
 
 class Position(models.Model):
     title = models.CharField(max_length=45)
-    brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
+    brother = models.ForeignKey(Brother, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
 
 
 class PotentialNewMember(models.Model):
     first_name = models.CharField(max_length=45)
-    last_name = models.CharField(max_length=45, null=True)
+    last_name = models.CharField(max_length=45, blank=True, null=True)
     email = models.EmailField()
 
     # regex for proper phone number entry
@@ -127,14 +124,17 @@ class PotentialNewMember(models.Model):
     phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=15)  # validators should be a list
 
     primary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, related_name="primary")
-    secondary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, null=True, related_name="secondary")
-    tertiary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, null=True, related_name="tertiary")
+    secondary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, blank=True, null=True,
+                                          related_name="secondary")
+    tertiary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, blank=True, null=True,
+                                         related_name="tertiary")
 
 
 class ServiceSubmission(models.Model):
     name = models.CharField(max_length=200, default="Service Event")
     description = models.TextField(default="I did the service thing")
     hours = models.IntegerField(default=0)
+    date_applied = models.DateTimeField(default=django.utils.timezone.now)
     submitted = models.BooleanField(default=False)
     date = models.DateField()
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
@@ -144,12 +144,30 @@ class ServiceSubmission(models.Model):
         return self.name
 
 
+# Given separate section to prevent accidental viewing while in admin views
+class ScholarshipReport(models.Model):
+    brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
+    past_semester_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
+    cumulative_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
+    scholarship_plan = models.TextField(default="Scholarship plan has not been setup yet if you past semester GPA "
+                                                "or cum GPA are below 3.0 you should "
+                                                "setup a meeting to have this corrected")
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return "%s %s - %s %s" % (self.brother.first_name, self.brother.last_name,
+                                  self.semester.get_season_display(), self.semester.year)
+
+
 class ChapterEvent(models.Model):
     name = models.CharField(max_length=200, default="Chapter Event")
     date_time = models.DateTimeField()
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
     mandatory = models.BooleanField(default=True)
-    attendees = models.ManyToManyField(Brother)
+    attendees = models.ManyToManyField(Brother, blank=True)
+    notes = models.TextField(blank=True, null=True)
+    minutes = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -158,8 +176,9 @@ class ChapterEvent(models.Model):
 class PhilanthropyEvent(models.Model):
     name = models.CharField(max_length=200, default="Philanthropy Event")
     date_time = models.DateTimeField()
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
-    rsvp_brothers = models.ManyToManyField(Brother)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    rsvp_brothers = models.ManyToManyField(Brother, blank=True)
+    notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -168,8 +187,9 @@ class PhilanthropyEvent(models.Model):
 class ServiceEvent(models.Model):
     name = models.CharField(max_length=200, default="Service Event")
     date_time = models.DateTimeField()
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
-    rsvp_brothers = models.ManyToManyField(Brother)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    rsvp_brothers = models.ManyToManyField(Brother, blank=True)
+    notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -178,24 +198,35 @@ class ServiceEvent(models.Model):
 class RecruitmentEvent(models.Model):
     name = models.CharField(max_length=200, default="Recruitment Event")
     date_time = models.DateTimeField()
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
-    attendees = models.ManyToManyField(PotentialNewMember)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    attendees = models.ManyToManyField(PotentialNewMember, blank=True)
+    notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 
-class EventExcuse(models.Model):
+class StudyTableEvent(models.Model):
+    date = models.DateField()
+    attendees = models.ManyToManyField(Brother, blank=True)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.date
+
+
+class Excuse(models.Model):
     event = models.ForeignKey(ChapterEvent, on_delete=models.CASCADE)
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True)
+    date_submitted = models.DateTimeField(default=django.utils.timezone.now)
     description = models.TextField("Reasoning", default="I will not be attending because")
-    response_message = models.TextField(default="Your excuse was not approved because")
+    response_message = models.TextField(default="Please fill out if excuse was not approved")
 
     STATUS_CHOICES = (
         ('0', 'Pending'),
         ('1', 'Approved'),
         ('2', 'Denied'),
+        ('3', 'Non-Mandatory'),
     )
 
     status = models.CharField(
