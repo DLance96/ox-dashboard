@@ -15,6 +15,14 @@ def get_season():
     # else:
     #     return '2'
 
+def get_season_from(month):
+    if month <= 5:
+        return '0'
+    elif month <= 7:
+        return '1'
+    else:
+        return '2'
+
 
 def get_year():
     return datetime.datetime.now().year

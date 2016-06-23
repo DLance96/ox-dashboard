@@ -1,58 +1,72 @@
 from .models import *
 from django import forms
 
+
 class BrotherForm(forms.ModelForm):
     class Meta:
-        model=Brother
+        model = Brother
         fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
                   'case_ID', 'birthday', 'hometown', 'phone_number', 'room_number', 'current_residence',
                   'standing_committee', 'operational_committee']
 
-class BrotherStatusForm(forms.Form):
+# class BrotherStatusForm(forms.Form):
+
 
 class PositionForm(forms.ModelForm):
     class Meta:
-        model=Position
-        fields = []
+        model = Position
+        fields = ['title', 'brother']
+
+# class PositionChange(forms.Form):
+
 
 class ExcuseForm(forms.ModelForm):
     class Meta:
         model = Excuse
-        fields = []
+        fields = ['brother', 'event', 'description']
+
 
 class PotentialNewMemberForm(forms.ModelForm):
     class Meta:
         model = PotentialNewMember
-        fields = []
+        fields = ['first_name', 'last_name', 'email', 'phone_number', 'primary_contact', 'secondary_contact',
+                  'tertiary_contact']
+
 
 class ScholarshipReportForm(forms.ModelForm):
     class Meta:
         model = ScholarshipReport
-        fields = []
+        fields = ['brother', 'cumulative_gpa', 'past_semester_gpa', 'scholarship_plan']
 
-class StudyTableEventForm(forms.ModelForm);
+
+class StudyTableEventForm(forms.ModelForm):
     class Meta:
         model = StudyTableEvent
-        fields = []
+        fields = ['date']
+
 
 class ChapterEventForm(forms.ModelForm):
     class Meta:
         model = ChapterEvent
-        fields = []
+        fields = ['name', 'mandatory', 'date_time']
+
 
 class RecruitmentEventForm(forms.ModelForm):
     class Meta:
         model = RecruitmentEvent
-        fields = []
+        fields = ['name', 'date_time']
+
 
 class PhilanthropyEventForm(forms.ModelForm):
     class Meta:
         model = PhilanthropyEvent
-        fields = []
+        fields = ['name', 'date_time']
+
 
 class ServiceEventForm(forms.ModelForm):
     class Meta:
         model = ServiceEvent
-        fields = []
+        fields = ['name', 'date_time']
 
-class ExcuseResponseForm(forms.Form):
+
+# class ExcuseResponseForm(forms.Form):

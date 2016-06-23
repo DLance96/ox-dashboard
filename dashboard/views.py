@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from .models import *
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 import utils
+from .forms import *
 
 
 def home(request):
@@ -60,10 +62,10 @@ def secretary_event(request, event_id):
 def secretary_excuse(request, excuse_id):
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     excuse = get_object_or_404(Excuse, pk=excuse_id)
-    return render(request, "secretary-excuse.html", context)
     context = {
         'excuse': excuse,
     }
+    return render(request, "secretary-excuse.html", context)
 
 
 def secretary_all_excuses(request):
@@ -78,8 +80,25 @@ def secretary_all_excuses(request):
 
 def secretary_add_event(request):
     # TODO: verify that user is Secretary (add a file with secretary verify function)
-    context = {}
-    return render(request, "home.html", context)
+    form = ChapterEventForm(request.POST or None)
+
+    if request.method == 'POST':
+        instance = form.save(commit=False)
+        if form.is_valid():
+            try:
+                semester = Semester.objects.filter(season=utils.get_season_from(instance.date_time.month),
+                                                   year=instance.date_time.year)[0]
+            except IndexError:
+                semester = Semester(season=utils.get_season(), year=utils.get_year())
+                semester.save()
+            instance.semester = semester
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:secretary'))
+
+    context = {
+        'form': form,
+    }
+    return render(request, "secretary-event-add.html", context)
 
 
 # view for seeing all events in the database
