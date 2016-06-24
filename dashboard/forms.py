@@ -26,6 +26,12 @@ class ExcuseForm(forms.ModelForm):
         fields = ['brother', 'event', 'description']
 
 
+class ExcuseResponseForm(forms.ModelForm):
+    class Meta:
+        model = Excuse
+        fields = ['status', 'response_message']
+
+
 class PotentialNewMemberForm(forms.ModelForm):
     class Meta:
         model = PotentialNewMember
@@ -42,31 +48,29 @@ class ScholarshipReportForm(forms.ModelForm):
 class StudyTableEventForm(forms.ModelForm):
     class Meta:
         model = StudyTableEvent
-        fields = ['date']
+        fields = ['date', 'start_time', 'end_time']
 
 
 class ChapterEventForm(forms.ModelForm):
     class Meta:
         model = ChapterEvent
-        fields = ['name', 'mandatory', 'date_time']
+        fields = ['name', 'mandatory', 'date', 'start_time', 'end_time']
 
 
 class RecruitmentEventForm(forms.ModelForm):
     class Meta:
         model = RecruitmentEvent
-        fields = ['name', 'date_time']
+        fields = ['name', 'date', 'start_time', 'end_time']
 
 
 class PhilanthropyEventForm(forms.ModelForm):
     class Meta:
         model = PhilanthropyEvent
-        fields = ['name', 'date_time']
+        fields = ['name', 'date', 'start_time', 'end_time']
 
 
 class ServiceEventForm(forms.ModelForm):
     class Meta:
         model = ServiceEvent
-        fields = ['name', 'date_time']
+        fields = ['name', 'date', 'start_time', 'end_time']
 
-
-# class ExcuseResponseForm(forms.Form):

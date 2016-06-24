@@ -69,15 +69,22 @@ class Brother(models.Model):
     )
 
     # Secretary Information
+    major = models.CharField(max_length=200, default="Undecided")
+    minor = models.CharField(max_length=200, blank=True, null=True)
     case_ID = models.CharField(max_length=10)
     birthday = models.DateField()
     hometown = models.CharField(max_length=200, default="Cleveland, OH")
+    t_shirt_size = models.CharField(max_length=5, default="M")
 
     # regex for proper phone number entry
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                  message="Phone number must be entered in the format: "
                                          "'+999999999'. Up to 15 digits allowed.")
     phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=15)  # validators should be a list
+
+    # President Information
+    emergency_contact = models.CharField(max_length=200, default="Chapter President")
+    emergency_contact_phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=15)
 
     # Vice President Information
     room_number = models.CharField(max_length=3, default="NA")
@@ -162,7 +169,9 @@ class ScholarshipReport(models.Model):
 
 class ChapterEvent(models.Model):
     name = models.CharField(max_length=200, default="Chapter Event")
-    date_time = models.DateTimeField()
+    date = models.DateField(default=django.utils.timezone.now)
+    start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
+    end_time = models.TimeField(blank=True, null=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
     mandatory = models.BooleanField(default=True)
     attendees = models.ManyToManyField(Brother, blank=True)
@@ -175,7 +184,9 @@ class ChapterEvent(models.Model):
 
 class PhilanthropyEvent(models.Model):
     name = models.CharField(max_length=200, default="Philanthropy Event")
-    date_time = models.DateTimeField()
+    date = models.DateField(default=django.utils.timezone.now)
+    start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
+    end_time = models.TimeField(blank=True, null=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
     rsvp_brothers = models.ManyToManyField(Brother, blank=True)
     notes = models.TextField(blank=True, null=True)
@@ -186,7 +197,9 @@ class PhilanthropyEvent(models.Model):
 
 class ServiceEvent(models.Model):
     name = models.CharField(max_length=200, default="Service Event")
-    date_time = models.DateTimeField()
+    date = models.DateField(default=django.utils.timezone.now)
+    start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
+    end_time = models.TimeField(blank=True, null=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
     rsvp_brothers = models.ManyToManyField(Brother, blank=True)
     notes = models.TextField(blank=True, null=True)
@@ -197,7 +210,9 @@ class ServiceEvent(models.Model):
 
 class RecruitmentEvent(models.Model):
     name = models.CharField(max_length=200, default="Recruitment Event")
-    date_time = models.DateTimeField()
+    date = models.DateField(default=django.utils.timezone.now)
+    start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
+    end_time = models.TimeField(blank=True, null=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
     attendees = models.ManyToManyField(PotentialNewMember, blank=True)
     notes = models.TextField(blank=True, null=True)
@@ -207,7 +222,9 @@ class RecruitmentEvent(models.Model):
 
 
 class StudyTableEvent(models.Model):
-    date = models.DateField()
+    date = models.DateField(default=django.utils.timezone.now)
+    start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
+    end_time = models.TimeField(blank=True, null=True)
     attendees = models.ManyToManyField(Brother, blank=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
 
@@ -220,7 +237,7 @@ class Excuse(models.Model):
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
     date_submitted = models.DateTimeField(default=django.utils.timezone.now)
     description = models.TextField("Reasoning", default="I will not be attending because")
-    response_message = models.TextField(default="Please fill out if excuse was not approved")
+    response_message = models.TextField(blank=True, null=True)
 
     STATUS_CHOICES = (
         ('0', 'Pending'),

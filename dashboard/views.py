@@ -38,9 +38,9 @@ def secretary(request):
     # TODO: verify that user is Secretary
     excuses = Excuse.objects.filter(event__semester__season=utils.get_season(),
                                     event__semester__year=utils.get_year(),
-                                    status='0').order_by("event__date_time")
+                                    status='0').order_by("event__date")
     events = ChapterEvent.objects.filter(semester__season=utils.get_season(),
-                                         semester__year=utils.get_year()).order_by("date_time")
+                                         semester__year=utils.get_year()).order_by("date")
     context = {
         'excuses': excuses,
         'events': events,
@@ -62,15 +62,36 @@ def secretary_event(request, event_id):
 def secretary_excuse(request, excuse_id):
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     excuse = get_object_or_404(Excuse, pk=excuse_id)
+    form = ExcuseResponseForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.save(commit=False)
+            print instance.response_message
+            print instance.status
+            if instance.status == '2':
+                context = {
+                    'excuse': excuse,
+                    'form': form,
+                    'error_message': "Response message required for denial"
+                }
+                return render(request, "secretary-excuse.html", context)
+            else:
+                excuse.status = instance.status
+                excuse.response_message = instance.response_message
+                excuse.save()
+                return HttpResponseRedirect(reverse('dashboard:secretary'))
+
     context = {
         'excuse': excuse,
+        'form': form,
     }
     return render(request, "secretary-excuse.html", context)
 
 
 def secretary_all_excuses(request):
     # TODO: verify that user is Secretary (add a file with secretary verify function)
-    excuses = Excuse.objects.order_by("event__date_time")
+    excuses = Excuse.objects.order_by("event__date")
     context = {
         'excuses': excuses,
     }
@@ -83,14 +104,21 @@ def secretary_add_event(request):
     form = ChapterEventForm(request.POST or None)
 
     if request.method == 'POST':
-        instance = form.save(commit=False)
         if form.is_valid():
+            instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date_time.month),
-                                                   year=instance.date_time.year)[0]
+                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                                                   year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season(), year=utils.get_year())
+                semester = Semester(season=utils.get_season_from(instance.date.month),
+                                    year=instance.date.year)
                 semester.save()
+            if instance.end_time is not None and instance.end_time < instance.start_time:
+                context = {
+                    'form': form,
+                    'error_message': "Start time after end time!",
+                }
+                return render(request, "secretary-event-add.html", context)
             instance.semester = semester
             instance.save()
             return HttpResponseRedirect(reverse('dashboard:secretary'))
