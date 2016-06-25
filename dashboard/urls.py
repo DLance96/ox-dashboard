@@ -5,7 +5,7 @@ app_name = 'dashboard'
 
 urlpatterns = [
     url(r'^$', views.home, name="home"),
-    url(r'^brother/', views.brother, name="brother"),
+    url(r'^brother/', views.brother_view, name="brother"),
     url(r'^president/', views.president, name="president"),
     url(r'^vice-president/', views.v_president, name="v_president"),
     url(r'^treasurer/', views.treasurer, name="treasurer"),

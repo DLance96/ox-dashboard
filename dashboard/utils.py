@@ -36,6 +36,13 @@ def get_day():
     return datetime.datetime.now().day
 
 
+def forms_is_valid(form_list):
+    for form in form_list:
+        if not form.is_valid():
+            return False
+    return True
+
+
 def verify_president(user):
     # TODO: create custom user with roster_number
     roster_number = user.roster_number

@@ -9,7 +9,7 @@ def home(request):
     return render(request, 'home.html', {})
 
 
-def brother(request):
+def brother_view(request):
     # TODO: pull brother from user login
     # TODO: check if user is authenticated
     current_brother = Brother.objects.filter(roster_number=898).all()[0]
@@ -52,11 +52,37 @@ def secretary(request):
 def secretary_event(request, event_id):
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     event = ChapterEvent.objects.get(pk=event_id)
+    brothers = Brother.objects.exclude(brother_status='2')
+    form_list = []
+    for brother in brothers:
+        if event.attendees.filter(roster_number=brother.roster_number):
+            new_form = AttendanceForm(request.POST or None, initial={'present': True}, prefix=brother.roster_number,
+                                      brother="- %s %s" % (brother.first_name, brother.last_name))
+            form_list.append(new_form)
+        else:
+            new_form = AttendanceForm(request.POST or None, initial={'present': False}, prefix=brother.roster_number,
+                                      brother="- %s %s" % (brother.first_name, brother.last_name))
+            form_list.append(new_form)
+    list = zip(brothers, form_list)
+
+    if request.method == 'POST':
+        if utils.forms_is_valid(form_list):
+            for counter, form in enumerate(form_list):
+                instance = form.cleaned_data
+                if instance['present'] is True:
+                    event.attendees.add(brothers[counter])
+                    event.save()
+                if instance['present'] is False:
+                    event.attendees.remove(brothers[counter])
+                    event.save()
+            return HttpResponseRedirect(reverse('dashboard:secretary'))
+
     context = {
+        'list': list,
         'event': event,
     }
     # TODO: create secretary-event.html with attendance form
-    return render(request, "home.html", context)
+    return render(request, "secretary-event.html", context)
 
 
 def secretary_excuse(request, excuse_id):
@@ -91,7 +117,7 @@ def secretary_excuse(request, excuse_id):
 
 def secretary_all_excuses(request):
     # TODO: verify that user is Secretary (add a file with secretary verify function)
-    excuses = Excuse.objects.order_by("event__date")
+    excuses = Excuse.objects.order_by('brother__last_name').order_by('event__date')
     context = {
         'excuses': excuses,
     }
@@ -105,6 +131,7 @@ def secretary_add_event(request):
 
     if request.method == 'POST':
         if form.is_valid():
+            # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
                 semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
@@ -115,18 +142,20 @@ def secretary_add_event(request):
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
                 context = {
+                    'position': 'Secretary',
                     'form': form,
                     'error_message': "Start time after end time!",
                 }
-                return render(request, "secretary-event-add.html", context)
+                return render(request, "event-add.html", context)
             instance.semester = semester
             instance.save()
             return HttpResponseRedirect(reverse('dashboard:secretary'))
 
     context = {
+        'position': 'Secretary',
         'form': form,
     }
-    return render(request, "secretary-event-add.html", context)
+    return render(request, "event-add.html", context)
 
 
 # view for seeing all events in the database

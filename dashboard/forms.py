@@ -74,3 +74,15 @@ class ServiceEventForm(forms.ModelForm):
         model = ServiceEvent
         fields = ['name', 'date', 'start_time', 'end_time']
 
+
+class AttendanceForm(forms.Form):
+    present = forms.BooleanField(label="", required=False, label_suffix='')
+
+    def __init__(self, *args, **kwargs):
+        brother = kwargs.pop('brother', "")
+        super(AttendanceForm, self).__init__(*args, **kwargs)
+
+        if brother:
+            self.fields['present'].label = brother
+
+
