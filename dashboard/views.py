@@ -170,6 +170,15 @@ def secretary_all_events(request):
     return render(request, "home.html", context)
 
 
+def marshall(request):
+    # TODO: verify that user is Marshall
+    candidates = Brother.objects.filter(brother_status='0')
+    context = {
+        'candidates': candidates,
+    }
+    return render(request, 'marshall.html.html', context)
+
+
 def scholarship_c(request):
     # TODO: verify that user is Scholarship chair (add a file with scholarship verify function)
     reports = ScholarshipReport.objects.filter(semester__season=utils.get_season(),
