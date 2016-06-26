@@ -6,10 +6,12 @@ from .forms import *
 
 
 def home(request):
+    """ Renders the home page """
     return render(request, 'home.html', {})
 
 
 def brother_view(request):
+    """ Renders the brother page of current user showing all standard brother information """
     # TODO: pull brother from user login
     # TODO: check if user is authenticated
     current_brother = Brother.objects.filter(roster_number=898).all()[0]
@@ -20,21 +22,25 @@ def brother_view(request):
 
 
 def president(request):
+    """ Renders the President page and all relevant information """
     # TODO: verify that user is President
     return render(request, 'president.html', {})
 
 
 def v_president(request):
+    """ Renders the Vice President page and all relevant information, primarily committee related """
     # TODO: verify that user is Vice President
     return render(request, 'vice-president.html', {})
 
 
 def treasurer(request):
+    """ Renders all the transactional information on the site for the treasurer """
     # TODO: verify that user is Treasurer
     return render(request, 'treasurer.html', {})
 
 
 def secretary(request):
+    """ Renders the secretary page giving access to excuses and ChapterEvents """
     # TODO: verify that user is Secretary
     excuses = Excuse.objects.filter(event__semester__season=utils.get_season(),
                                     event__semester__year=utils.get_year(),
@@ -50,6 +56,7 @@ def secretary(request):
 
 # View for doing attendance on a specific event
 def secretary_event(request, event_id):
+    """ Renders the attendance sheet for any event """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     event = ChapterEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')
@@ -86,6 +93,7 @@ def secretary_event(request, event_id):
 
 
 def secretary_excuse(request, excuse_id):
+    """ Renders Excuse response form """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     excuse = get_object_or_404(Excuse, pk=excuse_id)
     form = ExcuseResponseForm(request.POST or None)
@@ -116,6 +124,7 @@ def secretary_excuse(request, excuse_id):
 
 
 def secretary_all_excuses(request):
+    """ Renders all excuses sorted by date then semester """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     excuses = Excuse.objects.order_by('brother__last_name').order_by('event__date')
     context = {
@@ -126,6 +135,7 @@ def secretary_all_excuses(request):
 
 
 def secretary_add_event(request):
+    """ Renders the Secretary way of adding ChapterEvents """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     form = ChapterEventForm(request.POST or None)
 
@@ -158,8 +168,8 @@ def secretary_add_event(request):
     return render(request, "event-add.html", context)
 
 
-# view for seeing all events in the database
 def secretary_all_events(request):
+    """ Renders a secretary view with all the ChapterEvent models ordered by date grouped by semester """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     events = ChapterEvent.objects.all()
     context = {
@@ -171,6 +181,7 @@ def secretary_all_events(request):
 
 
 def marshall(request):
+    """ Renders the Marshall page listing all the candidates and relevant information to them """
     # TODO: verify that user is Marshall
     candidates = Brother.objects.filter(brother_status='0')
     context = {
@@ -180,6 +191,7 @@ def marshall(request):
 
 
 def scholarship_c(request):
+    """ Renders the Scholarship page listing all brother gpas and study table attendance """
     # TODO: verify that user is Scholarship chair (add a file with scholarship verify function)
     reports = ScholarshipReport.objects.filter(semester__season=utils.get_season(),
                                                semester__year=utils.get_year())\
@@ -191,6 +203,7 @@ def scholarship_c(request):
 
 
 def recruitment_c(request):
+    """ Renders Scholarship chair page with events for the current and following semester """
     # TODO: verify that user is Recruitment Chair
     current_season = utils.get_season()
     if current_season is '0':
@@ -211,12 +224,14 @@ def recruitment_c(request):
 
 
 def recruitment_c_add_event(request):
+    """ Renders the recruitment chair way of adding RecruitmentEvents """
     # TODO: verify that user is Recruitment Chair
     # TODO: create recruitment-chair-add-event.html
     return render(request, 'home.html', {})
 
 
 def service_c(request):
+    """ Renders the service chair page with service submissions """
     # TODO: verify that user is Service Chair
     events = ServiceEvent.objects.filter(semester__season=utils.get_season(),
                                          semester__year=utils.get_year())
@@ -230,12 +245,14 @@ def service_c(request):
 
 
 def service_c_add_event(request):
+    """ Renders the service chair way of adding ServiceEvent """
     # TODO: verify that user is Service Chair
     # TODO: create service-chair-add-event.html
     return render(request, 'home.html', {})
 
 
 def philanthropy_c(request):
+    """ Renders the philanthropy chair's RSVP page for different events """
     # TODO: verify that user is Philanthropy Chair
     events = PhilanthropyEvent.objects.filter(semester__season=utils.get_season(),
                                               semester__year=utils.get_year())
@@ -246,11 +263,13 @@ def philanthropy_c(request):
 
 
 def philanthropy_c_add_event(request):
+    """ Renders the philanthropy chair way of adding PhilanthropyEvent """
     # TODO: verify that user is Philanthropy Chair
     # TODO: create philanthropy-chair-add-event.html
     return render(request, 'home.html', {})
 
 
 def detail_m(request):
+    """ Renders the detail manager page"""
     # TODO: verify that user is Detail Manager
     return render(request, 'detail-manager.html', {})
