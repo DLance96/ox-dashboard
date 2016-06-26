@@ -1,3 +1,4 @@
+/*Making google calendar responsive*/
 .responsiveCal {
     position: relative; padding-bottom: 75%; height: 0; overflow: hidden;
 }
@@ -6,6 +7,26 @@
     position: absolute; top:0; left: 0; width: 100%; height: 100%;
 }
 
+
+/*Used to make label towards top of text areas*/
 textarea {
     vertical-align: top;
-}​
+}
+
+/*Used to display event information*/
+.table-event-information > tbody > tr {
+    border-top: 1px solid rgb(221, 221, 221);
+}
+
+.table-event-information > tbody > tr:first-child {
+    border-top: 0;
+}
+
+
+.table-event-information > tbody > tr > td {
+    border-top: 0;
+}
+.toppad
+{margin-top:20px;
+}
+​
