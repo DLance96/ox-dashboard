@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>{{ position }}</h1>
+    </div>
+    {% for events, semester  in list %}
+        <div class="panel panel-default">
+            <div class="panel-heading">{{ semester }}</div>
+            <div class="panel-body">
+            {% for event in events %}
+                <a href={% url 'dashboard:secretary_view_event' event.id %}>{{ event }}</a> <br>
+            {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

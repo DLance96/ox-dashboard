@@ -88,9 +88,7 @@ def secretary_event(request, event_id):
         'list': list,
         'event': event,
     }
-    # TODO: create secretary-event.html with attendance form
     return render(request, "secretary-event.html", context)
-
 
 def secretary_excuse(request, excuse_id):
     """ Renders Excuse response form """
@@ -134,6 +132,20 @@ def secretary_all_excuses(request):
     return render(request, "home.html", context)
 
 
+def secretary_view_event(request, event_id):
+    """ Renders the Secretary way of viewing old events """
+    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    event = ChapterEvent.objects.get(pk=event_id)
+    attendees = event.attendees.all().order_by("last_name")
+
+    context = {
+        'postition': "Secretary",
+        'attendees': attendees,
+        'event': event,
+    }
+    return render(request, "chapter-view-event.html", context)
+
+
 def secretary_add_event(request):
     """ Renders the Secretary way of adding ChapterEvents """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
@@ -171,13 +183,24 @@ def secretary_add_event(request):
 def secretary_all_events(request):
     """ Renders a secretary view with all the ChapterEvent models ordered by date grouped by semester """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
-    events = ChapterEvent.objects.all()
+    events_by_semester = []
+    semesters = Semester.objects.order_by("season").order_by("year").all()
+    for semester in semesters:
+        events = ChapterEvent.objects.filter(semester=semester).order_by("date")
+        if len(events) == 0:
+            print semester
+            print events
+            events_by_semester.append([])
+        else:
+            print semester
+            print events
+            events_by_semester.append(events)
+    zip_list = zip(events_by_semester, semesters)
     context = {
-        'events': events,
+        'list': zip_list,
+        'position': "Secretary"
     }
-    # Reminder to use a for loop for all the years and then have Spring Semester first in secretary-all-events.html
-    # TODO: make secretary-all-events.html
-    return render(request, "home.html", context)
+    return render(request, "chapter-all-events.html", context)
 
 
 def marshall(request):
