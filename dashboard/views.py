@@ -27,7 +27,7 @@ class LoginView(View):
 class LogoutView(View):
     def get(self, request, *args, **kwargs):
         auth.logout(request)
-        return HttpResponseRedirect(reverse('home'))
+        return HttpResponseRedirect(reverse('dashboard:home'))
 
 
 def home(request):
