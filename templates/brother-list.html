@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>{{ position }}</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Brother List</div>
+        <div class="panel-body">
+            {% for brother in brothers %}
+                <a href={% url 'dashboard:secretary_brother_view' brother.id %}>{{ brother }}</a> <br>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

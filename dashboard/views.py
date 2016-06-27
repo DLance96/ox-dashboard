@@ -90,6 +90,7 @@ def secretary_event(request, event_id):
     }
     return render(request, "secretary-event.html", context)
 
+
 def secretary_excuse(request, excuse_id):
     """ Renders Excuse response form """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
@@ -139,11 +140,48 @@ def secretary_view_event(request, event_id):
     attendees = event.attendees.all().order_by("last_name")
 
     context = {
-        'postition': "Secretary",
+        'position': "Secretary",
         'attendees': attendees,
         'event': event,
     }
     return render(request, "chapter-view-event.html", context)
+
+
+def secretary_brother_list(request):
+    """ Renders the Secretary way of viewing brothers """
+    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    brothers = Brother.objects.exclude(brother_status='2')
+    context = {
+        'position': 'Secretary',
+        'brothers': brothers
+    }
+    print brothers
+    return render(request, "brother-list.html", context)
+
+
+def secretary_brother_view(request, brother_id):
+    """ Renders the Secretary way of viewing a brother """
+    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    brother = Brother.objects.get(pk=brother_id)
+    context = {
+        'position': 'Secretary',
+        'brother': brother
+    }
+    return render(request, "home.html", context)
+
+
+def secretary_brother_edit(request, brother_id):
+    """ Renders the Secretary way of editing brother info """
+    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    brother = Brother.objects.get(pk=brother_id)
+    form = None  # TODO: create UpdateForm
+
+    context = {
+        'position': 'Secretary',
+        'brother': brother,
+        'form': form
+    }
+    return render(request, "home.html", context)
 
 
 def secretary_add_event(request):
