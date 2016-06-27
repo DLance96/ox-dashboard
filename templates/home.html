@@ -21,7 +21,7 @@
                 <form method="post" action="{% url "dashboard:login" %}">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <input type="submit"/>
+                    <input type="submit" value="Log in"/>
                 </form>
             {% endif %}
         </p>

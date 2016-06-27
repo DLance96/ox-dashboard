@@ -14,13 +14,14 @@ class LoginView(View):
             password=request.POST['password']
         )
         if user is not None:
+            print user.is_active
             if user.is_active:
                 auth.login(request, user)
-        return HttpResponseRedirect(reverse('home'))
+        return HttpResponseRedirect(reverse('dashboard:home'))
 
     def get(request, *args, **kwargs):
         # we should never get to this codepath
-        return HttpResponseRedirect(reverse('home'))
+        return HttpResponseRedirect(reverse('dashboard:home'))
 
 
 class LogoutView(View):
@@ -44,7 +45,7 @@ def brother_view(request):
     """ Renders the brother page of current user showing all standard brother information """
     # TODO: pull brother from user login
     # TODO: check if user is authenticated
-    current_brother = Brother.objects.filter(roster_number=898).all()[0]
+    current_brother = Brother.objects.filter(roster_number=989).all()[0]
     context = {
         ('brother', current_brother),
     }
