@@ -15,7 +15,15 @@
     <div class="jumbotron">
         <h2>Test</h2>
         <p>
-            More testing
+            {% if is_authenticated %}
+                User: {{ user }} | <a href="{% url "dashboard:logout" %}">logout</a>
+            {% else %}
+                <form method="post" action="{% url "dashboard:login" %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit"/>
+                </form>
+            {% endif %}
         </p>
     </div>
 {% endblock %}

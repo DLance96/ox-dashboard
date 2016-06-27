@@ -3,11 +3,41 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 import utils
 from .forms import *
+from django.views.generic import View
+from django.contrib import auth
+
+
+class LoginView(View):
+    def post(self, request, *args, **kwargs):
+        user = auth.authenticate(
+            username=request.POST['username'],
+            password=request.POST['password']
+        )
+        if user is not None:
+            if user.is_active:
+                auth.login(request, user)
+        return HttpResponseRedirect(reverse('home'))
+
+    def get(request, *args, **kwargs):
+        # we should never get to this codepath
+        return HttpResponseRedirect(reverse('home'))
+
+
+class LogoutView(View):
+    def get(self, request, *args, **kwargs):
+        auth.logout(request)
+        return HttpResponseRedirect(reverse('home'))
 
 
 def home(request):
     """ Renders the home page """
-    return render(request, 'home.html', {})
+    form = LoginForm()
+    is_authenticated = request.user.is_authenticated()
+    context = {
+        'form': form,
+        'is_authenticated': is_authenticated,
+    }
+    return render(request, 'home.html', context)
 
 
 def brother_view(request):
@@ -27,7 +57,7 @@ def president(request):
     return render(request, 'president.html', {})
 
 
-def v_president(request):
+def vice_president(request):
     """ Renders the Vice President page and all relevant information, primarily committee related """
     # TODO: verify that user is Vice President
     return render(request, 'vice-president.html', {})
@@ -155,7 +185,6 @@ def secretary_brother_list(request):
         'position': 'Secretary',
         'brothers': brothers
     }
-    print brothers
     return render(request, "brother-list.html", context)
 
 
@@ -255,7 +284,7 @@ def scholarship_c(request):
     """ Renders the Scholarship page listing all brother gpas and study table attendance """
     # TODO: verify that user is Scholarship chair (add a file with scholarship verify function)
     reports = ScholarshipReport.objects.filter(semester__season=utils.get_season(),
-                                               semester__year=utils.get_year())\
+                                               semester__year=utils.get_year()) \
         .order_by("past_semester_gpa")
     context = {
         'reports': reports,

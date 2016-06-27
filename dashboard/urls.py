@@ -4,13 +4,18 @@ from . import views
 app_name = 'dashboard'
 
 urlpatterns = [
+
+    # login views
+    url(r'^login/$', views.LoginView.as_view(), name='login'),
+    url(r'^logout/$', views.LogoutView.as_view(), name='logout'),
+
     url(r'^$', views.home, name="home"),
 
     # Brother URL section
     url(r'^brother/', views.brother_view, name="brother"),
 
     url(r'^president/', views.president, name="president"),
-    url(r'^vice-president/', views.v_president, name="v_president"),
+    url(r'^vice-president/', views.vice_president, name="vice_president"),
     url(r'^treasurer/', views.treasurer, name="treasurer"),
 
     # Secretary URL section

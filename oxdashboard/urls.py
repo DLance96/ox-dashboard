@@ -19,8 +19,8 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    url(r'', include('dashboard.urls', namespace='dashboard')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'', include('dashboard.urls', namespace='dashboard')),
 ]
 
 if settings.DEBUG:

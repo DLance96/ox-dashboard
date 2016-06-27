@@ -1,5 +1,7 @@
 from django.db import models
 import django.utils.timezone
+from django.contrib import auth
+from django.contrib.auth.models import *
 from django.core.validators import RegexValidator
 import datetime
 
@@ -29,6 +31,8 @@ class Semester(models.Model):
 
 
 class Brother(models.Model):
+    user = models.OneToOneField(User, unique=True)
+
     # General profile information
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45)
