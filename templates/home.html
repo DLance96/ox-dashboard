@@ -6,15 +6,19 @@
 {% block content %}
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <h1>Homepage</h1>
-        <h2>Lower title</h2>
-        <p>
-            tada
-        </p>
+        <h1>Theta Chi Dashboard</h1>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">
+                    {{ message|safe }}
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
-    <div class="jumbotron">
-        <h2>Test</h2>
-        <p>
-        </p>
+    <div class="panel panel-default">
+        <div class="panel-heading">Some article stuff</div>
+        <div class="panel-body">
+
+        </div>
     </div>
 {% endblock %}

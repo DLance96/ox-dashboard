@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 import utils
 from .forms import *
 from django.views.generic import View
-from django.contrib import auth
+from django.contrib import auth, messages
 
 
 class LoginView(View):
@@ -33,7 +33,7 @@ class LogoutView(View):
 
 
 def home(request):
-    """ Renders the home page """
+    """ Renders home page """
     context = {
     }
     return render(request, 'home.html', context)
@@ -43,7 +43,11 @@ def brother_view(request):
     """ Renders the brother page of current user showing all standard brother information """
     # TODO: pull brother from user login
     # TODO: check if user is authenticated
-    current_brother = Brother.objects.filter(roster_number=989).all()[0]
+    if not request.user.is_authenticated():
+        messages.error(request, "Brother not logged in before viewing brother portal")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    current_brother = Brother.objects.filter(user=request.user)[0]
     context = {
         ('brother', current_brother),
     }
