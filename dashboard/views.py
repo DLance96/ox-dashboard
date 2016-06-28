@@ -8,6 +8,7 @@ from django.contrib import auth
 
 
 class LoginView(View):
+    """ Logs in and redirects to the homepage """
     def post(self, request, *args, **kwargs):
         user = auth.authenticate(
             username=request.POST['username'],
@@ -19,12 +20,13 @@ class LoginView(View):
                 auth.login(request, user)
         return HttpResponseRedirect(reverse('dashboard:home'))
 
-    def get(request, *args, **kwargs):
-        # we should never get to this codepath
+    def get(self, request, *args, **kwargs):
+        # we should never get to this code path
         return HttpResponseRedirect(reverse('dashboard:home'))
 
 
 class LogoutView(View):
+    """ Logout and redirect to homepage """
     def get(self, request, *args, **kwargs):
         auth.logout(request)
         return HttpResponseRedirect(reverse('dashboard:home'))
@@ -32,11 +34,7 @@ class LogoutView(View):
 
 def home(request):
     """ Renders the home page """
-    form = LoginForm()
-    is_authenticated = request.user.is_authenticated()
     context = {
-        'form': form,
-        'is_authenticated': is_authenticated,
     }
     return render(request, 'home.html', context)
 
