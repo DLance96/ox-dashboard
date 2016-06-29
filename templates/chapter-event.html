@@ -24,11 +24,16 @@
                             <td>{{ event.date }}</td>
                         </tr>
                         <tr>
-                            <td>Time</td>
-                            <td>Start: {{ event.start_time }}
+                            <td>Time Start:
                                 {% if event.end_time %}
-                                    <br><br>End: {{ event.end_time }}
+                                    <br>End:
                                 {% endif %}</td>
+                            </td>
+                            <td>{{ event.start_time }}
+                                {% if event.end_time %}
+                                    <br>{{ event.end_time }}
+                                {% endif %}
+                            </td>
                         </tr>
                         <tr>
                             <td>Mandatory</td>
@@ -50,7 +55,9 @@
                     </table>
                 </div>
             </div>
+        {% if type == 'attendance' or type == 'secretary-view'%}
             <a class="btn btn-default" href={% url 'dashboard:secretary' %} role="button">Edit event</a>
+        {% endif %}
         </div>
     </div>
     {% if type == 'attendance' %}
@@ -70,7 +77,7 @@
             </div>
         </div>
     {% endif %}
-    {% if type == 'view' %}
+    {% if type == 'view' or type == 'secretary-view' %}
         <div class="panel panel-default">
             <div class="panel-heading">Event Attendance</div>
             <div class="panel-body">
@@ -84,10 +91,15 @@
         <div class="panel panel-default">
             <div class="panel-heading">Event Excuse</div>
             <div class="panel-body">
+                {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                {% endif %}
                 <form action="" method="post">
                     {% csrf_token %}
-                    {{ form }}
-                    <input type="submit" value="Update"/>
+                    {{ form.as_p }}
+                    <input type="submit" value="Submit Excuse"/>
                 </form>
             </div>
         </div>

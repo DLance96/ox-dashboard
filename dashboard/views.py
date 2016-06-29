@@ -1,21 +1,22 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-import utils
+from django.db.models import Q
 from .forms import *
 from django.views.generic import View
 from django.contrib import auth, messages
+import utils
 
 
 class LoginView(View):
     """ Logs in and redirects to the homepage """
+
     def post(self, request, *args, **kwargs):
         user = auth.authenticate(
             username=request.POST['username'],
             password=request.POST['password']
         )
         if user is not None:
-            print user.is_active
             if user.is_active:
                 auth.login(request, user)
         return HttpResponseRedirect(reverse('dashboard:home'))
@@ -27,6 +28,7 @@ class LoginView(View):
 
 class LogoutView(View):
     """ Logout and redirect to homepage """
+
     def get(self, request, *args, **kwargs):
         auth.logout(request)
         return HttpResponseRedirect(reverse('dashboard:home'))
@@ -46,11 +48,65 @@ def brother_view(request):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     brother = Brother.objects.filter(user=request.user)[0]
-
+    chapter_events = ChapterEvent.objects.filter(semester__season=utils.get_season(),
+                                                 semester__year=utils.get_year()).order_by("date")
+    excuses = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
+                                    event__semester__year=utils.get_year()).order_by("event__date")
+    # committee_meetings = CommitteeMeetingEvent.objects.filter()
+    recruitment_events = RecruitmentEvent.objects.filter(semester__season=utils.get_season(),
+                                                         semester__year=utils.get_year()).order_by("date")
+    pnms = PotentialNewMember.objects.filter(Q(primary_contact=brother) |
+                                             Q(secondary_contact=brother) |
+                                             Q(tertiary_contact=brother))
+    service_events = ServiceEvent.objects.filter(semester__season=utils.get_season(),
+                                                 semester__year=utils.get_year()).order_by("date")
+    service_submissions = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
+                                                           semester__year=utils.get_year()).order_by("date_applied")
+    philanthropy_events = PhilanthropyEvent.objects.filter(semester__season=utils.get_season(),
+                                                           semester__year=utils.get_year()) \
+        .order_by("start_time").order_by("date")
     context = {
         'brother': brother,
+        'chapter_events': chapter_events,
+        'excuses': excuses,
+        # 'committee_meetings': committee_meetings,
+        'recruitment_events': recruitment_events,
+        'pnms': pnms,
+        'service_events': service_events,
+        'service_submissions': service_submissions,
+        'philanthropy_events': philanthropy_events,
     }
     return render(request, "brother.html", context)
+
+
+def brother_chapter_event(request, event_id):
+    """ Renders the brother page for chapter event with a excuse form """
+    event = ChapterEvent.objects.get(pk=event_id)
+    form = ExcuseForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.save(commit=False)
+            if instance.description == "I will not be attending because":
+                context = {
+                    'type': 'brother',
+                    'form': form,
+                    'event': event,
+                    'error_message': "Please write a description",
+                }
+                return render(request, "chapter-event.html", context)
+            brother = Brother.objects.filter(user=request.user)[0]
+            instance.brother = brother
+            instance.event = event
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:brother'))
+
+    context = {
+        'type': 'brother',
+        'form': form,
+        'event': event,
+    }
+    return render(request, "chapter-event.html", context)
 
 
 def president(request):
@@ -117,10 +173,11 @@ def secretary_event(request, event_id):
             return HttpResponseRedirect(reverse('dashboard:secretary'))
 
     context = {
+        'type': 'attendance',
         'list': list,
         'event': event,
     }
-    return render(request, "secretary-event.html", context)
+    return render(request, "chapter-event.html", context)
 
 
 def secretary_excuse(request, excuse_id):
@@ -132,8 +189,6 @@ def secretary_excuse(request, excuse_id):
     if request.method == 'POST':
         if form.is_valid():
             instance = form.save(commit=False)
-            print instance.response_message
-            print instance.status
             if instance.status == '2':
                 context = {
                     'excuse': excuse,
@@ -172,11 +227,11 @@ def secretary_view_event(request, event_id):
     attendees = event.attendees.all().order_by("last_name")
 
     context = {
-        'position': "Secretary",
+        'type': 'secretary-view',
         'attendees': attendees,
         'event': event,
     }
-    return render(request, "chapter-view-event.html", context)
+    return render(request, "chapter-event.html", context)
 
 
 def secretary_brother_list(request):
@@ -257,12 +312,8 @@ def secretary_all_events(request):
     for semester in semesters:
         events = ChapterEvent.objects.filter(semester=semester).order_by("date")
         if len(events) == 0:
-            print semester
-            print events
             events_by_semester.append([])
         else:
-            print semester
-            print events
             events_by_semester.append(events)
     zip_list = zip(events_by_semester, semesters)
     context = {

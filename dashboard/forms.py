@@ -28,7 +28,7 @@ class PositionForm(forms.ModelForm):
 class ExcuseForm(forms.ModelForm):
     class Meta:
         model = Excuse
-        fields = ['brother', 'event', 'description']
+        fields = ['description']
 
 
 class ExcuseResponseForm(forms.ModelForm):

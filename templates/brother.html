@@ -63,7 +63,8 @@
                         </tr>
                         <tr>
                             <td>Emergency Contact:<br>
-                                Phone Number:</td>
+                                Phone Number:
+                            </td>
                             <td>{{ brother.emergency_contact }}<br>
                                 {{ brother.emergency_contact_phone_number }}</td>
                         </tr>
@@ -82,6 +83,46 @@
                 </div>
             </div>
             <a class="btn btn-default" href="" role="button">Edit information</a>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Chapter Events</div>
+        <div class="panel-body">
+            <p>
+                {% for event in chapter_events %}
+                    <a href={% url 'dashboard:brother_chapter_event' event.id %}>{{ event }} - {{ event.date }}</a><br>
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Excuses</div>
+        <div class="panel-body">
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Committees</div>
+        <div class="panel-body">
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Recruitment Events</div>
+        <div class="panel-body">
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Potential New Members</div>
+        <div class="panel-body">
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Service</div>
+        <div class="panel-body">
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Philanthropy Events</div>
+        <div class="panel-body">
         </div>
     </div>
 {% endblock %}

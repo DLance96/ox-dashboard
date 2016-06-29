@@ -12,7 +12,8 @@ urlpatterns = [
     url(r'^$', views.home, name="home"),
 
     # Brother URL section
-    url(r'^brother/', views.brother_view, name="brother"),
+    url(r'^brother/$', views.brother_view, name="brother"),
+    url(r'^brother/event/(?P<event_id>[0-9]+)/$', views.brother_chapter_event, name="brother_chapter_event"),
 
     url(r'^president/', views.president, name="president"),
     url(r'^vice-president/', views.vice_president, name="vice_president"),
