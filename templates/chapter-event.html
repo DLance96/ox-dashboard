@@ -6,9 +6,7 @@
 {% block content %}
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <h1>Secretary</h1>
-        <p>
-        </p>
+        <h1>Chapter Event</h1>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Event</div>
@@ -55,19 +53,43 @@
             <a class="btn btn-default" href={% url 'dashboard:secretary' %} role="button">Edit event</a>
         </div>
     </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">Event Attendance</div>
-        <div class="panel-body">
-            <form action="" method="post">
-                {% csrf_token %}
-                {% for brother, form in list %}
-                    {% for field in form %}
-                        {{ field }}{{ field.label_tag }}
+    {% if type == 'attendance' %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Event Attendance</div>
+            <div class="panel-body">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {% for brother, form in list %}
+                        {% for field in form %}
+                            {{ field }}{{ field.label_tag }}
+                        {% endfor %}
+                        <br>
                     {% endfor %}
-                    <br>
-                {% endfor %}
-                <input type="submit" value="Update"/>
-            </form>
+                    <input type="submit" value="Update"/>
+                </form>
+            </div>
         </div>
-    </div>
+    {% endif %}
+    {% if type == 'view' %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Event Attendance</div>
+            <div class="panel-body">
+                {% for brother in attendees %}
+                    {{ brother }}<br>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% if type == 'brother' %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Event Excuse</div>
+            <div class="panel-body">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form }}
+                    <input type="submit" value="Update"/>
+                </form>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
