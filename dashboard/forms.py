@@ -11,7 +11,7 @@ class BrotherForm(forms.ModelForm):
     class Meta:
         model = Brother
         fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
-                  'case_ID', 'birthday', 'hometown', 'phone_number', 'room_number', 'current_residence',
+                  'case_ID', 'birthday', 'hometown', 'phone_number', 'room_number', "address",
                   'standing_committee', 'operational_committee']
 
 # class BrotherStatusForm(forms.Form):

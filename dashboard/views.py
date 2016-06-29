@@ -41,15 +41,14 @@ def home(request):
 
 def brother_view(request):
     """ Renders the brother page of current user showing all standard brother information """
-    # TODO: pull brother from user login
-    # TODO: check if user is authenticated
     if not request.user.is_authenticated():
         messages.error(request, "Brother not logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
-    current_brother = Brother.objects.filter(user=request.user)[0]
+    brother = Brother.objects.filter(user=request.user)[0]
+
     context = {
-        ('brother', current_brother),
+        'brother': brother,
     }
     return render(request, "brother.html", context)
 
