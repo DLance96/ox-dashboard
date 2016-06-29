@@ -43,15 +43,23 @@ def home(request):
 
 def brother_view(request):
     """ Renders the brother page of current user showing all standard brother information """
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated():  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     brother = Brother.objects.filter(user=request.user)[0]
     chapter_events = ChapterEvent.objects.filter(semester__season=utils.get_season(),
                                                  semester__year=utils.get_year()).order_by("date")
-    excuses = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
-                                    event__semester__year=utils.get_year()).order_by("event__date")
+    excuses_pending = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
+                                            event__semester__year=utils.get_year(), status='0').order_by("event__date")
+    excuses_approved = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
+                                             event__semester__year=utils.get_year(), status='1').order_by("event__date")
+    excuses_denied = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
+                                           event__semester__year=utils.get_year(), status='2').order_by("event__date")
+    excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
+                                                  event__semester__year=utils.get_year(), status='3').order_by(
+        "event__date")
+
     # committee_meetings = CommitteeMeetingEvent.objects.filter()
     recruitment_events = RecruitmentEvent.objects.filter(semester__season=utils.get_season(),
                                                          semester__year=utils.get_year()).order_by("date")
@@ -68,7 +76,10 @@ def brother_view(request):
     context = {
         'brother': brother,
         'chapter_events': chapter_events,
-        'excuses': excuses,
+        'excuses_pending': excuses_pending,
+        'excuses_approved': excuses_approved,
+        'excuses_denied': excuses_denied,
+        'excuses_not_mandatory': excuses_not_mandatory,
         # 'committee_meetings': committee_meetings,
         'recruitment_events': recruitment_events,
         'pnms': pnms,
@@ -81,6 +92,10 @@ def brother_view(request):
 
 def brother_chapter_event(request, event_id):
     """ Renders the brother page for chapter event with a excuse form """
+    if not request.user.is_authenticated():  # brother auth check
+        messages.error(request, "Brother not logged in before viewing brother chapter events")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     event = ChapterEvent.objects.get(pk=event_id)
     form = ExcuseForm(request.POST or None)
 
@@ -189,11 +204,18 @@ def secretary_excuse(request, excuse_id):
     if request.method == 'POST':
         if form.is_valid():
             instance = form.save(commit=False)
-            if instance.status == '2':
+            if instance.status == '2' and instance.response_message is None:
                 context = {
                     'excuse': excuse,
                     'form': form,
                     'error_message': "Response message required for denial"
+                }
+                return render(request, "secretary-excuse.html", context)
+            if instance.status == '3' and excuse.event.mandatory:
+                context = {
+                    'excuse': excuse,
+                    'form': form,
+                    'error_message': "Event is mandatory cannot mark excuse not mandatory"
                 }
                 return render(request, "secretary-excuse.html", context)
             else:
