@@ -69,7 +69,7 @@ class Brother(models.Model):
     brother_status = models.CharField(
         max_length=1,
         choices=BROTHER_STATUS_CHOICES,
-        default=0,
+        default='0',
     )
 
     # Secretary Information
@@ -92,9 +92,25 @@ class Brother(models.Model):
 
     # Vice President Information
     room_number = models.CharField(max_length=3, default="NA")
-    current_residence = models.CharField(max_length=200, default="Theta Chi House")
-    standing_committee = models.CharField(max_length=200, default="Not assigned")
-    operational_committee = models.CharField(max_length=200, default="Not assigned")
+    address = models.CharField(max_length=200, default="Theta Chi House")
+
+    STANDING_COMMITTEE_CHOICES = {
+        ('0', 'Recruitment'),
+        ('1', 'Public Relations'),
+        ('2', 'Health and Safety'),
+        ('3', 'Social'),
+        ('4', 'Unassigned')
+    }
+
+    OPERATIONAL_COMMITTEE_CHOICES = {
+        ('0', 'Alumni Relations'),
+        ('1', 'Membership Development'),
+        ('2', 'Scholarship'),
+        ('3', 'Unassigned')
+    }
+
+    standing_committee = models.CharField(max_length=1, choices=STANDING_COMMITTEE_CHOICES, default='4')
+    operational_committee = models.CharField(max_length=1, choices=OPERATIONAL_COMMITTEE_CHOICES, default='3')
 
     # Treasurer Information
     # TODO: Add treasury models
@@ -223,6 +239,27 @@ class RecruitmentEvent(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class CommitteeMeetingEvent(models.Model):
+    date = models.DateTimeField(default=django.utils.timezone.now)
+    attendees = models.ManyToManyField(Brother, blank=True)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+
+    COMMITTEE_CHOICES = {
+        ('0', 'Recruitment'),
+        ('1', 'Public Relations'),
+        ('2', 'Health and Safety'),
+        ('3', 'Social'),
+        ('4', 'Alumni Relations'),
+        ('5', 'Membership Development'),
+        ('6', 'Scholarship'),
+    }
+
+    committee = models.CharField(max_length=1, choices=COMMITTEE_CHOICES)
+
+    def __str__(self):
+        return "%s - %s" % (self.type, self.date)
 
 
 class StudyTableEvent(models.Model):
