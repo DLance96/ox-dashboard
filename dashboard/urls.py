@@ -14,6 +14,8 @@ urlpatterns = [
     # Brother URL section
     url(r'^brother/$', views.brother_view, name="brother"),
     url(r'^brother/event/(?P<event_id>[0-9]+)/$', views.brother_chapter_event, name="brother_chapter_event"),
+    url(r'^brother/excuse/(?P<excuse_id>[0-9]+)/$', views.brother_excuse, name="brother_excuse"),
+    url(r'^brother/excuse/(?P<excuse_id>[0-9]+)/edit/$', views.brother_excuse_edit, name="brother_excuse_edit"),
 
     url(r'^president/', views.president, name="president"),
     url(r'^vice-president/', views.vice_president, name="vice_president"),

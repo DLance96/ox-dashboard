@@ -69,7 +69,7 @@
                                 {{ brother.emergency_contact_phone_number }}</td>
                         </tr>
                         <tr>
-                            {% if brother.current_residence == 'Theta Chi House' or brother.address == '11136 Magnolia Drive' %}
+                            {% if brother.address == "Theta Chi House" or brother.address == "11136 Magnolia Drive" %}
                                 <td>Room Number:</td>
                                 <td>{{ brother.room_number }}</td>
                             {% else %}
@@ -104,7 +104,7 @@
                         <div class="panel-heading">Pending</div>
                         <div class="panel-body">
                             {% for excuse in excuses_pending %}
-                                <a href="">{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
+                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
                             {% endfor %}
                         </div>
                     </div>
@@ -114,7 +114,7 @@
                         <div class="panel-heading">Not Mandatory</div>
                         <div class="panel-body">
                             {% for excuse in excuses_not_mandatory %}
-                                <a href="">{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
+                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
                             {% endfor %}
                         </div>
                     </div>
@@ -126,7 +126,7 @@
                         <div class="panel-heading">Approved</div>
                         <div class="panel-body">
                             {% for excuse in excuses_approved %}
-                                <a href="">{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
+                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
                             {% endfor %}
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                         <div class="panel-heading">Denied</div>
                         <div class="panel-body">
                             {% for excuse in excuses_denied %}
-                                <a href="">{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
+                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
                             {% endfor %}
                         </div>
                     </div>

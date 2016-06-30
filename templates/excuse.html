@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Chapter Excuse</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Excuse</div>
+        <div class="panel-body">
+            Name: {{ excuse.brother.first_name }} {{ excuse.brother.last_name }}<br>
+            Event: {{ excuse.event.name }}<br>
+            Event Date: {{ excuse.event.date }}<br>
+            Date Submitted: {{ excuse.date_submitted }}<br>
+            Event Mandatory: {{ excuse.event.mandatory }}<br>
+            Reasoning: {{ excuse.description }}
+            {% if excuse.status == '2' or excuse.status == '3' and excuse.response_message %}
+                <br>Response: {{ excuse.response_message }}
+            {% elif type == "review" %}
+                <br><a class="btn btn-default" href={% url 'dashboard:brother_excuse_edit' excuse.id %}>Edit Excuse</a>
+            {% endif %}
+        </div>
+    </div>
+    {% if type == "response" %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Excuse Response</div>
+
+            <div class="panel-body">
+                {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                {% endif %}
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Submit"/>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

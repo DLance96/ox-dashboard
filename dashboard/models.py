@@ -1,9 +1,7 @@
-from django.db import models
+import datetime
 import django.utils.timezone
-from django.contrib import auth
 from django.contrib.auth.models import *
 from django.core.validators import RegexValidator
-import datetime
 
 
 class Semester(models.Model):
@@ -221,7 +219,8 @@ class ServiceEvent(models.Model):
     start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
     end_time = models.TimeField(blank=True, null=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
-    rsvp_brothers = models.ManyToManyField(Brother, blank=True)
+    rsvp_brothers = models.ManyToManyField(Brother, blank=True, related_name="rsvp")
+    attendees = models.ManyToManyField(Brother, blank=True, related_name="attended")
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -234,7 +233,9 @@ class RecruitmentEvent(models.Model):
     start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
     end_time = models.TimeField(blank=True, null=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
-    attendees = models.ManyToManyField(PotentialNewMember, blank=True)
+    attendees_pnms = models.ManyToManyField(PotentialNewMember, blank=True)
+    attendees_brothers = models.ManyToManyField(Brother, blank=True)
+    rush = models.BooleanField(default=True)
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):

@@ -124,6 +124,27 @@ def brother_chapter_event(request, event_id):
     return render(request, "chapter-event.html", context)
 
 
+def brother_excuse(request, excuse_id):
+    """ Renders the brother page for one of their excuses """
+    excuse = Excuse.objects.get(pk=excuse_id)
+
+    if not request.user == excuse.brother.user:  # brother auth check
+        messages.error(request, "Please log into the brother that submitted that excuse")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    context = {
+        'excuse': excuse,
+        'type': 'review',
+    }
+    return render(request, "excuse.html", context)
+
+
+def brother_excuse_edit(request, excuse_id):
+    """ Renders the excuse page to edit pending excuses """
+    # TODO:
+    return render(request, 'home.html', {})
+
+
 def president(request):
     """ Renders the President page and all relevant information """
     # TODO: verify that user is President
@@ -210,14 +231,14 @@ def secretary_excuse(request, excuse_id):
                     'form': form,
                     'error_message': "Response message required for denial"
                 }
-                return render(request, "secretary-excuse.html", context)
+                return render(request, "excuse.html", context)
             if instance.status == '3' and excuse.event.mandatory:
                 context = {
                     'excuse': excuse,
                     'form': form,
                     'error_message': "Event is mandatory cannot mark excuse not mandatory"
                 }
-                return render(request, "secretary-excuse.html", context)
+                return render(request, "excuse.html", context)
             else:
                 excuse.status = instance.status
                 excuse.response_message = instance.response_message
@@ -228,7 +249,7 @@ def secretary_excuse(request, excuse_id):
         'excuse': excuse,
         'form': form,
     }
-    return render(request, "secretary-excuse.html", context)
+    return render(request, "excuse.html", context)
 
 
 def secretary_all_excuses(request):
