@@ -8,4 +8,54 @@
     <div class="jumbotron">
         <h1>Recruitment Chair</h1>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Events This Semester</div>
+        <div class="panel-body">
+            <p>
+                {% for event in events %}
+                    <a href={% url 'dashboard:recruitment_chair_event' event.id %}>{{ event }} - {{ event.date }}</a>
+                    <br>
+                {% endfor %}
+                <br><br><a class="btn btn-default" href="" role="button">Add Event</a>
+            </p>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Events Next Semester</div>
+        <div class="panel-body">
+            <p>
+                {% for event in events_future %}
+                    <a href={% url 'dashboard:recruitment_chair_event' event.id %}>{{ event }} - {{ event.date }}</a>
+                    <br>
+                {% endfor %}
+                <br><br><a class="btn btn-default" href="" role="button">Add Event</a>
+            </p>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Names List</div>
+        <div class="panel-body">
+            <a class="btn btn-default" href="" role="button">Add Potential New Member</a>
+            <table class="table table-event-information">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Potential New Member:</td>
+                    <td>Primary Contact</td>
+                    <td>Secondary Contact</td>
+                    <td>Tertiary Contact</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for pnm in potential_new_members %}
+                    <tr>
+                        <td><a href={% url 'dashboard:recruitment_c_pnm' pnm.id %}>{{ pnm.first_name }} {{ pnm.last_name }}</a></td>
+                        <td>{{ pnm.primary_contact }}</td>
+                        <td>{{ pnm.secondary_contact }}</td>
+                        <td>{{ pnm.tertiary_contact }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}

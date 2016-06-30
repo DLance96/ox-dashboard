@@ -59,7 +59,7 @@ def brother_view(request):
     excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
                                                   event__semester__year=utils.get_year(), status='3').order_by(
         "event__date")
-
+    # TODO: write util function to covert standing/operational committee # to standard #
     # committee_meetings = CommitteeMeetingEvent.objects.filter()
     recruitment_events = RecruitmentEvent.objects.filter(semester__season=utils.get_season(),
                                                          semester__year=utils.get_year()).order_by("date")
@@ -104,7 +104,7 @@ def brother_chapter_event(request, event_id):
             instance = form.save(commit=False)
             if instance.description == "I will not be attending because":
                 context = {
-                    'type': 'brother',
+                    'type': 'brother-view',
                     'form': form,
                     'event': event,
                     'error_message': "Please write a description",
@@ -409,11 +409,69 @@ def recruitment_c(request):
     return render(request, 'recruitment-chair.html', context)
 
 
+def recruitment_c_pnm(request, pnm_id):
+    """ Renders PNM view for recruitment chair """
+    # TODO: verify that user is Recruitment chair
+    pnm = PotentialNewMember.objects.get(pk=pnm_id)
+
+    context = {
+        'type': 'recruitment-chair-view',
+        'pnm': pnm,
+    }
+    return render(request, 'potential_new_member.html', context)
+
+
+def recruitment_c_add_pnm(request):
+    """ Renders the recruitment chair way of adding PNMs """
+    # TODO: verify that user is Recruitment Chair
+    # TODO: recruitment_c_add_pnm
+    context = {
+
+    }
+    return render(request, 'home.html', context)
+
+
+def recruitment_c_edit_pnm(request, pnm_id):
+    """ Renders PNM edit view for recruitment chair """
+    # TODO: verify that user is Recruitment chair
+    pnm = PotentialNewMember.objects.get(pk=pnm_id)
+
+    context = {
+        'pnm': pnm,
+    }
+    return render(request, 'home.html', context)
+
+
+def recruitment_c_event(request, event_id):
+    """ Renders the recruitment chair way of view RecruitmentEvents """
+    # TODO: verify that user is Recruitment Chair
+    # TODO: recruitment_c_event
+    event = RecruitmentEvent.objects.get(pk=event_id)
+    context = {
+        'event': event,
+    }
+    return render(request, 'home.html', context)
+
+
 def recruitment_c_add_event(request):
     """ Renders the recruitment chair way of adding RecruitmentEvents """
     # TODO: verify that user is Recruitment Chair
-    # TODO: create recruitment-chair-add-event.html
-    return render(request, 'home.html', {})
+    # TODO: recruitment_c_add_event
+    context = {
+
+    }
+    return render(request, 'home.html', context)
+
+
+def recruitment_c_edit_event(request, event_id):
+    """ Renders the recruitment chair way of adding RecruitmentEvents """
+    # TODO: verify that user is Recruitment Chair
+    # TODO: recruitment_c_add_event
+    event = RecruitmentEvent.objects.get(pk=event_id)
+    context = {
+        'event': event,
+    }
+    return render(request, 'home.html', context)
 
 
 def service_c(request):

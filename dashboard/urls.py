@@ -34,7 +34,16 @@ urlpatterns = [
 
     # Marshall URL section
     url(r'^marshall/$', views.marshall, name="marshall"),
+
+    # Recruitment Chair URL sectiion
     url(r'^recruitment-chair/$', views.recruitment_c, name="recruitment_c"),
+    url(r'^recruitment-chair/event/(?P<event_id>[0-9]+)/$', views.recruitment_c_event, name="recruitment_c_event"),
+    url(r'^recruitment-chair/event/add/$', views.recruitment_c_add_event, name="recruitment_c_add_event"),
+    url(r'^recruitment-chair/event/(?P<event_id>[0-9]+)/edit/$', views.recruitment_c_edit_event, name="recruitment_c_edit_event"),
+    url(r'^recruitment-chair/pnm/(?P<pnm_id>[0-9]+)/$', views.recruitment_c_pnm, name="recruitment_c_pnm"),
+    url(r'^recruitment-chair/pnm/(?P<pnm_id>[0-9]+)/edit/$', views.recruitment_c_edit_pnm, name="recruitment_c_edit_pnm"),
+    url(r'^recruitment-chair/pnm/add/$', views.recruitment_c_add_pnm, name="recruitment_c_pnm"),
+
     url(r'^scholarship-chair/$', views.scholarship_c, name="scholarship_c"),
     url(r'^service-chair/$', views.service_c, name="service_c"),
     url(r'^philanthropy-chair/$', views.philanthropy_c, name="philanthropy_c"),

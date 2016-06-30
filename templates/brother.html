@@ -12,7 +12,8 @@
         <div class="panel-heading">Brother Information</div>
         <div class="panel-body">
             <div class="row">
-                <div class=" col-lg-7 ">
+                <div class="col-lg-2"></div>
+                <div class="col-lg-8">
                     <table class="table table-event-information">
                         <tbody>
                         <tr>
@@ -77,12 +78,12 @@
                                 <td>{{ brother.address }}</td>
                             {% endif %}
                         </tr>
-
                         </tbody>
                     </table>
+                    <a class="btn btn-default" href="" role="button">Edit information</a>
                 </div>
+                <div class="col-lg-2"></div>
             </div>
-            <a class="btn btn-default" href="" role="button">Edit information</a>
         </div>
     </div>
     <div class="panel panel-default">
@@ -104,7 +105,8 @@
                         <div class="panel-heading">Pending</div>
                         <div class="panel-body">
                             {% for excuse in excuses_pending %}
-                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
+                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }}
+                                    - {{ excuse.event.date }}</a><br>
                             {% endfor %}
                         </div>
                     </div>
@@ -114,7 +116,8 @@
                         <div class="panel-heading">Not Mandatory</div>
                         <div class="panel-body">
                             {% for excuse in excuses_not_mandatory %}
-                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
+                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }}
+                                    - {{ excuse.event.date }}</a><br>
                             {% endfor %}
                         </div>
                     </div>
@@ -126,7 +129,8 @@
                         <div class="panel-heading">Approved</div>
                         <div class="panel-body">
                             {% for excuse in excuses_approved %}
-                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
+                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }}
+                                    - {{ excuse.event.date }}</a><br>
                             {% endfor %}
                         </div>
                     </div>
@@ -136,7 +140,8 @@
                         <div class="panel-heading">Denied</div>
                         <div class="panel-body">
                             {% for excuse in excuses_denied %}
-                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }} - {{ excuse.event.date }}</a><br>
+                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }}
+                                    - {{ excuse.event.date }}</a><br>
                             {% endfor %}
                         </div>
                     </div>
