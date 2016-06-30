@@ -12,7 +12,8 @@
         <div class="panel-heading">Event</div>
         <div class="panel-body">
             <div class="row">
-                <div class=" col-lg-7 ">
+                <div class=" col-lg-2 "></div>
+                <div class=" col-lg-8 ">
                     <table class="table table-event-information">
                         <tbody>
                         <tr>
@@ -53,11 +54,13 @@
                         {% endif %}
                         </tbody>
                     </table>
+                    {% if type == 'attendance' or type == 'secretary-view' %}
+                        <a class="btn btn-default" href={% url 'dashboard:secretary' %} role="button">Edit event</a>
+                    {% endif %}
                 </div>
+                <div class=" col-lg-2 "></div>
             </div>
-        {% if type == 'attendance' or type == 'secretary-view'%}
-            <a class="btn btn-default" href={% url 'dashboard:secretary' %} role="button">Edit event</a>
-        {% endif %}
+
         </div>
     </div>
     {% if type == 'attendance' %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>{{ title }}</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ title }}</div>
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <div class="panel-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Submit"/>
+            </form>
+        </div>
+    </div>
+{% endblock %}

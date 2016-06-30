@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1>Confirm Delete</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form method="post">{% csrf_token %}
+                Are you sure you want to delete "{{ object }}"<br><br>
+                <input type="submit" value="Submit"/>
+        </div>
+    </div>
+    </form>
+
+{% endblock %}

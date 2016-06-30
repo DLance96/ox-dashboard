@@ -40,7 +40,7 @@ class ExcuseResponseForm(forms.ModelForm):
 class PotentialNewMemberForm(forms.ModelForm):
     class Meta:
         model = PotentialNewMember
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'primary_contact', 'secondary_contact',
+        fields = ['first_name', 'last_name', 'case_ID', 'phone_number', 'primary_contact', 'secondary_contact',
                   'tertiary_contact']
 
 

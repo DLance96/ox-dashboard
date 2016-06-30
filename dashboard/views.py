@@ -1,11 +1,12 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.db.models import Q
-from .forms import *
-from django.views.generic import View
 from django.contrib import auth, messages
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.db.models import Q
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import View, DeleteView
+
 import utils
+from .forms import *
 
 
 class LoginView(View):
@@ -424,11 +425,31 @@ def recruitment_c_pnm(request, pnm_id):
 def recruitment_c_add_pnm(request):
     """ Renders the recruitment chair way of adding PNMs """
     # TODO: verify that user is Recruitment Chair
-    # TODO: recruitment_c_add_pnm
-    context = {
+    form = PotentialNewMemberForm(request.POST or None)
 
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('dashboard:recruitment_c'))
+
+    context = {
+        'title': 'Add Potential New Member',
+        'form': form,
     }
-    return render(request, 'home.html', context)
+    return render(request, 'model-add.html', context)
+
+
+class PnmDelete(DeleteView):
+    model = PotentialNewMember
+    success_url = reverse_lazy('dashboard:recruitment_c')
+
+def recruitment_c_delete_pnm(request, pnm_id):
+    """ Recruitment chair pnm delete view """
+    # TODO: verify that user is Recruitment chair
+    pnm = PotentialNewMember.objects.get(pk=pnm_id)
+    pnm.delete()
+
+    return HttpResponseRedirect(reverse('dashboard:recruitment_c'))
 
 
 def recruitment_c_edit_pnm(request, pnm_id):

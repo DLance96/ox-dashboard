@@ -35,23 +35,29 @@
     <div class="panel panel-default">
         <div class="panel-heading">Names List</div>
         <div class="panel-body">
-            <a class="btn btn-default" href="" role="button">Add Potential New Member</a>
+            <a class="btn btn-default" href={% url 'dashboard:recruitment_c_add_pnm' %} role="button">Add Potential New Member</a>
             <table class="table table-event-information">
                 <thead style="font-weight:bold;">
                 <tr>
                     <td>Potential New Member:</td>
+                    <td>Case ID:</td>
+                    <td>Phone Number:</td>
                     <td>Primary Contact</td>
                     <td>Secondary Contact</td>
                     <td>Tertiary Contact</td>
+                    <td>Delete?</td>
                 </tr>
                 </thead>
                 <tbody>
                 {% for pnm in potential_new_members %}
                     <tr>
                         <td><a href={% url 'dashboard:recruitment_c_pnm' pnm.id %}>{{ pnm.first_name }} {{ pnm.last_name }}</a></td>
+                        <td>{{ pnm.case_ID }}</td>
+                        <td>{{ pnm.phone_number }}</td>
                         <td>{{ pnm.primary_contact }}</td>
                         <td>{{ pnm.secondary_contact }}</td>
                         <td>{{ pnm.tertiary_contact }}</td>
+                        <td><a class="btn btn-default" href={% url 'dashboard:recruitment_c_delete_pnm' pnm.id %}>X</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
