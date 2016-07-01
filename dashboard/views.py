@@ -118,11 +118,26 @@ def brother_chapter_event(request, event_id):
             return HttpResponseRedirect(reverse('dashboard:brother'))
 
     context = {
-        'type': 'brother',
+        'type': 'brother-view',
         'form': form,
         'event': event,
     }
     return render(request, "chapter-event.html", context)
+
+
+def brother_recruitment_event(request, event_id):
+    """ Renders the brother page for recruitment event with a excuse form """
+    if not request.user.is_authenticated():  # brother auth check
+        messages.error(request, "Brother not logged in before viewing brother chapter events")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    event = RecruitmentEvent.objects.get(pk=event_id)
+
+    context = {
+        'type': 'brother-view',
+        'event': event,
+    }
+    return render(request, "recruitment-event.html", context)
 
 
 def brother_excuse(request, excuse_id):
@@ -144,6 +159,31 @@ def brother_excuse_edit(request, excuse_id):
     """ Renders the excuse page to edit pending excuses """
     # TODO:
     return render(request, 'home.html', {})
+
+
+def brother_pnm(request, pnm_id):
+    """ Renders the pnm page for brothers """
+    # TODO:
+    if not request.user.is_authenticated:  # brother auth check
+        messages.error(request, "Please log in to view pnms")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    pnm = PotentialNewMember.objects.get(pk=pnm_id)
+    events = RecruitmentEvent.objects.filter(semester__season=utils.get_season(),
+                                             semester__year=utils.get_year()).order_by("date").all()
+
+    print events
+    attended_events = []
+    for event in events:
+        if event.attendees_pnms.filter(id=pnm_id).exists():
+            attended_events.append(event)
+    
+    context = {
+        'type': 'brother-view',
+        'pnm': pnm,
+        'events': attended_events,
+    }
+    return render(request, 'potential_new_member.html', context)
 
 
 def president(request):
@@ -442,6 +482,7 @@ def recruitment_c_add_pnm(request):
 class PnmDelete(DeleteView):
     model = PotentialNewMember
     success_url = reverse_lazy('dashboard:recruitment_c')
+
 
 def recruitment_c_delete_pnm(request, pnm_id):
     """ Recruitment chair pnm delete view """

@@ -162,6 +162,38 @@
     <div class="panel panel-default">
         <div class="panel-heading">Potential New Members</div>
         <div class="panel-body">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table class="table table-event-information">
+                    <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Potential New Member:</td>
+                        <td>Case ID:</td>
+                        <td>Phone Number:</td>
+                        <td>Contact Type</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for pnm in pnms %}
+                        <tr>
+                            <td>
+                                <a href={% url 'dashboard:brother_pnm' pnm.id %}>{{ pnm.first_name }} {{ pnm.last_name }}</a>
+                            </td>
+                            <td>{{ pnm.case_ID }}</td>
+                            <td>{{ pnm.phone_number }}</td>
+                            <td> {% if pnm.primary_contact == brother %}
+                                Primary
+                            {% elif pnm.secondary_contact == brother %}
+                                Secondary
+                            {% else %}
+                                Tertiary
+                            {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <div class="panel panel-default">

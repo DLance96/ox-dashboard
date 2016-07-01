@@ -8,4 +8,68 @@
     <div class="jumbotron">
         <h1>Potential New Member</h1>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Potential New Member</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class=" col-lg-2 "></div>
+                <div class=" col-lg-8 ">
+                    <table class="table table-event-information">
+                        <tbody>
+                        <tr>
+                            <td>Name:</td>
+                            <td>{{ pnm.first_name }} {{ pnm.last_name }}</td>
+                        </tr>
+                        {% if pnm.case_ID %}
+                            <tr>
+                                <td>Case ID:</td>
+                                <td>{{ pnm.case_ID }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if pnm.phone_number %}
+                            <tr>
+                                <td>Phone Number:</td>
+                                <td>{{ pnm.phone_number }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td>Primary Contact:</td>
+                            <td>{{ pnm.primary_contact }}</td>
+                        </tr>
+                        {% if pnm.secondary_contact %}
+                            <tr>
+                                <td>Secondary Contact:</td>
+                                <td>{{ pnm.secondary_contact }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if pnm.tertiary_contact %}
+                            <tr>
+                                <td>Tertiary Contact:</td>
+                                <td>{{ pnm.tertiary_contact }}</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                    {% if type == 'recruitment-chair-view' %}
+                        <a class="btn btn-default" href={% url 'dashboard:secretary' %} role="button">Edit event</a>
+                    {% endif %}
+                </div>
+                <div class=" col-lg-2 "></div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Event Attendance</div>
+        <div class="panel-body">
+        {% if type == "brother-view" %}
+            {% for event in events %}
+                <a href={% url 'dashboard:brother_recruitment_event' event.id %}> {{ event }} - {{ event.date }} </a><br>
+            {% endfor %}
+        {% elif type == 'recruitment-chair-view' %}
+            {% for event in events %}
+                <a href={% url 'dashboard:recruitment_c_event' event.id %}> {{ event }} - {{ event.date }} </a><br>
+            {% endfor %}
+        {% endif %}
+        </div>
+    </div>
 {% endblock %}
