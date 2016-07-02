@@ -13,7 +13,7 @@
         <div class="panel-body">
             <p>
                 {% for event in events %}
-                    <a href={% url 'dashboard:recruitment_chair_event' event.id %}>{{ event }} - {{ event.date }}</a>
+                    <a href={% url 'dashboard:recruitment_c_event' event.id %}>{{ event }} - {{ event.date }}</a>
                     <br>
                 {% endfor %}
                 <br><br><a class="btn btn-default" href="" role="button">Add Event</a>
@@ -25,7 +25,7 @@
         <div class="panel-body">
             <p>
                 {% for event in events_future %}
-                    <a href={% url 'dashboard:recruitment_chair_event' event.id %}>{{ event }} - {{ event.date }}</a>
+                    <a href={% url 'dashboard:recruitment_c_event' event.id %}>{{ event }} - {{ event.date }}</a>
                     <br>
                 {% endfor %}
                 <br><br><a class="btn btn-default" href="" role="button">Add Event</a>

@@ -47,8 +47,7 @@ urlpatterns = [
     url(r'^recruitment-chair/pnm/(?P<pnm_id>[0-9]+)/edit/$', views.recruitment_c_edit_pnm,
         name="recruitment_c_edit_pnm"),
     url(r'^recruitment-chair/pnm/add/$', views.recruitment_c_add_pnm, name="recruitment_c_add_pnm"),
-    # url(r'^recruitment-chair/pnm/(?P<pnm_id>[0-9]+)/remove/$', views.recruitment_c_delete_pnm, name="recruitment_c_delete_pnm"),
-    url(r'^recruitment-chair/pnm/(?P<pk>\d+)/remove/$', views.PnmDelete.as_view(),
+    url(r'^recruitment-chair/pnm/(?P<pk>\d+)/delete/$', views.PnmDelete.as_view(),
         name="recruitment_c_delete_pnm"),
 
     url(r'^scholarship-chair/$', views.scholarship_c, name="scholarship_c"),

@@ -177,7 +177,7 @@ def brother_pnm(request, pnm_id):
     for event in events:
         if event.attendees_pnms.filter(id=pnm_id).exists():
             attended_events.append(event)
-    
+
     context = {
         'type': 'brother-view',
         'pnm': pnm,
@@ -266,8 +266,9 @@ def secretary_excuse(request, excuse_id):
     if request.method == 'POST':
         if form.is_valid():
             instance = form.save(commit=False)
-            if instance.status == '2' and instance.response_message is None:
+            if instance.status == '2' and instance.response_message == '':
                 context = {
+                    'type': 'response',
                     'excuse': excuse,
                     'form': form,
                     'error_message': "Response message required for denial"
@@ -275,6 +276,7 @@ def secretary_excuse(request, excuse_id):
                 return render(request, "excuse.html", context)
             if instance.status == '3' and excuse.event.mandatory:
                 context = {
+                    'type': 'response',
                     'excuse': excuse,
                     'form': form,
                     'error_message': "Event is mandatory cannot mark excuse not mandatory"
@@ -287,6 +289,7 @@ def secretary_excuse(request, excuse_id):
                 return HttpResponseRedirect(reverse('dashboard:secretary'))
 
     context = {
+        'type': 'response',
         'excuse': excuse,
         'form': form,
     }
