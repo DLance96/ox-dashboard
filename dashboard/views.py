@@ -155,7 +155,13 @@ def brother_excuse(request, excuse_id):
     return render(request, "excuse.html", context)
 
 
-def brother_excuse_edit(request, excuse_id):
+class ExcuseDelete(DeleteView):
+    # TODO: verify brother with excuse
+    model = Excuse
+    success_url = reverse_lazy('dashboard:brother')
+
+
+def brother_edit_excuse(request, excuse_id):
     """ Renders the excuse page to edit pending excuses """
     # TODO:
     return render(request, 'home.html', {})
@@ -393,6 +399,7 @@ def secretary_add_event(request):
 
 
 class ChapterEventDelete(DeleteView):
+    # TODO: verify secretary
     model = ChapterEvent
     success_url = reverse_lazy('dashboard:secretary')
 
@@ -598,6 +605,7 @@ def recruitment_c_add_event(request):
 
 
 class RecruitmentEventDelete(DeleteView):
+    # TODO: verify recruitment chair
     model = RecruitmentEvent
     success_url = reverse_lazy('dashboard:recruitment_c')
 

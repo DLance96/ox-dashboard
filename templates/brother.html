@@ -105,6 +105,7 @@
                         <div class="panel-heading">Pending</div>
                         <div class="panel-body">
                             {% for excuse in excuses_pending %}
+                                <a class="btn btn-default" href={% url 'dashboard:brother_delete_excuse' excuse.id %} role="button">X</a>
                                 <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }}
                                     - {{ excuse.event.date }}</a><br>
                             {% endfor %}
