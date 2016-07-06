@@ -517,11 +517,35 @@ def recruitment_c_event(request, event_id):
 def recruitment_c_add_event(request):
     """ Renders the recruitment chair way of adding RecruitmentEvents """
     # TODO: verify that user is Recruitment Chair
-    # TODO: recruitment_c_add_event
-    context = {
+    form = RecruitmentEventForm(request.POST or None)
 
+    if request.method == 'POST':
+        if form.is_valid():
+            # TODO: add google calendar event adding
+            instance = form.save(commit=False)
+            try:
+                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                                                   year=instance.date.year)[0]
+            except IndexError:
+                semester = Semester(season=utils.get_season_from(instance.date.month),
+                                    year=instance.date.year)
+                semester.save()
+            if instance.end_time is not None and instance.end_time < instance.start_time:
+                context = {
+                    'position': 'Recruitment Chair',
+                    'form': form,
+                    'error_message': "Start time after end time!",
+                }
+                return render(request, "event-add.html", context)
+            instance.semester = semester
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:recruitment_c'))
+
+    context = {
+        'position': 'Recruitment Chair',
+        'form': form,
     }
-    return render(request, 'home.html', context)
+    return render(request, "event-add.html", context)
 
 
 class RecruitmentEventDelete(DeleteView):

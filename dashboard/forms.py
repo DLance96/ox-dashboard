@@ -59,13 +59,13 @@ class StudyTableEventForm(forms.ModelForm):
 class ChapterEventForm(forms.ModelForm):
     class Meta:
         model = ChapterEvent
-        fields = ['name', 'mandatory', 'date', 'start_time', 'end_time']
+        fields = ['name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes', 'notes']
 
 
 class RecruitmentEventForm(forms.ModelForm):
     class Meta:
         model = RecruitmentEvent
-        fields = ['name', 'date', 'start_time', 'end_time']
+        fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'notes']
 
 
 class PhilanthropyEventForm(forms.ModelForm):
