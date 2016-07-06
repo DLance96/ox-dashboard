@@ -20,7 +20,7 @@
             {% if excuse.status == '2' or excuse.status == '3' and excuse.response_message %}
                 <br>Response: {{ excuse.response_message }}
             {% elif type == "review" %}
-                <br><br><a class="btn btn-default" href={% url 'dashboard:brother_edit_excuse' excuse.id %}>Edit Excuse</a>
+                <br><br><a class="btn btn-default" href={% url 'dashboard:brother_excuse_edit' excuse.id %}>Edit Excuse</a>
             {% endif %}
         </div>
     </div>

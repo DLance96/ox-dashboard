@@ -161,7 +161,7 @@ class ExcuseDelete(DeleteView):
     success_url = reverse_lazy('dashboard:brother')
 
 
-def brother_edit_excuse(request, excuse_id):
+def brother_excuse_edit(request, excuse_id):
     """ Renders the excuse page to edit pending excuses """
     # TODO:
     return render(request, 'home.html', {})
@@ -314,7 +314,7 @@ def secretary_all_excuses(request):
     return render(request, "home.html", context)
 
 
-def secretary_view_event(request, event_id):
+def secretary_event_view(request, event_id):
     """ Renders the Secretary way of viewing old events """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     event = ChapterEvent.objects.get(pk=event_id)
@@ -364,7 +364,7 @@ def secretary_brother_edit(request, brother_id):
     return render(request, "home.html", context)
 
 
-def secretary_add_event(request):
+def secretary_event_add(request):
     """ Renders the Secretary way of adding ChapterEvents """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     form = ChapterEventForm(request.POST or None)
@@ -478,7 +478,7 @@ def recruitment_c_pnm(request, pnm_id):
     return render(request, 'potential_new_member.html', context)
 
 
-def recruitment_c_add_pnm(request):
+def recruitment_c_pnm_add(request):
     """ Renders the recruitment chair way of adding PNMs """
     # TODO: verify that user is Recruitment Chair
     form = PotentialNewMemberForm(request.POST or None)
@@ -500,7 +500,7 @@ class PnmDelete(DeleteView):
     success_url = reverse_lazy('dashboard:recruitment_c')
 
 
-def recruitment_c_edit_pnm(request, pnm_id):
+def recruitment_c_pnm_edit(request, pnm_id):
     """ Renders PNM edit view for recruitment chair """
     # TODO: verify that user is Recruitment chair
     pnm = PotentialNewMember.objects.get(pk=pnm_id)
@@ -570,7 +570,7 @@ def recruitment_c_event(request, event_id):
     return render(request, "recruitment-event.html", context)
 
 
-def recruitment_c_add_event(request):
+def recruitment_c_event_add(request):
     """ Renders the recruitment chair way of adding RecruitmentEvents """
     # TODO: verify that user is Recruitment Chair
     form = RecruitmentEventForm(request.POST or None)
@@ -610,7 +610,7 @@ class RecruitmentEventDelete(DeleteView):
     success_url = reverse_lazy('dashboard:recruitment_c')
 
 
-def recruitment_c_edit_event(request, event_id):
+def recruitment_c_event_edit(request, event_id):
     """ Renders the recruitment chair way of adding RecruitmentEvents """
     # TODO: verify that user is Recruitment Chair
     # TODO: recruitment_c_add_event
