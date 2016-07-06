@@ -54,7 +54,7 @@
                         {% endif %}
                         </tbody>
                     </table>
-                    {% if type == 'attendance' or type == 'secretary-view' %}
+                    {% if type == 'attendance' or type == 'ec-view' %}
                         <a class="btn btn-default" href={% url 'dashboard:secretary' %} role="button">Edit event</a>
                     {% endif %}
                 </div>
@@ -65,11 +65,11 @@
     </div>
     {% if type == 'attendance' %}
         <div class="panel panel-default">
-            <div class="panel-heading">Event Attendance</div>
+            <div class="panel-heading">Brother Attendance</div>
             <div class="panel-body">
                 <form action="" method="post">
                     {% csrf_token %}
-                    {% for brother, form in list %}
+                    {% for form in brother_form_list %}
                         {% for field in form %}
                             {{ field }}{{ field.label_tag }}
                         {% endfor %}
@@ -80,7 +80,7 @@
             </div>
         </div>
     {% endif %}
-    {% if type == 'view' or type == 'secretary-view' %}
+    {% if type == 'view' or type == 'ec-view' %}
         <div class="panel panel-default">
             <div class="panel-heading">Event Attendance</div>
             <div class="panel-body">

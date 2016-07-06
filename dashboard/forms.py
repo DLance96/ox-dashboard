@@ -80,14 +80,25 @@ class ServiceEventForm(forms.ModelForm):
         fields = ['name', 'date', 'start_time', 'end_time']
 
 
-class AttendanceForm(forms.Form):
+class BrotherAttendanceForm(forms.Form):
     present = forms.BooleanField(label="", required=False, label_suffix='')
 
     def __init__(self, *args, **kwargs):
         brother = kwargs.pop('brother', "")
-        super(AttendanceForm, self).__init__(*args, **kwargs)
+        super(BrotherAttendanceForm, self).__init__(*args, **kwargs)
 
         if brother:
             self.fields['present'].label = brother
+
+
+class PnmAttendanceForm(forms.Form):
+    present = forms.BooleanField(label="", required=False, label_suffix='')
+
+    def __init__(self, *args, **kwargs):
+        pnm = kwargs.pop('pnm', "")
+        super(PnmAttendanceForm, self).__init__(*args, **kwargs)
+
+        if pnm:
+            self.fields['present'].label = pnm
 
 

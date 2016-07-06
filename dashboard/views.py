@@ -228,14 +228,15 @@ def secretary_event(request, event_id):
     form_list = []
     for brother in brothers:
         if event.attendees.filter(roster_number=brother.roster_number):
-            new_form = AttendanceForm(request.POST or None, initial={'present': True}, prefix=brother.roster_number,
-                                      brother="- %s %s" % (brother.first_name, brother.last_name))
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
             form_list.append(new_form)
         else:
-            new_form = AttendanceForm(request.POST or None, initial={'present': False}, prefix=brother.roster_number,
-                                      brother="- %s %s" % (brother.first_name, brother.last_name))
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
             form_list.append(new_form)
-    list = zip(brothers, form_list)
 
     if request.method == 'POST':
         if utils.forms_is_valid(form_list):
@@ -251,7 +252,7 @@ def secretary_event(request, event_id):
 
     context = {
         'type': 'attendance',
-        'list': list,
+        'brother_form_list': form_list,
         'event': event,
     }
     return render(request, "chapter-event.html", context)
@@ -314,7 +315,7 @@ def secretary_view_event(request, event_id):
     attendees = event.attendees.all().order_by("last_name")
 
     context = {
-        'type': 'secretary-view',
+        'type': 'ec-view',
         'attendees': attendees,
         'event': event,
     }
@@ -506,12 +507,60 @@ def recruitment_c_edit_pnm(request, pnm_id):
 def recruitment_c_event(request, event_id):
     """ Renders the recruitment chair way of view RecruitmentEvents """
     # TODO: verify that user is Recruitment Chair
-    # TODO: recruitment_c_event
     event = RecruitmentEvent.objects.get(pk=event_id)
+    pnms = PotentialNewMember.objects.all()
+    brothers = Brother.objects.exclude(brother_status='2')
+    pnm_form_list = []
+    brother_form_list = []
+    for pnm in pnms:
+        if event.attendees_pnms.filter(pk=pnm.id):
+            new_form = PnmAttendanceForm(request.POST or None, initial={'present': True}, prefix=pnm.id,
+                                         pnm="- %s %s" % (pnm.first_name, pnm.last_name))
+            pnm_form_list.append(new_form)
+        else:
+            new_form = PnmAttendanceForm(request.POST or None, initial={'present': False}, prefix=pnm.id,
+                                         pnm="- %s %s" % (pnm.first_name, pnm.last_name))
+            pnm_form_list.append(new_form)
+
+    for brother in brothers:
+        if event.attendees_brothers.filter(roster_number=brother.roster_number):
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
+            brother_form_list.append(new_form)
+        else:
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
+            brother_form_list.append(new_form)
+
+    if request.method == 'POST':
+        if utils.forms_is_valid(pnm_form_list) and utils.forms_is_valid(brother_form_list):
+            for counter, form in enumerate(pnm_form_list):
+                instance = form.cleaned_data
+                if instance['present'] is True:
+                    event.attendees_pnms.add(pnms[counter])
+                    event.save()
+                if instance['present'] is False:
+                    event.attendees_pnms.remove(pnms[counter])
+                    event.save()
+            for counter, form in enumerate(brother_form_list):
+                instance = form.cleaned_data
+                if instance['present'] is True:
+                    event.attendees_brothers.add(brothers[counter])
+                    event.save()
+                if instance['present'] is False:
+                    event.attendees_brothers.remove(brothers[counter])
+                    event.save()
+            return HttpResponseRedirect(reverse('dashboard:recruitment_c'))
+
     context = {
+        'type': 'attendance',
+        'pnm_form_list': pnm_form_list,
+        'brother_form_list': brother_form_list,
         'event': event,
     }
-    return render(request, 'home.html', context)
+    return render(request, "recruitment-event.html", context)
 
 
 def recruitment_c_add_event(request):
