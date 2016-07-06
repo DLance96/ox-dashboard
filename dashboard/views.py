@@ -391,6 +391,11 @@ def secretary_add_event(request):
     return render(request, "event-add.html", context)
 
 
+class ChapterEventDelete(DeleteView):
+    model = ChapterEvent
+    success_url = reverse_lazy('dashboard:secretary')
+
+
 def secretary_all_events(request):
     """ Renders a secretary view with all the ChapterEvent models ordered by date grouped by semester """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
@@ -487,15 +492,6 @@ class PnmDelete(DeleteView):
     success_url = reverse_lazy('dashboard:recruitment_c')
 
 
-def recruitment_c_delete_pnm(request, pnm_id):
-    """ Recruitment chair pnm delete view """
-    # TODO: verify that user is Recruitment chair
-    pnm = PotentialNewMember.objects.get(pk=pnm_id)
-    pnm.delete()
-
-    return HttpResponseRedirect(reverse('dashboard:recruitment_c'))
-
-
 def recruitment_c_edit_pnm(request, pnm_id):
     """ Renders PNM edit view for recruitment chair """
     # TODO: verify that user is Recruitment chair
@@ -526,6 +522,11 @@ def recruitment_c_add_event(request):
 
     }
     return render(request, 'home.html', context)
+
+
+class RecruitmentEventDelete(DeleteView):
+    model = RecruitmentEvent
+    success_url = reverse_lazy('dashboard:recruitment_c')
 
 
 def recruitment_c_edit_event(request, event_id):

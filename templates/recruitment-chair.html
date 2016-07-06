@@ -11,31 +11,58 @@
     <div class="panel panel-default">
         <div class="panel-heading">Events This Semester</div>
         <div class="panel-body">
-            <p>
+            <table class="table table-event-information">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Event:</td>
+                    <td>Date:</td>
+                    <td>Delete?</td>
+                </tr>
+                </thead>
+                <tbody>
                 {% for event in events %}
-                    <a href={% url 'dashboard:recruitment_c_event' event.id %}>{{ event }} - {{ event.date }}</a>
-                    <br>
+                    <tr>
+                        <td><a href={% url 'dashboard:recruitment_c_event' event.id %}>{{ event }}</a></td>
+                        <td>{{ event.date }}</td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:recruitment_c_delete_event' event.id %}>X</a></td>
+                    </tr>
                 {% endfor %}
-                <br><br><a class="btn btn-default" href="" role="button">Add Event</a>
-            </p>
+                </tbody>
+            </table>
+            <a class="btn btn-default" href="" role="button">Add Event</a>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Events Next Semester</div>
         <div class="panel-body">
-            <p>
+            <table class="table table-event-information">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Event:</td>
+                    <td>Date:</td>
+                    <td>Delete?</td>
+                </tr>
+                </thead>
+                <tbody>
                 {% for event in events_future %}
-                    <a href={% url 'dashboard:recruitment_c_event' event.id %}>{{ event }} - {{ event.date }}</a>
-                    <br>
+                    <tr>
+                        <td><a href={% url 'dashboard:recruitment_c_event' event.id %}>{{ event }}</a></td>
+                        <td>{{ event.date }}</td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:recruitment_c_delete_event' event.id %}>X</a></td>
+                    </tr>
                 {% endfor %}
-                <br><br><a class="btn btn-default" href="" role="button">Add Event</a>
-            </p>
+                </tbody>
+            </table>
+            <a class="btn btn-default" href="" role="button">Add Event</a>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Names List</div>
         <div class="panel-body">
-            <a class="btn btn-default" href={% url 'dashboard:recruitment_c_add_pnm' %} role="button">Add Potential New Member</a>
+            <a class="btn btn-default" href={% url 'dashboard:recruitment_c_add_pnm' %} role="button">Add Potential New
+                Member</a>
             <table class="table table-event-information">
                 <thead style="font-weight:bold;">
                 <tr>
@@ -51,13 +78,16 @@
                 <tbody>
                 {% for pnm in potential_new_members %}
                     <tr>
-                        <td><a href={% url 'dashboard:recruitment_c_pnm' pnm.id %}>{{ pnm.first_name }} {{ pnm.last_name }}</a></td>
+                        <td>
+                            <a href={% url 'dashboard:recruitment_c_pnm' pnm.id %}>{{ pnm.first_name }} {{ pnm.last_name }}</a>
+                        </td>
                         <td>{{ pnm.case_ID }}</td>
                         <td>{{ pnm.phone_number }}</td>
                         <td>{{ pnm.primary_contact }}</td>
                         <td>{{ pnm.secondary_contact }}</td>
                         <td>{{ pnm.tertiary_contact }}</td>
-                        <td><a class="btn btn-default" href={% url 'dashboard:recruitment_c_delete_pnm' pnm.id %}>X</a></td>
+                        <td><a class="btn btn-default" href={% url 'dashboard:recruitment_c_delete_pnm' pnm.id %}>X</a>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
