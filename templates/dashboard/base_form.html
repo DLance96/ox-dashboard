@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1>Edit {% block model %}{% endblock %}</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {% block model_info %}
+            {% endblock %}
+            <form method="post">{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Update"/>
+        </div>
+    </div>
+    </form>
+
+{% endblock %}

@@ -300,4 +300,4 @@ class Excuse(models.Model):
     )
 
     def __str__(self):
-        return self.brother.first_name + " " + self.brother.last_name + "- " + self.event.name
+        return self.brother.first_name + " " + self.brother.last_name + " - " + self.event.name

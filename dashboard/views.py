@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import View, DeleteView
+from django.views.generic import *
 
 import utils
 from .forms import *
@@ -143,7 +143,6 @@ def brother_recruitment_event(request, event_id):
 def brother_excuse(request, excuse_id):
     """ Renders the brother page for one of their excuses """
     excuse = Excuse.objects.get(pk=excuse_id)
-
     if not request.user == excuse.brother.user:  # brother auth check
         messages.error(request, "Please log into the brother that submitted that excuse")
         return HttpResponseRedirect(reverse('dashboard:home'))
@@ -159,6 +158,12 @@ class ExcuseDelete(DeleteView):
     # TODO: verify brother with excuse
     model = Excuse
     success_url = reverse_lazy('dashboard:brother')
+
+
+class ExcuseEdit(UpdateView):
+    model = Excuse
+    success_url = reverse_lazy('dashboard:brother')
+    fields = ['description']
 
 
 def brother_excuse_edit(request, excuse_id):

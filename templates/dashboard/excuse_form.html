@@ -1,0 +1,27 @@
+{% extends "dashboard/base_form.html" %}
+
+{% block model %}Excuse{% endblock %}
+
+{% block model_info %}
+    <table class="table table-event-information">
+        <tbody>
+        <tr>
+            <td>Event:</td>
+            <td>{{ form.instance.event }}</td>
+        </tr>
+        <tr>
+            <td>Date:</td>
+            <td>{{ form.instance.event.date }}</td>
+        </tr>
+        <tr>
+            <td>Date Submitted:</td>
+            <td>{{ form.instance.date_submitted }}</td>
+        </tr>
+        <tr>
+            <td>Start Time:</td>
+            <td>{{ form.instance.event.start_time }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+{% endblock %}
