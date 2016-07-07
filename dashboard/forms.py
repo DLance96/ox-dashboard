@@ -80,6 +80,12 @@ class ServiceEventForm(forms.ModelForm):
         fields = ['name', 'date', 'start_time', 'end_time']
 
 
+class ServiceSubmissionForm(forms.ModelForm):
+    class Meta:
+        model = ServiceSubmission
+        fields = ['name', 'date', 'hours', 'description']
+
+
 class BrotherAttendanceForm(forms.Form):
     present = forms.BooleanField(label="", required=False, label_suffix='')
 

@@ -80,7 +80,8 @@
                         </tr>
                         </tbody>
                     </table>
-                    <a class="btn btn-default" href={% url 'dashboard:brother_edit' brother.id %} role="button">Edit information</a>
+                    <a class="btn btn-default" href={% url 'dashboard:brother_edit' brother.id %} role="button">Edit
+                        information</a>
                 </div>
                 <div class="col-lg-2"></div>
             </div>
@@ -191,6 +192,66 @@
     <div class="panel panel-default">
         <div class="panel-heading">Service</div>
         <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <a class="btn btn-default"
+                       href={% url 'dashboard:brother_service_submission_add' %} role="button">Submit Service</a>
+                    <br><br>
+                </div>
+                <div class="col-md-6">
+                    Approved Hours: {{ approved_hours }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Pending</div>
+                        <div class="panel-body">
+                            {% for submission in submissions_pending %}
+                                <a class="btn btn-default"
+                                   href={% url 'dashboard:brother_service_submission_delete' submission.id %} role="button">X</a>
+                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }} -
+                                    {{ submission.hours }} hours</a><br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">Awaiting Approval</div>
+                        <div class="panel-body">
+                            {% for submission in submissions_submitted %}
+                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }} -
+                                    {{ submission.hours }} hours</a><br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-danger">
+                        <div class="panel-heading">Denied</div>
+                        <div class="panel-body">
+                            {% for submission in submussions_denied %}
+                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }} -
+                                    {{ submission.hours }} hours</a><br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">Approved</div>
+                        <div class="panel-body">
+                            {% for submission in submissions_approved %}
+                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }} -
+                                    {{ submission.hours }} hours</a><br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="panel panel-default">

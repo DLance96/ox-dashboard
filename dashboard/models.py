@@ -165,7 +165,20 @@ class ServiceSubmission(models.Model):
     description = models.TextField(default="I did the service thing")
     hours = models.IntegerField(default=0)
     date_applied = models.DateTimeField(default=django.utils.timezone.now)
-    submitted = models.BooleanField(default=False)
+
+    STATUS_CHOICES = (
+        ('0', 'Pending'),
+        ('1', 'Awaiting Approval'),
+        ('2', 'Approved'),
+        ('3', 'Denied'),
+    )
+
+    status = models.CharField(
+        max_length=1,
+        choices=STATUS_CHOICES,
+        default='0',
+    )
+
     date = models.DateField()
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)

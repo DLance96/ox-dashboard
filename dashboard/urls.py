@@ -18,7 +18,16 @@ urlpatterns = [
     url(r'^brother/r-event/(?P<event_id>[0-9]+)/$', views.brother_recruitment_event, name="brother_recruitment_event"),
     url(r'^brother/excuse/(?P<excuse_id>[0-9]+)/$', views.brother_excuse, name="brother_excuse"),
     url(r'^brother/excuse/(?P<pk>\d+)/delete/$', views.ExcuseDelete.as_view(), name="brother_excuse_delete"),
-    url(r'^brother/excuse/(?P<pk>\d+)/edit/$', views.ExcuseEdit.as_view(), name="brother_excuse_edit"),
+    url(r'^brother/excuse/(?P<pk>\d+)/$', views.ExcuseEdit.as_view(), name="brother_excuse_edit"),
+    url(r'^brother/service-submission/(?P<submission_id>[0-9]+)/$', views.brother_service_submission,
+        name="brother_service_submission"),
+    url(r'^brother/service-submission/(?P<pk>\d+)/edit/$', views.ServiceSubmissionEdit.as_view(),
+        name="brother_service_submission_edit"),
+    url(r'^brother/service-submission/(?P<pk>\d+)/delete/$', views.ServiceSubmissionDelete.as_view(),
+        name="brother_service_submission_delete"),
+    url(r'^brother/service-submission/add/$', views.brother_service_submission_add,
+        name="brother_service_submission_add"),
+
     url(r'^brother/pnm/(?P<pnm_id>[0-9]+)/$', views.brother_pnm, name="brother_pnm"),
 
     url(r'^president/', views.president, name="president"),

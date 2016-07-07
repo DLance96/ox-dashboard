@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Service Submission</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Service Submission</div>
+        <div class="panel-body">
+            Name: {{ submission.name}}<br>
+            Date: {{ submission.date }}<br>
+            Hours: {{ submission.hours }}<br>
+            Date Submitted: {{ submission.date_applied }}<br>
+            Description: {{ submission.description }}
+            {% if type == "review" %}
+                <br><br><a class="btn btn-default" href={% url 'dashboard:brother_service_submission_edit' submission.id %}>Edit Service Submission</a>
+            {% endif %}
+        </div>
+    </div>
+    {% if type == "response" %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Service Submission Response</div>
+
+            <div class="panel-body">
+                {% if error_message %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error_message }}
+                    </div>
+                {% endif %}
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Submit"/>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

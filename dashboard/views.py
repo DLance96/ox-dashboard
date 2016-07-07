@@ -78,8 +78,24 @@ def brother_view(request):
                                              Q(tertiary_contact=brother)).order_by("last_name")
     service_events = ServiceEvent.objects.filter(semester__season=utils.get_season(),
                                                  semester__year=utils.get_year()).order_by("date")
-    service_submissions = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
-                                                           semester__year=utils.get_year()).order_by("date_applied")
+    chapter_events = ChapterEvent.objects.filter(semester__season=utils.get_season(),
+                                                 semester__year=utils.get_year()).order_by("date")
+
+    # Service submissions
+    approved_hours = 0 # TODO count approved hours
+    submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
+                                                           semester__year=utils.get_year(), status='0').order_by("date")
+    print submissions_pending
+    submissions_submitted = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
+                                                             semester__year=utils.get_year(), status='1').order_by(
+        "date")
+    submissions_approved = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
+                                                            semester__year=utils.get_year(), status='2').order_by(
+        "date")
+    submissions_denied = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
+                                                          semester__year=utils.get_year(), status='3').order_by(
+        "date")
+
     philanthropy_events = PhilanthropyEvent.objects.filter(semester__season=utils.get_season(),
                                                            semester__year=utils.get_year()) \
         .order_by("start_time").order_by("date")
@@ -95,7 +111,11 @@ def brother_view(request):
         'recruitment_events_next': recruitment_events_next,
         'pnms': pnms,
         'service_events': service_events,
-        'service_submissions': service_submissions,
+        'approved_hours': approved_hours,
+        'submissions_pending': submissions_pending,
+        'submissions_submitted': submissions_submitted,
+        'submissions_approved': submissions_approved,
+        'submissions_denied': submissions_denied,
         'philanthropy_events': philanthropy_events,
     }
     return render(request, "brother.html", context)
@@ -210,6 +230,67 @@ def brother_pnm(request, pnm_id):
         'events': attended_events,
     }
     return render(request, 'potential_new_member.html', context)
+
+
+def brother_service_submission(request, submission_id):
+    """ Renders the Brother page for viewing a service submission"""
+    if not request.user.is_authenticated():  # brother auth check
+        messages.error(request, "Brother not logged in before adding service hours")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    submission = ServiceSubmission.objects.get(pk=submission_id)
+
+    context = {
+        'type': 'review',
+        'submission': submission,
+    }
+
+    return render(request, 'service-submission.html', context)
+
+
+def brother_service_submission_add(request):
+    """ Renders the Brother page for adding a service submission"""
+    if not request.user.is_authenticated():  # brother auth check
+        messages.error(request, "Brother not logged in before adding service hours")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    form = ServiceSubmissionForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.save(commit=False)
+
+            try:
+                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                                                   year=instance.date.year)[0]
+            except IndexError:
+                semester = Semester(season=utils.get_season_from(instance.date.month),
+                                    year=instance.date.year)
+                semester.save()
+
+            brother = Brother.objects.filter(user=request.user)[0]
+            instance.brother = brother
+            instance.semester = semester
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:brother'))
+
+    context = {
+        'title': 'Submit Service Hours',
+        'form': form,
+    }
+    return render(request, 'model-add.html', context)
+
+
+class ServiceSubmissionDelete(DeleteView):
+    # TODO: verify brother with submission
+    model = ServiceSubmission
+    success_url = reverse_lazy('dashboard:brother')
+
+
+class ServiceSubmissionEdit(UpdateView):
+    model = ServiceSubmission
+    success_url = reverse_lazy('dashboard:brother')
+    fields = ['name', 'date', 'description', 'hours', 'status']
 
 
 def president(request):
