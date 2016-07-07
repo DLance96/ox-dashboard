@@ -40,12 +40,6 @@
                             <td>Rush:</td>
                             <td>{{ event.rush }}</td>
                         </tr>
-                        {% if event.minutes %}
-                            <tr>
-                                <td>Minutes</td>
-                                <td>{{ event.minutes }}</td>
-                            </tr>
-                        {% endif %}
                         {% if event.notes %}
                             <tr>
                                 <td>Notes</td>
@@ -95,30 +89,23 @@
             </div>
         </div>
     {% endif %}
-    {% if type == 'view' or type == 'ec-view' %}
+    {% if type == 'brother-view' or type == 'ec-view' %}
         <div class="panel panel-default">
-            <div class="panel-heading">Event Attendance</div>
+            <div class="panel-heading">General Attendance</div>
             <div class="panel-body">
-                {% for brother in attendees %}
-                    {{ brother }}<br>
+                {% for pnm in attendees_pnms %}
+                    {{ pnm }}<br>
                 {% endfor %}
             </div>
         </div>
     {% endif %}
-    {% if type == 'brother-view' %}
+    {% if type == 'ec-view' %}
         <div class="panel panel-default">
-            <div class="panel-heading">Event Excuse</div>
+            <div class="panel-heading">Brother Attendance</div>
             <div class="panel-body">
-                {% if error_message %}
-                    <div class="alert alert-danger" role="alert">
-                        {{ error_message }}
-                    </div>
-                {% endif %}
-                <form action="" method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <input type="submit" value="Submit Excuse"/>
-                </form>
+                {% for brother in attendees_brothers %}
+                    {{ brother }}<br>
+                {% endfor %}
             </div>
         </div>
     {% endif %}

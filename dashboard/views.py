@@ -62,11 +62,20 @@ def brother_view(request):
         "event__date")
     # TODO: write util function to covert standing/operational committee # to standard #
     # committee_meetings = CommitteeMeetingEvent.objects.filter()
-    recruitment_events = RecruitmentEvent.objects.filter(semester__season=utils.get_season(),
-                                                         semester__year=utils.get_year()).order_by("date")
+    current_season = utils.get_season()
+    if current_season is '0':
+        recruitment_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year())\
+            .order_by("date")
+        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year())\
+            .order_by("date")
+    else:
+        recruitment_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year())\
+            .order_by("date")
+        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year())\
+            .order_by("date")
     pnms = PotentialNewMember.objects.filter(Q(primary_contact=brother) |
                                              Q(secondary_contact=brother) |
-                                             Q(tertiary_contact=brother))
+                                             Q(tertiary_contact=brother)).order_by("last_name")
     service_events = ServiceEvent.objects.filter(semester__season=utils.get_season(),
                                                  semester__year=utils.get_year()).order_by("date")
     service_submissions = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
@@ -83,6 +92,7 @@ def brother_view(request):
         'excuses_not_mandatory': excuses_not_mandatory,
         # 'committee_meetings': committee_meetings,
         'recruitment_events': recruitment_events,
+        'recruitment_events_next': recruitment_events_next,
         'pnms': pnms,
         'service_events': service_events,
         'service_submissions': service_submissions,
@@ -132,9 +142,11 @@ def brother_recruitment_event(request, event_id):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     event = RecruitmentEvent.objects.get(pk=event_id)
+    attendees_pnms = event.attendees_pnms.all()
 
     context = {
         'type': 'brother-view',
+        'attendees_pnms': attendees_pnms,
         'event': event,
     }
     return render(request, "recruitment-event.html", context)
@@ -164,12 +176,6 @@ class ExcuseEdit(UpdateView):
     model = Excuse
     success_url = reverse_lazy('dashboard:brother')
     fields = ['description']
-
-
-def brother_excuse_edit(request, excuse_id):
-    """ Renders the excuse page to edit pending excuses """
-    # TODO:
-    return render(request, 'home.html', {})
 
 
 def brother_pnm(request, pnm_id):
@@ -505,15 +511,11 @@ class PnmDelete(DeleteView):
     success_url = reverse_lazy('dashboard:recruitment_c')
 
 
-def recruitment_c_pnm_edit(request, pnm_id):
-    """ Renders PNM edit view for recruitment chair """
-    # TODO: verify that user is Recruitment chair
-    pnm = PotentialNewMember.objects.get(pk=pnm_id)
-
-    context = {
-        'pnm': pnm,
-    }
-    return render(request, 'home.html', context)
+class PnmEdit(UpdateView):
+    model = PotentialNewMember
+    success_url = reverse_lazy('dashboard:recruitment_c')
+    fields = ['first_name', 'last_name', 'case_ID', 'phone_number', 'primary_contact', 'secondary_contact',
+              'tertiary_contact', 'notes']
 
 
 def recruitment_c_event(request, event_id):

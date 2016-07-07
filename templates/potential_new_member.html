@@ -48,10 +48,16 @@
                                 <td>{{ pnm.tertiary_contact }}</td>
                             </tr>
                         {% endif %}
+                        {% if pnm.notes %}
+                            <tr>
+                                <td>Notes:</td>
+                                <td>{{ pnm.notes }}</td>
+                            </tr>
+                        {% endif %}
                         </tbody>
                     </table>
                     {% if type == 'recruitment-chair-view' %}
-                        <a class="btn btn-default" href={% url 'dashboard:secretary' %} role="button">Edit event</a>
+                        <a class="btn btn-default" href={% url 'dashboard:recruitment_c_pnm_edit' pnm.id %} role="button">Edit Potential New Member</a>
                     {% endif %}
                 </div>
                 <div class=" col-lg-2 "></div>
