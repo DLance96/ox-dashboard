@@ -13,6 +13,7 @@ urlpatterns = [
 
     # Brother URL section
     url(r'^brother/$', views.brother_view, name="brother"),
+    url(r'^brother/(?P<pk>\d+)/edit/$', views.BrotherEdit.as_view(), name="brother_edit"),
     url(r'^brother/c-event/(?P<event_id>[0-9]+)/$', views.brother_chapter_event, name="brother_chapter_event"),
     url(r'^brother/r-event/(?P<event_id>[0-9]+)/$', views.brother_recruitment_event, name="brother_recruitment_event"),
     url(r'^brother/excuse/(?P<excuse_id>[0-9]+)/$', views.brother_excuse, name="brother_excuse"),

@@ -64,14 +64,14 @@ def brother_view(request):
     # committee_meetings = CommitteeMeetingEvent.objects.filter()
     current_season = utils.get_season()
     if current_season is '0':
-        recruitment_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year())\
+        recruitment_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year()) \
             .order_by("date")
-        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year())\
+        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year()) \
             .order_by("date")
     else:
-        recruitment_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year())\
+        recruitment_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year()) \
             .order_by("date")
-        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year())\
+        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year()) \
             .order_by("date")
     pnms = PotentialNewMember.objects.filter(Q(primary_contact=brother) |
                                              Q(secondary_contact=brother) |
@@ -176,6 +176,15 @@ class ExcuseEdit(UpdateView):
     model = Excuse
     success_url = reverse_lazy('dashboard:brother')
     fields = ['description']
+
+
+class BrotherEdit(UpdateView):
+    model = Brother
+    success_url = reverse_lazy('dashboard:brother')
+    fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
+              'major', 'minor', 't_shirt_size', 'case_ID', 'birthday', 'hometown', 'phone_number',
+              'emergency_contact_phone_number', 'emergency_contact', 'room_number',
+              'address']
 
 
 def brother_pnm(request, pnm_id):
