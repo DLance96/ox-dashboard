@@ -8,4 +8,41 @@
     <div class="jumbotron">
         <h1>Service Chair</h1>s
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Pending Service Hours</div>
+        <div class="panel-body">
+            Approved Hours: {{ hours_approved }}<br>
+            Pending Hours: {{ hours_pending }}<br><br>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">Pending Submissions</div>
+                        <div class="panel-body">
+                            {% for submission in submissions_pending %}
+                                <a href={% url 'dashboard:service_c_submission_response' submission.id %}>
+                                    {{ submission.brother.first_name }} {{ submission.brother.last_name }}
+                                    - {{ submission.name }} - Hours: {{ submission.hours }}
+                                </a>
+                                <br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Submitted Submissions</div>
+                        <div class="panel-body">
+                            {% for submission in submissions_submitted %}
+                                <a href={% url 'dashboard:service_c_submission_response' submission.id %}>
+                                    {{ submission.brother.first_name }} {{ submission.brother.last_name }}
+                                    - {{ submission.name }} - Hours: {{ submission.hours }}
+                                </a>
+                                <br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -66,6 +66,9 @@ urlpatterns = [
 
     url(r'^scholarship-chair/$', views.scholarship_c, name="scholarship_c"),
     url(r'^service-chair/$', views.service_c, name="service_c"),
+    url(r'^service-chair/(?P<pk>\d+)/response/$', views.ServiceSubmissionChairEdit.as_view(),
+        name="service_c_submission_response"),
+
     url(r'^philanthropy-chair/$', views.philanthropy_c, name="philanthropy_c"),
     url(r'^detail-manager/$', views.detail_m, name="detail_m"),
 ]

@@ -78,14 +78,10 @@ def brother_view(request):
                                              Q(tertiary_contact=brother)).order_by("last_name")
     service_events = ServiceEvent.objects.filter(semester__season=utils.get_season(),
                                                  semester__year=utils.get_year()).order_by("date")
-    chapter_events = ChapterEvent.objects.filter(semester__season=utils.get_season(),
-                                                 semester__year=utils.get_year()).order_by("date")
-
     # Service submissions
-    approved_hours = 0 # TODO count approved hours
+    approved_hours = 0  # TODO count approved hours
     submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
                                                            semester__year=utils.get_year(), status='0').order_by("date")
-    print submissions_pending
     submissions_submitted = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
                                                              semester__year=utils.get_year(), status='1').order_by(
         "date")
@@ -96,9 +92,20 @@ def brother_view(request):
                                                           semester__year=utils.get_year(), status='3').order_by(
         "date")
 
+    hours_pending = 0
+    for submission in submissions_pending:
+        hours_pending += submission.hours
+    for submission in submissions_submitted:
+        hours_pending += submission.hours
+
+    hours_approved = 0
+    for submission in submissions_approved:
+        hours_approved += submission.hours
+
     philanthropy_events = PhilanthropyEvent.objects.filter(semester__season=utils.get_season(),
                                                            semester__year=utils.get_year()) \
         .order_by("start_time").order_by("date")
+
     context = {
         'brother': brother,
         'chapter_events': chapter_events,
@@ -117,6 +124,8 @@ def brother_view(request):
         'submissions_approved': submissions_approved,
         'submissions_denied': submissions_denied,
         'philanthropy_events': philanthropy_events,
+        'hours_approved': hours_approved,
+        'hours_pending': hours_pending,
     }
     return render(request, "brother.html", context)
 
@@ -723,13 +732,40 @@ def service_c(request):
     # TODO: verify that user is Service Chair
     events = ServiceEvent.objects.filter(semester__season=utils.get_season(),
                                          semester__year=utils.get_year())
-    submissions = ServiceSubmission.objects.filter(semester__season=utils.get_season(),
-                                                   semester__year=utils.get_year())
+    submissions_pending = ServiceSubmission.objects.filter(semester__season=utils.get_season(),
+                                                           semester__year=utils.get_year(), status='0').order_by("date")
+
+    submissions_submitted = ServiceSubmission.objects.filter(semester__season=utils.get_season(),
+                                                             semester__year=utils.get_year(), status='1').order_by(
+        "date")
+
+    hours_pending = 0
+    for submission in submissions_pending:
+        hours_pending += submission.hours
+    for submission in submissions_submitted:
+        hours_pending += submission.hours
+
+    hours_approved = 0
+    submissions_approved = ServiceSubmission.objects.filter(semester__season=utils.get_season(),
+                                                            semester__year=utils.get_year(), status='2')
+    for submission in submissions_approved:
+        hours_approved += submission.hours
+
     context = {
         'events': events,
-        'submissions': submissions,
+        'hours_approved': hours_approved,
+        'hours_pending': hours_pending,
+        'submissions_pending': submissions_pending,
+        'submissions_submitted': submissions_submitted,
     }
     return render(request, 'service-chair.html', context)
+
+
+class ServiceSubmissionChairEdit(UpdateView):
+    model = ServiceSubmission
+    success_url = reverse_lazy('dashboard:service_c')
+    fields = ['status']
+    template_name = 'dashboard/servicesubmission_chair_form.html'
 
 
 def service_c_add_event(request):
