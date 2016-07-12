@@ -6,7 +6,32 @@
 {% block content %}
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <h1>Service Chair</h1>s
+        <h1>Service Chair</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Semester Events</div>
+        <div class="panel-body">
+            <table class="table table-event-information">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Event:</td>
+                    <td>Date:</td>
+                    <td>Delete?</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td><a href={% url 'dashboard:service_c_event' event.id %}>{{ event.name }}</a></td>
+                        <td>{{ event.date }}</td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:service_c_event_delete' event.id %}>X</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <a class="btn btn-default" href={% url 'dashboard:service_c_event_add' %} role="button">Add an event</a>
+        </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Pending Service Hours</div>

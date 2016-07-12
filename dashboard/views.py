@@ -761,6 +761,24 @@ def service_c(request):
     return render(request, 'service-chair.html', context)
 
 
+def service_c_event(request, event_id):
+    """ Renders the service chair way of adding ServiceEvent """
+    # TODO: verify that user is Service Chair
+    # TODO: create service-chair-add-event.html
+    event = ServiceEvent.objects.get(pk=event_id)
+
+    context = {
+        'event': event,
+    }
+
+    return render(request, 'home.html', context)
+
+
+class ServiceEventDelete(DeleteView):
+    model = ServiceEvent
+    success_url = reverse_lazy('dashboard:service_c')
+
+
 class ServiceSubmissionChairEdit(UpdateView):
     model = ServiceSubmission
     success_url = reverse_lazy('dashboard:service_c')
@@ -768,11 +786,40 @@ class ServiceSubmissionChairEdit(UpdateView):
     template_name = 'dashboard/servicesubmission_chair_form.html'
 
 
-def service_c_add_event(request):
+def service_c_event_add(request):
     """ Renders the service chair way of adding ServiceEvent """
     # TODO: verify that user is Service Chair
     # TODO: create service-chair-add-event.html
-    return render(request, 'home.html', {})
+    form = ServiceEventForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            # TODO: add google calendar event adding
+            instance = form.save(commit=False)
+            try:
+                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                                                   year=instance.date.year)[0]
+            except IndexError:
+                semester = Semester(season=utils.get_season_from(instance.date.month),
+                                    year=instance.date.year)
+                semester.save()
+            if instance.end_time is not None and instance.end_time < instance.start_time:
+                context = {
+                    'position': 'Service Chair',
+                    'form': form,
+                    'error_message': "Start time after end time!",
+                }
+                return render(request, "event-add.html", context)
+            instance.semester = semester
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:service_c'))
+
+    context = {
+        'position': 'Service Chair',
+        'form': form,
+    }
+
+    return render(request, 'event-add.html', context)
 
 
 def philanthropy_c(request):

@@ -77,7 +77,7 @@ class PhilanthropyEventForm(forms.ModelForm):
 class ServiceEventForm(forms.ModelForm):
     class Meta:
         model = ServiceEvent
-        fields = ['name', 'date', 'start_time', 'end_time']
+        fields = ['name', 'date', 'start_time', 'end_time', 'notes']
 
 
 class ServiceSubmissionForm(forms.ModelForm):
