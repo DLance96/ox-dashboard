@@ -47,7 +47,7 @@ def brother_view(request):
     if not request.user.is_authenticated():  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
-
+    print Brother.objects.all()
     brother = Brother.objects.filter(user=request.user)[0]
     chapter_events = ChapterEvent.objects.filter(semester__season=utils.get_season(),
                                                  semester__year=utils.get_year()).order_by("date")
@@ -162,6 +162,34 @@ def brother_chapter_event(request, event_id):
         'event': event,
     }
     return render(request, "chapter-event.html", context)
+
+
+def brother_service_event(request, event_id):
+    """ Renders the brother page for service event with a excuse form """
+    if not request.user.is_authenticated():  # brother auth check
+        messages.error(request, "Brother not logged in before viewing brother chapter events")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    brother = Brother.objects.filter(user=request.user)[0]
+    event = ServiceEvent.objects.get(pk=event_id)
+    rsvpd = event.rsvp_brothers.all()
+    rsvp_brother = event.rsvp_brothers.filter(id=brother.id)
+
+    if request.method == 'POST':
+        if rsvp_brother.exists():
+            event.rsvp_brothers.remove(brother)
+        else:
+            event.rsvp_brothers.add(brother)
+        event.save()
+        return HttpResponseRedirect(reverse('dashboard:brother'))
+
+    context = {
+        'type': 'brother-view',
+        'rsvpd': rsvpd,
+        'event': event,
+    }
+
+    return render(request, "service-event.html", context)
 
 
 def brother_recruitment_event(request, event_id):
@@ -335,7 +363,6 @@ def secretary(request):
     return render(request, 'secretary.html', context)
 
 
-# View for doing attendance on a specific event
 def secretary_event(request, event_id):
     """ Renders the attendance sheet for any event """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
@@ -764,14 +791,41 @@ def service_c(request):
 def service_c_event(request, event_id):
     """ Renders the service chair way of adding ServiceEvent """
     # TODO: verify that user is Service Chair
-    # TODO: create service-chair-add-event.html
     event = ServiceEvent.objects.get(pk=event_id)
+    brothers = Brother.objects.exclude(brother_status='2')
+    form_list = []
+
+    for brother in brothers:
+        if event.attendees.filter(roster_number=brother.roster_number):
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
+            form_list.append(new_form)
+        else:
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
+            form_list.append(new_form)
+
+    if request.method == 'POST':
+        if utils.forms_is_valid(form_list):
+            for counter, form in enumerate(form_list):
+                instance = form.cleaned_data
+                if instance['present'] is True:
+                    event.attendees.add(brothers[counter])
+                    event.save()
+                if instance['present'] is False:
+                    event.attendees.remove(brothers[counter])
+                    event.save()
+            return HttpResponseRedirect(reverse('dashboard:service_c'))
 
     context = {
+        'type': 'attendance',
+        'brother_form_list': form_list,
         'event': event,
     }
 
-    return render(request, 'home.html', context)
+    return render(request, 'service-event.html', context)
 
 
 class ServiceEventDelete(DeleteView):

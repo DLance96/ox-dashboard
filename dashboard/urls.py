@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^brother/(?P<pk>\d+)/edit/$', views.BrotherEdit.as_view(), name="brother_edit"),
     url(r'^brother/c-event/(?P<event_id>[0-9]+)/$', views.brother_chapter_event, name="brother_chapter_event"),
     url(r'^brother/r-event/(?P<event_id>[0-9]+)/$', views.brother_recruitment_event, name="brother_recruitment_event"),
+    url(r'^brother/s-event/(?P<event_id>[0-9]+)/$', views.brother_service_event, name="brother_service_event"),
     url(r'^brother/excuse/(?P<excuse_id>[0-9]+)/$', views.brother_excuse, name="brother_excuse"),
     url(r'^brother/excuse/(?P<pk>\d+)/delete/$', views.ExcuseDelete.as_view(), name="brother_excuse_delete"),
     url(r'^brother/excuse/(?P<pk>\d+)/$', views.ExcuseEdit.as_view(), name="brother_excuse_edit"),

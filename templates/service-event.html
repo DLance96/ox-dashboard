@@ -8,4 +8,93 @@
     <div class="jumbotron">
         <h1>Service Event</h1>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Event</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class=" col-lg-2 "></div>
+                <div class=" col-lg-8 ">
+                    <table class="table table-event-information">
+                        <tbody>
+                        <tr>
+                            <td>Name:</td>
+                            <td>{{ event.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date:</td>
+                            <td>{{ event.date }}</td>
+                        </tr>
+                        <tr>
+                            <td>Time Start:
+                                {% if event.end_time %}
+                                    <br>End:
+                                {% endif %}</td>
+                            </td>
+                            <td>{{ event.start_time }}
+                                {% if event.end_time %}
+                                    <br>{{ event.end_time }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if event.notes %}
+                            <tr>
+                                <td>Notes</td>
+                                <td>{{ event.Notes }}</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                    {% if type == 'attendance' or type == 'ec-view' %}
+                        <a class="btn btn-default" href={% url 'dashboard:service_c' %} role="button">Edit event</a>
+                    {% endif %}
+                </div>
+                <div class=" col-lg-2 "></div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">RSVP</div>
+        <div class="panel-body">
+            {% if type == 'brother-view' %}
+                <form method="post" action="">
+                    {% csrf_token %}
+                    {% if rsvpd %}
+                        <input type="submit" value="Cancel RSVP"/><br><br>
+                    {% else %}
+                        <input type="submit" value="RSVP"/><br><br>
+                    {% endif %}
+                </form>
+            {% endif %}
+            {% for brother in rsvpd %}
+                {{ brother }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    {% if type == 'attendance' %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Attendance</div>
+            <div class="panel-body">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {% for form in brother_form_list %}
+                        {% for field in form %}
+                            {{ field }}{{ field.label_tag }}
+                        {% endfor %}
+                        <br>
+                    {% endfor %}
+                    <input type="submit" value="Update"/>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+    {% if type == 'ec-view' %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Event Attendance</div>
+            <div class="panel-body">
+                {% for brother in attendees %}
+                    {{ brother }}<br>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

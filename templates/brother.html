@@ -90,11 +90,27 @@
     <div class="panel panel-default">
         <div class="panel-heading">Chapter Events</div>
         <div class="panel-body">
-            <p>
-                {% for event in chapter_events %}
-                    <a href={% url 'dashboard:brother_chapter_event' event.id %}>{{ event }} - {{ event.date }}</a><br>
-                {% endfor %}
-            </p>
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table class="table table-event-information">
+                    <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Event</td>
+                        <td>Date</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for event in chapter_events %}
+                        <tr>
+                            <td>
+                                <a href={% url 'dashboard:brother_chapter_event' event.id %}>{{ event.name }}</a>
+                            </td>
+                            <td>{{ event.date }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <div class="panel panel-default">
@@ -190,7 +206,7 @@
         </div>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Service</div>
+        <div class="panel-heading">Service Hours</div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
@@ -211,7 +227,8 @@
                             {% for submission in submissions_pending %}
                                 <a class="btn btn-default"
                                    href={% url 'dashboard:brother_service_submission_delete' submission.id %} role="button">X</a>
-                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }} -
+                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }}
+                                    -
                                     {{ submission.hours }} hours</a><br>
                             {% endfor %}
                         </div>
@@ -222,7 +239,8 @@
                         <div class="panel-heading">Awaiting Approval</div>
                         <div class="panel-body">
                             {% for submission in submissions_submitted %}
-                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }} -
+                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }}
+                                    -
                                     {{ submission.hours }} hours</a><br>
                             {% endfor %}
                         </div>
@@ -235,7 +253,8 @@
                         <div class="panel-heading">Denied</div>
                         <div class="panel-body">
                             {% for submission in submussions_denied %}
-                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }} -
+                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }}
+                                    -
                                     {{ submission.hours }} hours</a><br>
                             {% endfor %}
                         </div>
@@ -246,7 +265,8 @@
                         <div class="panel-heading">Approved</div>
                         <div class="panel-body">
                             {% for submission in submissions_approved %}
-                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }} -
+                                <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }}
+                                    -
                                     {{ submission.hours }} hours</a><br>
                             {% endfor %}
                         </div>
@@ -256,48 +276,77 @@
         </div>
     </div>
     <div class="panel panel-default">
+        <div class="panel-heading">Service Events</div>
+        <div class="panel-body">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table class="table table-event-information">
+                    <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Event</td>
+                        <td>Date</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for event in service_events %}
+                        <tr>
+                            <td>
+                                <a href={% url 'dashboard:brother_service_event' event.id %}>{{ event.name }}</a>
+                            </td>
+                            <td>{{ event.date }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
         <div class="panel-heading">Recruitment Events</div>
         <div class="panel-body">
-            <table class="table table-event-information">
-                <thead style="font-weight:bold;">
-                <tr>
-                    <td>Event This Semester</td>
-                    <td>Date</td>
-                    <td>Rush</td>
-                </tr>
-                </thead>
-                <tbody>
-                {% for event in recruitment_events %}
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table class="table table-event-information">
+                    <thead style="font-weight:bold;">
                     <tr>
-                        <td>
-                            <a href={% url 'dashboard:brother_recruitment_event' event.id %}>{{ event.name }}</a>
-                        </td>
-                        <td>{{ event.date }}</td>
-                        <td>{{ event.rush }}</td>
+                        <td>Event This Semester</td>
+                        <td>Date</td>
+                        <td>Rush</td>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            <table class="table table-event-information">
-                <thead style="font-weight:bold;">
-                <tr>
-                    <td>Event Next Semester</td>
-                    <td>Date</td>
-                    <td>Rush</td>
-                </tr>
-                </thead>
-                <tbody>
-                {% for event in recruitment_events_next %}
+                    </thead>
+                    <tbody>
+                    {% for event in recruitment_events %}
+                        <tr>
+                            <td>
+                                <a href={% url 'dashboard:brother_recruitment_event' event.id %}>{{ event.name }}</a>
+                            </td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ event.rush }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <table class="table table-event-information">
+                    <thead style="font-weight:bold;">
                     <tr>
-                        <td>
-                            <a href={% url 'dashboard:brother_recruitment_event' event.id %}>{{ event.name }}</a>
-                        </td>
-                        <td>{{ event.date }}</td>
-                        <td>{{ event.rush }}</td>
+                        <td>Event Next Semester</td>
+                        <td>Date</td>
+                        <td>Rush</td>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for event in recruitment_events_next %}
+                        <tr>
+                            <td>
+                                <a href={% url 'dashboard:brother_recruitment_event' event.id %}>{{ event.name }}</a>
+                            </td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ event.rush }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <div class="panel panel-default">
