@@ -535,6 +535,12 @@ def secretary_event_add(request):
     return render(request, "event-add.html", context)
 
 
+class ChapterEventEdit(UpdateView):
+    model = ChapterEvent
+    success_url = reverse_lazy('dashboard:secretary')
+    fields = ['name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes', 'notes']
+
+
 class ChapterEventDelete(DeleteView):
     # TODO: verify secretary
     model = ChapterEvent
@@ -743,15 +749,10 @@ class RecruitmentEventDelete(DeleteView):
     success_url = reverse_lazy('dashboard:recruitment_c')
 
 
-def recruitment_c_event_edit(request, event_id):
-    """ Renders the recruitment chair way of adding RecruitmentEvents """
-    # TODO: verify that user is Recruitment Chair
-    # TODO: recruitment_c_add_event
-    event = RecruitmentEvent.objects.get(pk=event_id)
-    context = {
-        'event': event,
-    }
-    return render(request, 'home.html', context)
+class RecruitmentEventEdit(UpdateView):
+    model = RecruitmentEvent
+    success_url = reverse_lazy('dashboard:recruitment_c')
+    fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'notes']
 
 
 def service_c(request):
@@ -831,6 +832,12 @@ def service_c_event(request, event_id):
 class ServiceEventDelete(DeleteView):
     model = ServiceEvent
     success_url = reverse_lazy('dashboard:service_c')
+
+
+class ServiceEventEdit(UpdateView):
+    model = ServiceEvent
+    success_url = reverse_lazy('dashboard:service_c')
+    fields = ['name', 'date', 'start_time', 'end_time', 'notes']
 
 
 class ServiceSubmissionChairEdit(UpdateView):
