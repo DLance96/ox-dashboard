@@ -8,4 +8,4 @@ install:
 before_script:
   – python manage.py syncdb –migrate –noinput
 script:
-  - python syncdb test
+  - python migrate 
