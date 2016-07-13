@@ -6,6 +6,6 @@ python:
 install:
   - pip install -r requirements.txt
 before_script:
-  – python manage.py syncdb –migrate –noinput
+  – python manage.py migrate 
 script:
-  - python migrate 
+  - python manage.py test 
