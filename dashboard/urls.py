@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^brother/c-event/(?P<event_id>[0-9]+)/$', views.brother_chapter_event, name="brother_chapter_event"),
     url(r'^brother/r-event/(?P<event_id>[0-9]+)/$', views.brother_recruitment_event, name="brother_recruitment_event"),
     url(r'^brother/s-event/(?P<event_id>[0-9]+)/$', views.brother_service_event, name="brother_service_event"),
+    url(r'^brother/p-event/(?P<event_id>[0-9]+)/$', views.brother_philanthropy_event, name="brother_philanthropy_event"),
     url(r'^brother/excuse/(?P<excuse_id>[0-9]+)/$', views.brother_excuse, name="brother_excuse"),
     url(r'^brother/excuse/(?P<pk>\d+)/delete/$', views.ExcuseDelete.as_view(), name="brother_excuse_delete"),
     url(r'^brother/excuse/(?P<pk>\d+)/$', views.ExcuseEdit.as_view(), name="brother_excuse_edit"),
@@ -66,6 +67,8 @@ urlpatterns = [
     url(r'^recruitment-chair/pnm/(?P<pk>\d+)/delete/$', views.PnmDelete.as_view(), name="recruitment_c_pnm_delete"),
 
     url(r'^scholarship-chair/$', views.scholarship_c, name="scholarship_c"),
+
+    # Service Chair URL section
     url(r'^service-chair/$', views.service_c, name="service_c"),
     url(r'^service-chair/(?P<pk>\d+)/response/$', views.ServiceSubmissionChairEdit.as_view(),
         name="service_c_submission_response"),
@@ -77,6 +80,15 @@ urlpatterns = [
     url(r'^service-chair/event/(?P<pk>\d+)/edit/$', views.ServiceEventEdit.as_view(),
         name="service_c_event_edit"),
 
+    # Philanthropy Chair URL Section
     url(r'^philanthropy-chair/$', views.philanthropy_c, name="philanthropy_c"),
+    url(r'^philanthropy-chair/event/(?P<event_id>[0-9]+)/$', views.philanthropy_c_event,
+        name="philanthropy_c_event"),
+    url(r'^philanthropy-chair/event/add/$', views.philanthropy_c_event_add, name="philanthropy_c_event_add"),
+    url(r'^philanthropy-chair/event/(?P<pk>\d+)/delete/$', views.PhilanthropyEventDelete.as_view(),
+        name="philanthropy_c_event_delete"),
+    url(r'^philanthropy-chair/event/(?P<pk>\d+)/edit/$', views.PhilanthropyEventEdit.as_view(),
+        name="philanthropy_c_event_edit"),
+
     url(r'^detail-manager/$', views.detail_m, name="detail_m"),
 ]

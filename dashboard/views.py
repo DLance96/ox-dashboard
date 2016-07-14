@@ -172,7 +172,7 @@ def brother_service_event(request, event_id):
 
     brother = Brother.objects.filter(user=request.user)[0]
     event = ServiceEvent.objects.get(pk=event_id)
-    rsvpd = event.rsvp_brothers.all()
+    brothers_rsvp = event.rsvp_brothers.all()
     rsvp_brother = event.rsvp_brothers.filter(id=brother.id)
 
     if request.method == 'POST':
@@ -185,11 +185,41 @@ def brother_service_event(request, event_id):
 
     context = {
         'type': 'brother-view',
-        'rsvpd': rsvpd,
+        'brothers_rsvp': brothers_rsvp,
+        'rsvpd': rsvp_brother.exists(),
         'event': event,
     }
 
     return render(request, "service-event.html", context)
+
+
+def brother_philanthropy_event(request, event_id):
+    """ Renders the brother page for service event with a excuse form """
+    if not request.user.is_authenticated():  # brother auth check
+        messages.error(request, "Brother not logged in before viewing brother chapter events")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    brother = Brother.objects.filter(user=request.user)[0]
+    event = PhilanthropyEvent.objects.get(pk=event_id)
+    brothers_rsvp = event.rsvp_brothers.all()
+    rsvp_brother = event.rsvp_brothers.filter(id=brother.id)
+
+    if request.method == 'POST':
+        if rsvp_brother.exists():
+            event.rsvp_brothers.remove(brother)
+        else:
+            event.rsvp_brothers.add(brother)
+        event.save()
+        return HttpResponseRedirect(reverse('dashboard:brother'))
+
+    context = {
+        'type': 'brother-view',
+        'brothers_rsvp': brothers_rsvp,
+        'rsvpd': rsvp_brother.exists(),
+        'event': event,
+    }
+
+    return render(request, "philanthropy-event.html", context)
 
 
 def brother_recruitment_event(request, event_id):
@@ -794,6 +824,7 @@ def service_c_event(request, event_id):
     # TODO: verify that user is Service Chair
     event = ServiceEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')
+    brothers_rsvp = event.rsvp_brothers.all()
     form_list = []
 
     for brother in brothers:
@@ -823,6 +854,7 @@ def service_c_event(request, event_id):
     context = {
         'type': 'attendance',
         'brother_form_list': form_list,
+        'brothers_rsvp': brothers_rsvp,
         'event': event,
     }
 
@@ -850,7 +882,6 @@ class ServiceSubmissionChairEdit(UpdateView):
 def service_c_event_add(request):
     """ Renders the service chair way of adding ServiceEvent """
     # TODO: verify that user is Service Chair
-    # TODO: create service-chair-add-event.html
     form = ServiceEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -894,11 +925,63 @@ def philanthropy_c(request):
     return render(request, 'philanthropy-chair.html', context)
 
 
-def philanthropy_c_add_event(request):
+def philanthropy_c_event(request, event_id):
+    """"""
+    event = PhilanthropyEvent.objects.get(pk=event_id)
+    brothers_rsvp = event.rsvp_brothers.all()
+
+    context = {
+        'type': 'ec-view',
+        'brothers_rsvp': brothers_rsvp,
+        'event': event,
+    }
+
+    return render(request, 'philanthropy-event.html', context)
+
+
+def philanthropy_c_event_add(request):
     """ Renders the philanthropy chair way of adding PhilanthropyEvent """
     # TODO: verify that user is Philanthropy Chair
-    # TODO: create philanthropy-chair-add-event.html
-    return render(request, 'home.html', {})
+    form = PhilanthropyEventForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            # TODO: add google calendar event adding
+            instance = form.save(commit=False)
+            try:
+                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                                                   year=instance.date.year)[0]
+            except IndexError:
+                semester = Semester(season=utils.get_season_from(instance.date.month),
+                                    year=instance.date.year)
+                semester.save()
+            if instance.end_time is not None and instance.end_time < instance.start_time:
+                context = {
+                    'position': 'Philanthropy Chair',
+                    'form': form,
+                    'error_message': "Start time after end time!",
+                }
+                return render(request, "event-add.html", context)
+            instance.semester = semester
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:service_c'))
+
+    context = {
+        'position': 'Philanthropy Chair',
+        'form': form,
+    }
+    return render(request, 'event-add.html', context)
+
+
+class PhilanthropyEventDelete(DeleteView):
+    model = PhilanthropyEvent
+    success_url = reverse_lazy('dashboard:philanthropy_c')
+
+
+class PhilanthropyEventEdit(UpdateView):
+    model = PhilanthropyEvent
+    success_url = reverse_lazy('dashboard:philanthropy_c')
+    fields = ['name', 'date', 'start_time', 'end_time', 'notes']
 
 
 def detail_m(request):
