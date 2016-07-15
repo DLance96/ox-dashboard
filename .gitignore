@@ -4,6 +4,9 @@ key.txt
 # database file
 db.sqlite3
 
+# static root folder
+/static-root/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
