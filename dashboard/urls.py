@@ -59,7 +59,7 @@ urlpatterns = [
     url(r'^recruitment-chair/event/(?P<event_id>[0-9]+)/$', views.recruitment_c_event, name="recruitment_c_event"),
     url(r'^recruitment-chair/event/add/$', views.recruitment_c_event_add, name="recruitment_c_event_add"),
     url(r'^recruitment-chair/event/(?P<pk>\d+)/edit/$', views.RecruitmentEventEdit.as_view(),
-        name="recruitment_c_pnm_edit"),
+        name="recruitment_c_event_edit"),
     url(r'^recruitment-chair/event/(?P<pk>\d+)/delete/$', views.RecruitmentEventDelete.as_view(),
         name="recruitment_c_event_delete"),
     url(r'^recruitment-chair/pnm/(?P<pnm_id>[0-9]+)/$', views.recruitment_c_pnm, name="recruitment_c_pnm"),

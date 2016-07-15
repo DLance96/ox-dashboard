@@ -285,7 +285,6 @@ def brother_pnm(request, pnm_id):
     events = RecruitmentEvent.objects.filter(semester__season=utils.get_season(),
                                              semester__year=utils.get_year()).order_by("date").all()
 
-    print events
     attended_events = []
     for event in events:
         if event.attendees_pnms.filter(id=pnm_id).exists():
@@ -396,7 +395,8 @@ def secretary(request):
 def secretary_attendance(request):
     """ Renders the secretary view for chapter attendance """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
-    events = ChapterEvent.objects.filter(semester__season=utils.get_season(), semester__year=utils.get_year())
+    events = ChapterEvent.objects.filter(semester__season=utils.get_season(), semester__year=utils.get_year())\
+        .exclude(pub_date__gt=datetime.date.today())
     excuses = Excuse.objects.filter(event__semester__season=utils.get_season(),
                                     event__semester__year=utils.get_year(), status='1')
     events_excused_list = []
@@ -700,9 +700,17 @@ def recruitment_c_pnm(request, pnm_id):
     """ Renders PNM view for recruitment chair """
     # TODO: verify that user is Recruitment chair
     pnm = PotentialNewMember.objects.get(pk=pnm_id)
+    events = RecruitmentEvent.objects.filter(semester__season=utils.get_season(),
+                                             semester__year=utils.get_year()).order_by("date").all()
+
+    attended_events = []
+    for event in events:
+        if event.attendees_pnms.filter(id=pnm_id).exists():
+            attended_events.append(event)
 
     context = {
         'type': 'recruitment-chair-view',
+        'events': attended_events,
         'pnm': pnm,
     }
     return render(request, 'potential_new_member.html', context)
