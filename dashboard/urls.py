@@ -38,6 +38,7 @@ urlpatterns = [
 
     # Secretary URL section
     url(r'^secretary/$', views.secretary, name="secretary"),
+    url(r'^secretary/attendance/$', views.secretary_attendance, name="secretary_attendance"),
     url(r'^secretary/brother/list/$', views.secretary_brother_list, name="secretary_brother_list"),
     url(r'^secretary/brother/(?P<event_id>[0-9]+)/$', views.secretary_brother_view, name="secretary_brother_view"),
     url(r'^secretary/brother/(?P<event_id>[0-9]+)/edit/$', views.secretary_brother_edit, name="secretary_brother_edit"),

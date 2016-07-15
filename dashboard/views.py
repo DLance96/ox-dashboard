@@ -393,6 +393,36 @@ def secretary(request):
     return render(request, 'secretary.html', context)
 
 
+def secretary_attendance(request):
+    """ Renders the secretary view for chapter attendance """
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+    events = ChapterEvent.objects.filter(semester__season=utils.get_season(), semester__year=utils.get_year())
+    excuses = Excuse.objects.filter(event__semester__season=utils.get_season(),
+                                    event__semester__year=utils.get_year(), status='1')
+    events_excused_list = []
+    events_unexcused_list = []
+
+    for brother in brothers:
+        events_excused = 0
+        events_unexcused = 0
+        for event in events:
+            if not event.attendees.filter(id=brother.id).exists():
+                if excuses.filter(brother=brother, event=event).exists():
+                    events_excused += 1
+                else:
+                    events_unexcused += 1
+        events_excused_list.append(events_excused)
+        events_unexcused_list.append(events_unexcused)
+
+    brother_attendance = zip(brothers, events_excused_list, events_unexcused_list)
+
+    context = {
+        'brother_attendance': brother_attendance,
+    }
+
+    return render(request, 'chapter-event-attendance.html', context)
+
+
 def secretary_event(request, event_id):
     """ Renders the attendance sheet for any event """
     # TODO: verify that user is Secretary (add a file with secretary verify function)
@@ -593,7 +623,7 @@ def secretary_all_events(request):
         'list': zip_list,
         'position': "Secretary"
     }
-    return render(request, "chapter-all-events.html", context)
+    return render(request, "chapter-event-all.html", context)
 
 
 def marshall(request):
