@@ -13,7 +13,7 @@
             <div class="panel-heading">{{ semester }}</div>
             <div class="panel-body">
                 {% for event in events %}
-                    <a href={% url 'dashboard:secretary_view_event' event.id %}>{{ event }}</a> <br>
+                    <a href={% url 'dashboard:secretary_event_view' event.id %}>{{ event }}</a> <br>
                 {% endfor %}
             </div>
         </div>

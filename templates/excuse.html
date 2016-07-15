@@ -11,18 +11,52 @@
     <div class="panel panel-default">
         <div class="panel-heading">Excuse</div>
         <div class="panel-body">
-            Name: {{ excuse.brother.first_name }} {{ excuse.brother.last_name }}<br>
-            Event: {{ excuse.event.name }}<br>
-            Event Date: {{ excuse.event.date }}<br>
-            Date Submitted: {{ excuse.date_submitted }}<br>
-            Event Mandatory: {{ excuse.event.mandatory }}<br>
-            Reasoning: {{ excuse.description }}
-            {% if excuse.status == '2' or excuse.status == '3' and excuse.response_message %}
-                <br>Response: {{ excuse.response_message }}
-            {% elif type == "review" %}
-                <br><br><a class="btn btn-default" href={% url 'dashboard:brother_excuse_edit' excuse.id %}>Edit Excuse</a>
-            {% endif %}
-        </div>
+            <div class="row">
+                <div class=" col-lg-2 "></div>
+                <div class=" col-lg-8 ">
+                    <table class="table table-event-information">
+                        <tbody>
+                        <tr>
+                            <td>Name:</td>
+                            <td>{{ excuse.brother.first_name }} {{ excuse.brother.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Event:</td>
+                            <td>{{ excuse.event.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Event Date:</td>
+                            <td>{{ excuse.event.date }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date Submitted:</td>
+                            <td>{{ excuse.date_submitted }}</td>
+                        </tr>
+                        <tr>
+                            <td>Event Mandatory:</td>
+                            <td>{{ excuse.event.mandatory }}</td>
+                        </tr>
+                        {% if excuse.status == '2' or excuse.status == '3' and excuse.response_message %}
+                            <tr>
+                                <td>Response:</td>
+                                <td>{{ excuse.response_message }}</td>
+                            </tr>
+
+                        {% elif type == "review" %}
+                            <tr>
+                            <td>
+                                <a class="btn btn-default" href={% url 'dashboard:brother_excuse_edit' excuse.id %}>Edit
+                                Excuse</a>
+                            </td>
+                            </tr>
+                        {% endif %}
+        </tbody>
+                            </table>
+                            </div>
+
+        <div class=" col-lg-2 "></div>
+    </div>
+
     </div>
     {% if type == "response" %}
         <div class="panel panel-default">
