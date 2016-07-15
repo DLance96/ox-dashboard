@@ -8,11 +8,14 @@ class LoginForm(forms.Form):
 
 
 class BrotherForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput, label="Password")
+    password2 = forms.CharField(widget=forms.PasswordInput, label="Retype Password")
+
     class Meta:
         model = Brother
         fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
-                  'case_ID', 'birthday', 'hometown', 'phone_number', 'room_number', "address",
-                  'standing_committee', 'operational_committee']
+                  'case_ID', 'major', 'minor', 'birthday', 'hometown', 't_shirt_size', 'phone_number', 'room_number',
+                  'address', 'emergency_contact', 'emergency_contact_phone_number']
 
 # class BrotherStatusForm(forms.Form):
 

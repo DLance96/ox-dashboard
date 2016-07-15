@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>{{ brother.first_name }} {{ brother.last_name }}</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Brother Information</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-2"></div>
+                <div class="col-lg-8">
+                    <table class="table table-event-information">
+                        <tbody>
+                        <tr>
+                            <td>CaseID:</td>
+                            <td>{{ brother.case_ID }}</td>
+                        </tr>
+                        <tr>
+                            <td>Birthday:</td>
+                            <td>{{ brother.birthday }}</td>
+                        </tr>
+                        <tr>
+                            <td>Hometown:</td>
+                            <td>{{ brother.hometown }}</td>
+                        </tr>
+                        <tr>
+                            <td>Roster Number:</td>
+                            <td>{{ brother.roster_number }}</td>
+                        </tr>
+                        <tr>
+                            <td>Semester Joined:</td>
+                            <td>{{ brother.semester_joined }}</td>
+                        </tr>
+                        <tr>
+                            <td>School Status:</td>
+                            <td>{{ brother.get_school_status_display }}</td>
+                        </tr>
+                        <tr>
+                            <td>Brother Status:</td>
+                            <td>{{ brother.get_brother_status_display }}</td>
+                        </tr>
+                        <tr>
+                            <td>Major:</td>
+                            <td>{{ brother.major }}</td>
+                        </tr>
+                        {% if brother.minor %}
+                            <tr>
+                                <td>Minor:</td>
+                                <td>{{ brother.minor }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td>T-Shirt Size:</td>
+                            <td>{{ brother.t_shirt_size }}</td>
+                        </tr>
+                        <tr>
+                            <td>Phone Number:</td>
+                            <td>{{ brother.phone_number }}</td>
+                        </tr>
+                        <tr>
+                            <td>Emergency Contact:<br>
+                                Phone Number:
+                            </td>
+                            <td>{{ brother.emergency_contact }}<br>
+                                {{ brother.emergency_contact_phone_number }}</td>
+                        </tr>
+                        <tr>
+                            {% if brother.address == "Theta Chi House" or brother.address == "11136 Magnolia Drive" %}
+                                <td>Room Number:</td>
+                                <td>{{ brother.room_number }}</td>
+                            {% else %}
+                                <td>Address:</td>
+                                <td>{{ brother.address }}</td>
+                            {% endif %}
+                        </tr>
+                        </tbody>
+                    </table>
+                    <a class="btn btn-default" href={% url 'dashboard:secretary_brother_edit' brother.id %} role="button">Edit
+                        information</a>
+                </div>
+                <div class="col-lg-2"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

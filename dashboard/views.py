@@ -541,24 +541,51 @@ def secretary_brother_view(request, brother_id):
     # TODO: verify that user is Secretary (add a file with secretary verify function)
     brother = Brother.objects.get(pk=brother_id)
     context = {
-        'position': 'Secretary',
         'brother': brother
     }
-    return render(request, "home.html", context)
+    return render(request, "brother-view.html", context)
 
 
-def secretary_brother_edit(request, brother_id):
-    """ Renders the Secretary way of editing brother info """
-    # TODO: verify that user is Secretary (add a file with secretary verify function)
-    brother = Brother.objects.get(pk=brother_id)
-    form = None  # TODO: create UpdateForm
+def secretary_brother_add(request):
+    """ Renders the Secretary way of viewing a brother """
+    form = BrotherForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.cleaned_data
+            if instance['password'] == instance['password2']:
+                user = User.objects.create_user(instance['case_ID'], instance['case_ID'] + "@case.edu",
+                                                instance['password'])
+                user.last_name = instance['last_name']
+                user.save()
+
+                brother = form.save(commit=False)
+                brother.user = user
+                brother.save()
+
+                return HttpResponseRedirect(reverse('dashboard:secretary_brother_list'))
+            else:
+                context = {
+                    'error_message': "Please make sure your passwords match",
+                    'title': 'Add New Brother',
+                    'form': form,
+                }
+                return render(request, 'model-add.html', context)
 
     context = {
-        'position': 'Secretary',
-        'brother': brother,
-        'form': form
+        'title': 'Add New Brother',
+        'form': form,
     }
-    return render(request, "home.html", context)
+    return render(request, 'model-add.html', context)
+
+
+class SecretaryBrotherEdit(UpdateView):
+    model = Brother
+    success_url = reverse_lazy('dashboard:secretary_brother_list')
+    fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
+              'major', 'minor', 't_shirt_size', 'case_ID', 'birthday', 'hometown', 'phone_number',
+              'emergency_contact_phone_number', 'emergency_contact', 'room_number',
+              'address']
 
 
 def secretary_event_add(request):
