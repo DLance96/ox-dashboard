@@ -287,9 +287,10 @@ class StudyTableEvent(models.Model):
     end_time = models.TimeField(blank=True, null=True)
     attendees = models.ManyToManyField(Brother, blank=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.date
+        return "%s" % self.date
 
 
 class Excuse(models.Model):

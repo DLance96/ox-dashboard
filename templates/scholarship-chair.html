@@ -8,4 +8,33 @@
     <div class="jumbotron">
         <h1>Scholarship Chair</h1>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Study Tables</div>
+        <div class="panel-body">
+            <table class="table table-event-information">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Date:</td>
+                    <td>Time:</td>
+                    <td>Delete?</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td><a href={% url 'dashboard:scholarship_c_event' event.id %}>{{ event.date }}</a></td>
+                        <td>{{ event.start_time }}
+                            {% if event.end_time %}
+                                <br>{{ event.end_time }}
+                            {% endif %}
+                        </td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:scholarship_c_event_delete' event.id %}>X</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <a class="btn btn-default" href={% url 'dashboard:scholarship_c_event_add' %} role="button">Add Event</a>
+        </div>
+    </div>
 {% endblock %}

@@ -395,7 +395,7 @@ def secretary(request):
 def secretary_attendance(request):
     """ Renders the secretary view for chapter attendance """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
-    events = ChapterEvent.objects.filter(semester__season=utils.get_season(), semester__year=utils.get_year())\
+    events = ChapterEvent.objects.filter(semester__season=utils.get_season(), semester__year=utils.get_year()) \
         .exclude(pub_date__gt=datetime.date.today())
     excuses = Excuse.objects.filter(event__semester__season=utils.get_season(),
                                     event__semester__year=utils.get_year(), status='1')
@@ -669,10 +669,98 @@ def scholarship_c(request):
     reports = ScholarshipReport.objects.filter(semester__season=utils.get_season(),
                                                semester__year=utils.get_year()) \
         .order_by("past_semester_gpa")
+    events = StudyTableEvent.objects.filter(semester__season=utils.get_season(),
+                                            semester__year=utils.get_year()).order_by("date")
     context = {
+        'events': events,
         'reports': reports,
     }
     return render(request, "scholarship-chair.html", context)
+
+
+def scholarship_c_event(request, event_id):
+    """ Renders the scholarship chair way of view StudyTables """
+    # TODO: verify that user is Recruitment Chair
+    event = StudyTableEvent.objects.get(pk=event_id)
+    brothers = Brother.objects.exclude(brother_status='2')
+    brother_form_list = []
+
+    for brother in brothers:
+        if event.attendees.filter(roster_number=brother.roster_number):
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
+            brother_form_list.append(new_form)
+        else:
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
+            brother_form_list.append(new_form)
+
+    if request.method == 'POST':
+        if utils.forms_is_valid(brother_form_list):
+            for counter, form in enumerate(brother_form_list):
+                instance = form.cleaned_data
+                if instance['present'] is True:
+                    event.attendees.add(brothers[counter])
+                    event.save()
+                if instance['present'] is False:
+                    event.attendees.remove(brothers[counter])
+                    event.save()
+            return HttpResponseRedirect(reverse('dashboard:recruitment_c'))
+
+    context = {
+        'type': 'attendance',
+        'brother_form_list': brother_form_list,
+        'event': event,
+    }
+    return render(request, "studytable-event.html", context)
+
+
+def scholarship_c_event_add(request):
+    """ Renders the scholarship chair way of adding StudyTableEvents """
+    # TODO: verify that user is Recruitment Chair
+    form = StudyTableEventForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            # TODO: add google calendar event adding
+            instance = form.save(commit=False)
+            try:
+                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                                                   year=instance.date.year)[0]
+            except IndexError:
+                semester = Semester(season=utils.get_season_from(instance.date.month),
+                                    year=instance.date.year)
+                semester.save()
+            if instance.end_time is not None and instance.end_time < instance.start_time:
+                context = {
+                    'position': 'Scholarship Chair',
+                    'form': form,
+                    'error_message': "Start time after end time!",
+                }
+                return render(request, "event-add.html", context)
+            instance.semester = semester
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:scholarship_c'))
+
+    context = {
+        'position': 'Scholarship Chair',
+        'form': form,
+    }
+    return render(request, "event-add.html", context)
+
+
+class StudyEventDelete(DeleteView):
+    # TODO: verify recruitment chair
+    model = StudyTableEvent
+    success_url = reverse_lazy('dashboard:scholarship_c')
+
+
+class StudyEventEdit(UpdateView):
+    model = StudyTableEvent
+    success_url = reverse_lazy('dashboard:scholarship_c')
+    fields = ['date', 'start_time', 'end_time', 'notes']
 
 
 def recruitment_c(request):
