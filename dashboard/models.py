@@ -191,6 +191,7 @@ class ServiceSubmission(models.Model):
 class ScholarshipReport(models.Model):
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
+    active = models.BooleanField(default=False)
     past_semester_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
     cumulative_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
     scholarship_plan = models.TextField(default="Scholarship plan has not been setup yet if you past semester GPA "

@@ -50,7 +50,7 @@ class PotentialNewMemberForm(forms.ModelForm):
 class ScholarshipReportForm(forms.ModelForm):
     class Meta:
         model = ScholarshipReport
-        fields = ['brother', 'cumulative_gpa', 'past_semester_gpa', 'scholarship_plan']
+        fields = ['brother', 'cumulative_gpa', 'past_semester_gpa', 'scholarship_plan', 'active']
 
 
 class StudyTableEventForm(forms.ModelForm):

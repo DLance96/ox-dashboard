@@ -77,6 +77,9 @@ urlpatterns = [
         name="scholarship_c_event_edit"),
     url(r'^scholarship-chair/event/(?P<pk>\d+)/delete/$', views.StudyEventDelete.as_view(),
         name="scholarship_c_event_delete"),
+    url(r'^scholarship-chair/plan/(?P<plan_id>[0-9]+)/$', views.scholarship_c_plan, name="scholarship_c_plan"),
+    url(r'^scholarship-chair/plan/(?P<pk>\d+)/edit/$', views.ScholarshipReportEdit.as_view(),
+        name="scholarship_c_plan_edit"),
 
     # Service Chair URL section
     url(r'^service-chair/$', views.service_c, name="service_c"),

@@ -49,17 +49,15 @@ def brother_view(request):
         return HttpResponseRedirect(reverse('dashboard:home'))
     print Brother.objects.all()
     brother = Brother.objects.filter(user=request.user)[0]
-    chapter_events = ChapterEvent.objects.filter(semester__season=utils.get_season(),
-                                                 semester__year=utils.get_year()).order_by("date")
-    excuses_pending = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
-                                            event__semester__year=utils.get_year(), status='0').order_by("event__date")
-    excuses_approved = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
-                                             event__semester__year=utils.get_year(), status='1').order_by("event__date")
-    excuses_denied = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
-                                           event__semester__year=utils.get_year(), status='2').order_by("event__date")
-    excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester__season=utils.get_season(),
-                                                  event__semester__year=utils.get_year(), status='3').order_by(
-        "event__date")
+    chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    excuses_pending = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+                                            status='0').order_by("event__date")
+    excuses_approved = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+                                             status='1').order_by("event__date")
+    excuses_denied = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+                                           status='2').order_by("event__date")
+    excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+                                                  status='3').order_by("event__date")
     # TODO: write util function to covert standing/operational committee # to standard #
     # committee_meetings = CommitteeMeetingEvent.objects.filter()
     current_season = utils.get_season()
@@ -76,21 +74,16 @@ def brother_view(request):
     pnms = PotentialNewMember.objects.filter(Q(primary_contact=brother) |
                                              Q(secondary_contact=brother) |
                                              Q(tertiary_contact=brother)).order_by("last_name")
-    service_events = ServiceEvent.objects.filter(semester__season=utils.get_season(),
-                                                 semester__year=utils.get_year()).order_by("date")
+    service_events = ServiceEvent.objects.filter(semester=utils.get_semester()).order_by("date")
     # Service submissions
     approved_hours = 0  # TODO count approved hours
-    submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
-                                                           semester__year=utils.get_year(), status='0').order_by("date")
-    submissions_submitted = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
-                                                             semester__year=utils.get_year(), status='1').order_by(
-        "date")
-    submissions_approved = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
-                                                            semester__year=utils.get_year(), status='2').order_by(
-        "date")
-    submissions_denied = ServiceSubmission.objects.filter(brother=brother, semester__season=utils.get_season(),
-                                                          semester__year=utils.get_year(), status='3').order_by(
-        "date")
+    submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(), status='0').order_by("date")
+    submissions_submitted = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+                                                             status='1').order_by("date")
+    submissions_approved = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+                                                            status='2').order_by("date")
+    submissions_denied = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+                                                          status='3').order_by("date")
 
     hours_pending = 0
     for submission in submissions_pending:
@@ -102,8 +95,7 @@ def brother_view(request):
     for submission in submissions_approved:
         hours_approved += submission.hours
 
-    philanthropy_events = PhilanthropyEvent.objects.filter(semester__season=utils.get_season(),
-                                                           semester__year=utils.get_year()) \
+    philanthropy_events = PhilanthropyEvent.objects.filter(semester=utils.get_semester())\
         .order_by("start_time").order_by("date")
 
     context = {
@@ -282,8 +274,7 @@ def brother_pnm(request, pnm_id):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     pnm = PotentialNewMember.objects.get(pk=pnm_id)
-    events = RecruitmentEvent.objects.filter(semester__season=utils.get_season(),
-                                             semester__year=utils.get_year()).order_by("date").all()
+    events = RecruitmentEvent.objects.filter(semester=utils.get_season()).order_by("date").all()
 
     attended_events = []
     for event in events:
@@ -380,11 +371,9 @@ def treasurer(request):
 def secretary(request):
     """ Renders the secretary page giving access to excuses and ChapterEvents """
     # TODO: verify that user is Secretary
-    excuses = Excuse.objects.filter(event__semester__season=utils.get_season(),
-                                    event__semester__year=utils.get_year(),
-                                    status='0').order_by("event__date")
-    events = ChapterEvent.objects.filter(semester__season=utils.get_season(),
-                                         semester__year=utils.get_year()).order_by("date")
+    excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='0').order_by("event__date")
+    events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+
     context = {
         'excuses': excuses,
         'events': events,
@@ -395,10 +384,8 @@ def secretary(request):
 def secretary_attendance(request):
     """ Renders the secretary view for chapter attendance """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
-    events = ChapterEvent.objects.filter(semester__season=utils.get_season(), semester__year=utils.get_year()) \
-        .exclude(pub_date__gt=datetime.date.today())
-    excuses = Excuse.objects.filter(event__semester__season=utils.get_season(),
-                                    event__semester__year=utils.get_year(), status='1')
+    events = ChapterEvent.objects.filter(semester=utils.get_semester()).exclude(pub_date__gt=datetime.date.today())
+    excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='1')
     events_excused_list = []
     events_unexcused_list = []
 
@@ -666,14 +653,25 @@ def marshall(request):
 def scholarship_c(request):
     """ Renders the Scholarship page listing all brother gpas and study table attendance """
     # TODO: verify that user is Scholarship chair (add a file with scholarship verify function)
-    reports = ScholarshipReport.objects.filter(semester__season=utils.get_season(),
-                                               semester__year=utils.get_year()) \
-        .order_by("past_semester_gpa")
-    events = StudyTableEvent.objects.filter(semester__season=utils.get_season(),
-                                            semester__year=utils.get_year()).order_by("date")
+    reports = ScholarshipReport.objects.filter(semester=utils.get_semester()).order_by("past_semester_gpa")
+    events = StudyTableEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+
+    brothers = Brother.objects.exclude(brother_status='2')
+    plans = []
+
+    for brother in brothers:
+        plan = ScholarshipReport.objects.filter(semester=utils.get_semester(), brother__id=brother.id)
+        if not plan.exists():
+            plan = ScholarshipReport(brother=brother, semester=utils.get_semester())
+            plan.save()
+        plans.append(plan)
+
+    brother_plans = zip(brothers, plans)
+
     context = {
         'events': events,
         'reports': reports,
+        'brother_plans': brother_plans,
     }
     return render(request, "scholarship-chair.html", context)
 
@@ -763,6 +761,34 @@ class StudyEventEdit(UpdateView):
     fields = ['date', 'start_time', 'end_time', 'notes']
 
 
+def scholarship_c_plan(request, plan_id):
+    """Renders Scholarship Plan page for the Scholarship Chair"""
+    # TODO: verify scholarship chair
+    plan = ScholarshipReport.objects.get(pk=plan_id)
+    events = StudyTableEvent.objects.filter(semester=utils.get_semester())
+    study_tables_attended = 0
+    study_tables_count = len(events)
+
+    for event in events:
+        if event.attendees.get(id=plan.brother.id).exists():
+            study_tables_attended += 1
+
+    context = {
+        'type': 'scholarship-chair',
+        'plan': plan,
+        'study_tables_count': study_tables_count,
+        'study_tables_attended': study_tables_attended,
+    }
+
+    return render(request, 'scholarship-report.html', context)
+
+
+class ScholarshipReportEdit(UpdateView):
+    model = ScholarshipReport
+    success_url = reverse_lazy('dashboard:scholarship_c')
+    fields = ['cumulative_gpa', 'past_semester_gpa', 'scholarship_plan', 'active']
+
+
 def recruitment_c(request):
     """ Renders Scholarship chair page with events for the current and following semester """
     # TODO: verify that user is Recruitment Chair
@@ -788,8 +814,7 @@ def recruitment_c_pnm(request, pnm_id):
     """ Renders PNM view for recruitment chair """
     # TODO: verify that user is Recruitment chair
     pnm = PotentialNewMember.objects.get(pk=pnm_id)
-    events = RecruitmentEvent.objects.filter(semester__season=utils.get_season(),
-                                             semester__year=utils.get_year()).order_by("date").all()
+    events = RecruitmentEvent.objects.filter(semester=utils.get_semester()).order_by("date").all()
 
     attended_events = []
     for event in events:
@@ -941,13 +966,10 @@ class RecruitmentEventEdit(UpdateView):
 def service_c(request):
     """ Renders the service chair page with service submissions """
     # TODO: verify that user is Service Chair
-    events = ServiceEvent.objects.filter(semester__season=utils.get_season(),
-                                         semester__year=utils.get_year())
-    submissions_pending = ServiceSubmission.objects.filter(semester__season=utils.get_season(),
-                                                           semester__year=utils.get_year(), status='0').order_by("date")
+    events = ServiceEvent.objects.filter(semester=utils.get_semester())
+    submissions_pending = ServiceSubmission.objects.filter(semester=utils.get_semester(), status='0').order_by("date")
 
-    submissions_submitted = ServiceSubmission.objects.filter(semester__season=utils.get_season(),
-                                                             semester__year=utils.get_year(), status='1').order_by(
+    submissions_submitted = ServiceSubmission.objects.filter(semester=utils.get_semester(), status='1').order_by(
         "date")
 
     hours_pending = 0
@@ -957,8 +979,7 @@ def service_c(request):
         hours_pending += submission.hours
 
     hours_approved = 0
-    submissions_approved = ServiceSubmission.objects.filter(semester__season=utils.get_season(),
-                                                            semester__year=utils.get_year(), status='2')
+    submissions_approved = ServiceSubmission.objects.filter(semester=utils.get_semester(), status='2')
     for submission in submissions_approved:
         hours_approved += submission.hours
 
@@ -1070,8 +1091,7 @@ def service_c_event_add(request):
 def philanthropy_c(request):
     """ Renders the philanthropy chair's RSVP page for different events """
     # TODO: verify that user is Philanthropy Chair
-    events = PhilanthropyEvent.objects.filter(semester__season=utils.get_season(),
-                                              semester__year=utils.get_year())
+    events = PhilanthropyEvent.objects.filter(semester=utils.get_semester())
     context = {
         'events': events,
     }

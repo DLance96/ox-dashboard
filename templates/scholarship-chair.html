@@ -9,9 +9,41 @@
         <h1>Scholarship Chair</h1>
     </div>
     <div class="panel panel-default">
+        <div class="panel-heading">Scholarship Plans</div>
+        <div class="panel-body">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table class="table table-condensed">
+                    <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Brother</td>
+                        <td>Plan?</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for brother, plan in brother_plans %}
+                        <tr>
+                            <td>
+                                <a href={% url 'dashboard:scholarship_c_plan' plan.id %}>{{ brother.first_name }} {{ brother.last_name }}</a>
+                            </td>
+                            <td>
+                                {% if plan.active %}
+                                Yes
+                                {% else %}
+                                No
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
         <div class="panel-heading">Study Tables</div>
         <div class="panel-body">
-            <table class="table table-event-information">
+            <table class="table table-condensed">
                 <thead style="font-weight:bold;">
                 <tr>
                     <td>Date:</td>

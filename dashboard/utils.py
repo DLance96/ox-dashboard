@@ -3,6 +3,15 @@ from django.contrib.auth.models import User
 from .models import *
 
 
+def get_semester():
+    semester = Semester.objects.filter(season=get_season(), year=get_year())
+    if semester.exists():
+        return semester[0]
+    else:
+        semester = Semester(season=get_season(), year=get_year())
+        semester.save()
+        return semester
+
 # get semester used for filtering throughout the views
 # based on SEASON_CHOICES in models (0,1,2) => ('Spring','Summer','Fall')
 def get_season():
