@@ -782,6 +782,37 @@ def scholarship_c_plan(request, plan_id):
     return render(request, 'scholarship-report.html', context)
 
 
+def scholarship_c_gpa(request):
+    """Renders Scholarship Gpa update page for the Scholarship Chair"""
+    # TODO: verify scholarship chair
+    plans = ScholarshipReport.objects.filter(semester=utils.get_semester()).order_by("brother__last_name")
+    form_list = []
+
+    for plan in plans:
+        new_form = GPAForm(request.POST or None, initial={'cum_GPA': plan.cumulative_gpa,
+                                                          'past_GPA': plan.past_semester_gpa}, prefix=plan.id)
+        form_list.append(new_form)
+
+    form_plans = zip(form_list, plans)
+
+    if request.method == 'POST':
+        if utils.forms_is_valid(form_list):
+            for counter, form in enumerate(form_list):
+                instance = form.cleaned_data
+                print instance
+                plan = plans[counter]
+                plan.cumulative_gpa = instance['cum_GPA']
+                plan.past_semester_gpa = instance['past_GPA']
+                plan.save()
+            return HttpResponseRedirect(reverse('dashboard:scholarship_c'))
+
+    context = {
+        'form_plans': form_plans,
+    }
+
+    return render(request, 'scholarship-gpa.html', context)
+
+
 class ScholarshipReportEdit(UpdateView):
     model = ScholarshipReport
     success_url = reverse_lazy('dashboard:scholarship_c')

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Scholarship Chair</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">GPA Update</div>
+        <div class="panel-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                <table class="table table-condensed">
+                    <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Brother</td>
+                        <td>Cumulative GPA</td>
+                        <td>Past Semester GPA</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for form, plan in form_plans %}
+                        <tr>
+                            <td>
+                                {{ plan.brother.first_name }} {{ plan.brother.last_name }}
+                            </td>
+                            {% for field in form %}
+                                <td>{{ field }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <input type="submit" value="Update"/>
+            </form>
+        </div>
+    </div>
+{% endblock %}

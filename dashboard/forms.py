@@ -47,12 +47,6 @@ class PotentialNewMemberForm(forms.ModelForm):
                   'tertiary_contact']
 
 
-class ScholarshipReportForm(forms.ModelForm):
-    class Meta:
-        model = ScholarshipReport
-        fields = ['brother', 'cumulative_gpa', 'past_semester_gpa', 'scholarship_plan', 'active']
-
-
 class StudyTableEventForm(forms.ModelForm):
     class Meta:
         model = StudyTableEvent
@@ -111,3 +105,6 @@ class PnmAttendanceForm(forms.Form):
             self.fields['present'].label = pnm
 
 
+class GPAForm(forms.Form):
+    cum_GPA = forms.DecimalField(label="", max_digits=5, decimal_places=2)
+    past_GPA = forms.DecimalField(label="", max_digits=5, decimal_places=2)
