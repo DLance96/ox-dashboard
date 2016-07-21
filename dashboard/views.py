@@ -4,7 +4,6 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import *
-
 import utils
 from .forms import *
 
@@ -653,7 +652,6 @@ def marshall(request):
 def scholarship_c(request):
     """ Renders the Scholarship page listing all brother gpas and study table attendance """
     # TODO: verify that user is Scholarship chair (add a file with scholarship verify function)
-    reports = ScholarshipReport.objects.filter(semester=utils.get_semester()).order_by("past_semester_gpa")
     events = StudyTableEvent.objects.filter(semester=utils.get_semester()).order_by("date")
 
     brothers = Brother.objects.exclude(brother_status='2')
@@ -661,7 +659,9 @@ def scholarship_c(request):
 
     for brother in brothers:
         plan = ScholarshipReport.objects.filter(semester=utils.get_semester(), brother__id=brother.id)
-        if not plan.exists():
+        if plan.exists():
+            plan = plan[0]
+        else:
             plan = ScholarshipReport(brother=brother, semester=utils.get_semester())
             plan.save()
         plans.append(plan)
@@ -670,7 +670,6 @@ def scholarship_c(request):
 
     context = {
         'events': events,
-        'reports': reports,
         'brother_plans': brother_plans,
     }
     return render(request, "scholarship-chair.html", context)
@@ -750,7 +749,7 @@ def scholarship_c_event_add(request):
 
 
 class StudyEventDelete(DeleteView):
-    # TODO: verify recruitment chair
+    # TODO: verify scholarship chair
     model = StudyTableEvent
     success_url = reverse_lazy('dashboard:scholarship_c')
 
@@ -765,12 +764,12 @@ def scholarship_c_plan(request, plan_id):
     """Renders Scholarship Plan page for the Scholarship Chair"""
     # TODO: verify scholarship chair
     plan = ScholarshipReport.objects.get(pk=plan_id)
-    events = StudyTableEvent.objects.filter(semester=utils.get_semester())
+    events = StudyTableEvent.objects.filter(semester=utils.get_semester()).exclude(date__gt=datetime.date.today())
     study_tables_attended = 0
     study_tables_count = len(events)
 
     for event in events:
-        if event.attendees.get(id=plan.brother.id).exists():
+        if event.attendees.filter(id=plan.brother.id).exists():
             study_tables_attended += 1
 
     context = {
