@@ -654,7 +654,7 @@ def scholarship_c(request):
     # TODO: verify that user is Scholarship chair (add a file with scholarship verify function)
     events = StudyTableEvent.objects.filter(semester=utils.get_semester()).order_by("date")
 
-    brothers = Brother.objects.exclude(brother_status='2')
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
     plans = []
 
     for brother in brothers:

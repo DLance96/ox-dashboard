@@ -197,7 +197,6 @@ class ScholarshipReport(models.Model):
     scholarship_plan = models.TextField(default="Scholarship plan has not been setup yet if you past semester GPA "
                                                 "or cum GPA are below 3.0 you should "
                                                 "setup a meeting to have this corrected")
-    notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return "%s %s - %s %s" % (self.brother.first_name, self.brother.last_name,
