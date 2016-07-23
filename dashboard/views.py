@@ -704,7 +704,7 @@ def scholarship_c_event(request, event_id):
                 if instance['present'] is False:
                     event.attendees.remove(brothers[counter])
                     event.save()
-            return HttpResponseRedirect(reverse('dashboard:recruitment_c'))
+            return HttpResponseRedirect(reverse('dashboard:scholarship_c'))
 
     context = {
         'type': 'attendance',
