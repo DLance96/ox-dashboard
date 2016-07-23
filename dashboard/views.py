@@ -639,6 +639,42 @@ def secretary_all_events(request):
     return render(request, "chapter-event-all.html", context)
 
 
+def secretary_positions(request):
+    """ Renders all of the positions currently in the chapter """
+    # TODO: Verify Secretary
+
+    # Checking to make sure all of the EC and dashboard required positions are setup
+    for position in utils.ec:
+        if not Position.objects.filter(title=position).exists():
+            new_position = Position(title=position, ec=True)
+            new_position.save()
+    for position in utils.non_ec:
+        if not Position.objects.filter(title=position).exists():
+            new_position = Position(title=position)
+            new_position.save()
+
+    ec_positions = Position.objects.filter(ec=True)
+    positions = Position.objects.filter(ec=False)
+
+    context = {
+        'positions': positions,
+        'ec_positions': ec_positions,
+    }
+    return render(request, "positions.html", context)
+
+
+class PositionEdit(UpdateView):
+    model = Position
+    success_url = reverse_lazy('dashboard:secretary_positions')
+    fields = ['brother']
+
+
+class PositionDelete(DeleteView):
+    # TODO: verify secretary
+    model = Position
+    success_url = reverse_lazy('dashboard:secretary_positions')
+
+
 def marshall(request):
     """ Renders the Marshall page listing all the candidates and relevant information to them """
     # TODO: verify that user is Marshall

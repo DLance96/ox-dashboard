@@ -131,6 +131,7 @@ class Brother(models.Model):
 
 class Position(models.Model):
     title = models.CharField(max_length=45)
+    ec = models.BooleanField(default=False)
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):

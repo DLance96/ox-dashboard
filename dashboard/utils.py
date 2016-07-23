@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from .models import *
 
 
+# EC Positions
+ec = ['President', 'Vice President', 'Vice President of Health and Safety', 'Secretary', 'Treasurer', 'Marshal',
+      'Recruitment Chair', 'Scholarship Chair']
+# Positions not on EC that have importance on the dashboard
+non_ec = ['Service Chair', 'Philanthropy Chair', 'Detail Manager']
+
+
 def get_semester():
     semester = Semester.objects.filter(season=get_season(), year=get_year())
     if semester.exists():

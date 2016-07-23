@@ -39,6 +39,9 @@ urlpatterns = [
 
     # Secretary URL section
     url(r'^secretary/$', views.secretary, name="secretary"),
+    url(r'^secretary/positions/$', views.secretary_positions, name="secretary_positions"),
+    url(r'^secretary/position/(?P<pk>\d+)/edit/$', views.PositionEdit.as_view(), name="secretary_position_edit"),
+    url(r'^secretary/position/(?P<pk>\d+)/delete/$', views.PositionDelete.as_view(), name="secretary_position_delete"),
     url(r'^secretary/attendance/$', views.secretary_attendance, name="secretary_attendance"),
     url(r'^secretary/brother/list/$', views.secretary_brother_list, name="secretary_brother_list"),
     url(r'^secretary/brother/(?P<brother_id>[0-9]+)/$', views.secretary_brother_view, name="secretary_brother_view"),

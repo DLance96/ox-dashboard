@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Positions</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Executive Council Positions</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Position:</td>
+                    <td>Brother:</td>
+                    <td>Edit?</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for position in ec_positions %}
+                    <tr>
+                        <td>{{ position.title }}</td>
+                        <td>{{ position.brother }}</td>
+                        <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_edit' position.id %}>X</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Chapter Positions</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Position:</td>
+                    <td>Brother:</td>
+                    <td>Edit?</td>
+                    <td>Delete?</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for position in positions %}
+                    <tr>
+                        <td>{{ position.title }}</td>
+                        <td>{{ position.brother }}</td>
+                        <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_edit' position.id %}>X</a></td>
+                        <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_delete' position.id %}>X</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
