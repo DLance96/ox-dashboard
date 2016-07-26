@@ -11,9 +11,11 @@
         <div class="panel-body">
             {% block model_info %}
             {% endblock %}
-            <form method="post">{% csrf_token %}
+            <form method="post">
+                {% csrf_token %}
                 {{ form.as_p }}
                 <input type="submit" value="Update"/>
+            </form>
         </div>
     </div>
     </form>

@@ -654,13 +654,29 @@ def secretary_positions(request):
             new_position.save()
 
     ec_positions = Position.objects.filter(ec=True)
-    positions = Position.objects.filter(ec=False)
+    positions = Position.objects.filter(ec=False).order_by("title")
 
     context = {
         'positions': positions,
         'ec_positions': ec_positions,
     }
     return render(request, "positions.html", context)
+
+
+def secretary_position_add(request):
+    """ Renders the Secretary way of viewing a brother """
+    form = PositionForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('dashboard:secretary_positions'))
+
+    context = {
+        'title': 'Add New Position',
+        'form': form,
+    }
+    return render(request, 'model-add.html', context)
 
 
 class PositionEdit(UpdateView):
@@ -1152,6 +1168,39 @@ def service_c_event_add(request):
     }
 
     return render(request, 'event-add.html', context)
+
+
+def service_c_hours(request):
+    """ Renders the service chair way of viewing total service hours by brothers """
+    # TODO: verify that user is Service Chair
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+    approved_submissions = ServiceSubmission.objects.filter(status='2')
+    pending_submissions = ServiceSubmission.objects.exclude(status='2').exclude(status='3')
+
+    approved_hours_list = []
+    pending_hours_list = []
+
+    for brother in brothers:
+        approved_hours = 0
+        pending_hours = 0
+        for submission in approved_submissions:
+            if submission.brother == brother:
+                approved_hours += submission.hours
+        for submission in pending_submissions:
+            if submission.brother == brother:
+                pending_hours += submission.hours
+        approved_hours_list.append(approved_hours)
+        pending_hours_list.append(pending_hours)
+
+    brother_hours_list = zip(brothers, approved_hours_list, pending_hours_list)
+
+    context = {
+        'position': 'Service Chair',
+        'brother_hours_list': brother_hours_list,
+    }
+
+    return render(request, "service-hours-list.html", context)
+
 
 
 def philanthropy_c(request):

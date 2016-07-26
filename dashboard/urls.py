@@ -40,6 +40,7 @@ urlpatterns = [
     # Secretary URL section
     url(r'^secretary/$', views.secretary, name="secretary"),
     url(r'^secretary/positions/$', views.secretary_positions, name="secretary_positions"),
+    url(r'^secretary/positions/add/$', views.secretary_position_add, name="secretary_position_add"),
     url(r'^secretary/position/(?P<pk>\d+)/edit/$', views.PositionEdit.as_view(), name="secretary_position_edit"),
     url(r'^secretary/position/(?P<pk>\d+)/delete/$', views.PositionDelete.as_view(), name="secretary_position_delete"),
     url(r'^secretary/attendance/$', views.secretary_attendance, name="secretary_attendance"),
@@ -96,6 +97,7 @@ urlpatterns = [
         name="service_c_event_delete"),
     url(r'^service-chair/event/(?P<pk>\d+)/edit/$', views.ServiceEventEdit.as_view(),
         name="service_c_event_edit"),
+    url(r'^service-chair/hours/$', views.service_c_hours, name='service_c_hours'),
 
     # Philanthropy Chair URL Section
     url(r'^philanthropy-chair/$', views.philanthropy_c, name="philanthropy_c"),
