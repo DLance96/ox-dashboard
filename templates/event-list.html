@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>{{ position }}</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Service Hours List</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Brother:</td>
+                    <td>Approved Hours:</td>
+                    <td>Pending Hours:</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for brother, approved, pending in brother_hours_list %}
+                    <tr>
+                        <td>{{ brother }}</td>
+                        <td>{{ approved }}</td>
+                        <td>{{ pending }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

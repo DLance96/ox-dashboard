@@ -11,6 +11,11 @@ urlpatterns = [
 
     url(r'^$', views.home, name="home"),
 
+    # General Info
+    url(r'^general/brother-info-list/$', views.brother_info_list, name="brother_info_list"),
+    url(r'^general/contact-list/$', views.contact_list, name="contact_list"),
+    url(r'^general/emergency-contact-list/$', views.emergency_contact_list, name="emergency_contact_list"),
+
     # Brother URL section
     url(r'^brother/$', views.brother_view, name="brother"),
     url(r'^brother/(?P<pk>\d+)/edit/$', views.BrotherEdit.as_view(), name="brother_edit"),

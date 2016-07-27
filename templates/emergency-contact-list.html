@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Emergency Contact Info</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Academic Info</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Brother:</td>
+                    <td>Emergency Contact:</td>
+                    <td>Contact Phone Number:</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for brother in brothers %}
+                    <tr>
+                        <td>{{ brother }}</td>
+                        <td>{{ brother.emergency_contact }}</td>
+                        <td>{{ brother.emergency_contact_phone_number }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Brother Info</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Academic Info</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Brother:</td>
+                    <td>School Status:</td>
+                    <td>Brother Status:</td>
+                    <td>Major:</td>
+                    <td>Minor:</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for brother in brothers %}
+                    <tr>
+                        <td>{{ brother }}</td>
+                        <td>{{ brother.get_school_status_display }}</td>
+                        <td>{{ brother.get_brother_status_display }}</td>
+                        <td>{{ brother.major }}</td>
+                        <td>{{ brother.minor }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">General Info</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Brother:</td>
+                    <td>Hometown:</td>
+                    <td>Birthday:</td>
+                    <td>T-Shirt Size:</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for brother in brothers %}
+                    <tr>
+                        <td>{{ brother }}</td>
+                        <td>{{ brother.hometown }}</td>
+                        <td>{{ brother.birthday }}</td>
+                        <td>{{ brother.t_shirt_size }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

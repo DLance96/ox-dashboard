@@ -41,6 +41,36 @@ def home(request):
     return render(request, 'home.html', context)
 
 
+def brother_info_list(request):
+    """ Renders brother info page """
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+
+    context = {
+        'brothers': brothers,
+    }
+    return render(request, 'brother-info-list.html', context)
+
+
+def contact_list(request):
+    """ Renders contact info page """
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+
+    context = {
+        'brothers': brothers,
+    }
+    return render(request, 'contact-list.html', context)
+
+
+def emergency_contact_list(request):
+    """ Renders emergency contact info page """
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+
+    context = {
+        'brothers': brothers,
+    }
+    return render(request, 'emergency-contact-list.html', context)
+
+
 def brother_view(request):
     """ Renders the brother page of current user showing all standard brother information """
     if not request.user.is_authenticated():  # brother auth check
@@ -1200,7 +1230,6 @@ def service_c_hours(request):
     }
 
     return render(request, "service-hours-list.html", context)
-
 
 
 def philanthropy_c(request):
