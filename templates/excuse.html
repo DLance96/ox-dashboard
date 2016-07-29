@@ -44,36 +44,36 @@
 
                         {% elif type == "review" %}
                             <tr>
-                            <td>
-                                <a class="btn btn-default" href={% url 'dashboard:brother_excuse_edit' excuse.id %}>Edit
-                                Excuse</a>
-                            </td>
+                                <td>
+                                    <a class="btn btn-default" href={% url 'dashboard:brother_excuse_edit' excuse.id %}>Edit
+                                        Excuse</a>
+                                </td>
                             </tr>
                         {% endif %}
-        </tbody>
-                            </table>
-                            </div>
+                        </tbody>
+                    </table>
+                </div>
 
-        <div class=" col-lg-2 "></div>
-    </div>
-
-    </div>
-    {% if type == "response" %}
-        <div class="panel panel-default">
-            <div class="panel-heading">Excuse Response</div>
-
-            <div class="panel-body">
-                {% if error_message %}
-                    <div class="alert alert-danger" role="alert">
-                        {{ error_message }}
-                    </div>
-                {% endif %}
-                <form action="" method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <input type="submit" value="Submit"/>
-                </form>
+                <div class=" col-lg-2 "></div>
             </div>
+
         </div>
-    {% endif %}
+        {% if type == "response" %}
+            <div class="panel panel-default">
+                <div class="panel-heading">Excuse Response</div>
+
+                <div class="panel-body">
+                    {% if error_message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error_message }}
+                        </div>
+                    {% endif %}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="submit" value="Submit"/>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
 {% endblock %}

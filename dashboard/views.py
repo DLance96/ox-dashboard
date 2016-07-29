@@ -76,9 +76,9 @@ def brother_view(request):
     if not request.user.is_authenticated():  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
-    print Brother.objects.all()
     brother = Brother.objects.filter(user=request.user)[0]
     chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+
     excuses_pending = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
                                             status='0').order_by("event__date")
     excuses_approved = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
@@ -87,6 +87,23 @@ def brother_view(request):
                                            status='2').order_by("event__date")
     excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
                                                   status='3').order_by("event__date")
+
+    # Chapter Attendance calculation
+    past_chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester()).exclude(
+        date__gt=datetime.date.today())
+    past_chapter_event_count = len(past_chapter_events)
+    chapter_event_attendance = 0
+    unexcused_events = 0
+    for event in past_chapter_events:
+        if event.attendees.filter(id=brother.id):
+            chapter_event_attendance += 1
+        elif excuses_approved.filter(event=event):
+            pass
+        else:
+            unexcused_events += 1
+    chapter_attendance = "%s / %s" % (chapter_event_attendance, past_chapter_event_count)
+
+
     # TODO: write util function to covert standing/operational committee # to standard #
     # committee_meetings = CommitteeMeetingEvent.objects.filter()
     current_season = utils.get_season()
@@ -130,6 +147,9 @@ def brother_view(request):
     context = {
         'brother': brother,
         'chapter_events': chapter_events,
+        'chapter_attendance': chapter_attendance,
+        'unexcused_events': unexcused_events,
+
         'excuses_pending': excuses_pending,
         'excuses_approved': excuses_approved,
         'excuses_denied': excuses_denied,
