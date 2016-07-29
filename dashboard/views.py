@@ -71,6 +71,23 @@ def emergency_contact_list(request):
     return render(request, 'emergency-contact-list.html', context)
 
 
+def event_list(request):
+    """Renders all the semester events"""
+    chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    recruitment_events = RecruitmentEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    service_events = ServiceEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    philanthropy_events = PhilanthropyEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+
+    context = {
+        'chapter_events': chapter_events,
+        'recruitment_events': recruitment_events,
+        'service_events': service_events,
+        'philanthropy_events': philanthropy_events,
+    }
+
+    return render(request, "event-list.html", context)
+
+
 def brother_view(request):
     """ Renders the brother page of current user showing all standard brother information """
     if not request.user.is_authenticated():  # brother auth check

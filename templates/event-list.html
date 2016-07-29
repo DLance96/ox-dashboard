@@ -6,29 +6,38 @@
 {% block content %}
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <h1>{{ position }}</h1>
+        <h1>Semester Events</h1>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Service Hours List</div>
+        <div class="panel-heading">Chapter Events</div>
         <div class="panel-body">
-            <table class="table table-condensed">
-                <thead style="font-weight:bold;">
-                <tr>
-                    <td>Brother:</td>
-                    <td>Approved Hours:</td>
-                    <td>Pending Hours:</td>
-                </tr>
-                </thead>
-                <tbody>
-                {% for brother, approved, pending in brother_hours_list %}
-                    <tr>
-                        <td>{{ brother }}</td>
-                        <td>{{ approved }}</td>
-                        <td>{{ pending }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {% for event  in chapter_events %}
+                {{ event }} - {{ event.date }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Recruitment Events</div>
+        <div class="panel-body">
+            {% for event  in recruitment_events %}
+                {{ event }} - {{ event.date }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Service Events</div>
+        <div class="panel-body">
+            {% for event  in service_events %}
+                {{ event }} - {{ event.date }}<br>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Philanthropy Events</div>
+        <div class="panel-body">
+            {% for event  in philanthropy_events %}
+                {{ event }} - {{ event.date }}<br>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

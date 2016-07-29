@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^general/brother-info-list/$', views.brother_info_list, name="brother_info_list"),
     url(r'^general/contact-list/$', views.contact_list, name="contact_list"),
     url(r'^general/emergency-contact-list/$', views.emergency_contact_list, name="emergency_contact_list"),
+    url(r'^general/event-list/$', views.event_list, name="event_list"),
 
     # Brother URL section
     url(r'^brother/$', views.brother_view, name="brother"),
