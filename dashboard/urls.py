@@ -8,6 +8,7 @@ urlpatterns = [
     # login views
     url(r'^login/$', views.LoginView.as_view(), name='login'),
     url(r'^logout/$', views.LogoutView.as_view(), name='logout'),
+    url(r'^brother/change-password/$', views.change_password, name="change_password"),
 
     url(r'^$', views.home, name="home"),
 

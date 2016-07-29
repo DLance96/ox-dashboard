@@ -34,6 +34,46 @@ class LogoutView(View):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
 
+def change_password(request):
+    if not request.user.is_authenticated():  # brother auth check
+        messages.error(request, "Cannot change password if you are not logged in")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+    brother = Brother.objects.filter(user=request.user)[0]
+    form = ChangePasswordForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.cleaned_data
+            user = auth.authenticate(
+                username=request.user.username,
+                password=instance['old_password']
+            )
+            if user is not None:
+                if instance['new_password'] == instance['retype_new_password']:
+                    if instance['new_password'] == instance['old_password']:
+                        messages.error(request, "Old password and new password cannot match")
+                        return HttpResponseRedirect(reverse('dashboard:change_password'))
+                    else:
+                        user.set_password(instance['new_password'])
+                        user.save()
+                        user = auth.authenticate(
+                            username=request.user.username,
+                            password=instance['new_password']
+                        )
+                        auth.login(request, user)
+                        return HttpResponseRedirect(reverse('dashboard:brother'))
+                else:
+                    messages.error(request, "New password did not match")
+                    return HttpResponseRedirect(reverse('dashboard:change_password'))
+
+    context = {
+        'brother': brother,
+        'form': form,
+    }
+
+    return render(request, "change-password.html", context)
+
+
 def home(request):
     """ Renders home page """
     context = {
@@ -91,7 +131,7 @@ def event_list(request):
 def brother_view(request):
     """ Renders the brother page of current user showing all standard brother information """
     if not request.user.is_authenticated():  # brother auth check
-        messages.error(request, "Brother not logged in before viewing brother portal")
+        messages.error(request, "Brother needs to be logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
     brother = Brother.objects.filter(user=request.user)[0]
     chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")

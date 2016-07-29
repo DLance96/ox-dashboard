@@ -108,3 +108,9 @@ class PnmAttendanceForm(forms.Form):
 class GPAForm(forms.Form):
     cum_GPA = forms.DecimalField(label="", max_digits=5, decimal_places=2)
     past_GPA = forms.DecimalField(label="", max_digits=5, decimal_places=2)
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    retype_new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
