@@ -2,7 +2,6 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from .models import *
 
-
 # EC Positions
 ec = ['President', 'Vice President', 'Vice President of Health and Safety', 'Secretary', 'Treasurer', 'Marshal',
       'Recruitment Chair', 'Scholarship Chair']
@@ -59,6 +58,108 @@ def forms_is_valid(form_list):
         if not form.is_valid():
             return False
     return True
+
+
+def verify_president(user):
+    """ Verify user has President permissions """
+    roster_number = user.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number:
+        return True
+    else:
+        return False
+
+
+def verify_vice_president(user):
+    """ Verify user has Vice President permissions """
+    roster_number = user.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
+       Position.objects.filter(title='Vice President')[0].brother.roster_number is roster_number:
+        return True
+    else:
+        return False
+
+
+def verify_vphs(user):
+    """ Verify user has Vice President of Health and Safety permissions """
+    roster_number = user.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
+       Position.objects.filter(title='Vice President')[0].brother.roster_number is roster_number or \
+       Position.objects.filter(title='Vice President of Health and Safety')[0].brother.roster_number is roster_number:
+        return True
+    else:
+        return False
+
+
+def verify_secretary(user):
+    """ Verify user has Secretary permissions """
+    roster_number = user.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
+       Position.objects.filter(title='Vice President')[0].brother.roster_number is roster_number or \
+       Position.objects.filter(title='Secretary')[0].brother.roster_number is roster_number:
+        return True
+    else:
+        return False
+
+
+def verify_treasurer(user):
+    """ Verify user has Treasurer permissions """
+    roster_number = user.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
+       Position.objects.filter(title='Treasurer')[0].brother.roster_number is roster_number:
+        return True
+    else:
+        return False
+
+
+def verify_recruitment_chair(user):
+    """ Verify user has Recruitment Chair permissions """
+    roster_number = user.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
+       Position.objects.filter(title='Vice President')[0].brother.roster_number is roster_number or \
+       Position.objects.filter(title='Recruitment Chair')[0].brother.roster_number is roster_number:
+        return True
+    else:
+        return False
+
+
+def verify_scholarship_chair(user):
+    """ Verify user has Scholarship Chair permissions """
+    roster_number = user.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
+       Position.objects.filter(title='Scholarship Chair')[0].brother.roster_number is roster_number:
+        return True
+    else:
+        return False
+
+
+def verify_service_chair(user):
+    """ Verify user has Service Chair permissions """
+    roster_number = user.roster_number
+    if Position.objects.filter(roster_number=roster_number).ec or \
+       Position.objects.filter(title='Service Chair')[0].brother.roster_number is roster_number:
+        return True
+    else:
+        return False
+
+
+def verify_philanthropy_chair(user):
+    """ Verify user has Philanthropy Chair permissions """
+    roster_number = user.roster_number
+    if Position.objects.filter(roster_number=roster_number).ec or \
+       Position.objects.filter(title='Philanthropy Chair')[0].brother.roster_number is roster_number:
+        return True
+    else:
+        return False
+
+
+def verify_detail_manager(user):
+    """ Verify user has Detail Manager permissions """
+    roster_number = user.roster_number
+    if Position.objects.filter(roster_number=roster_number).ec or \
+       Position.objects.filter(title='Detail Manager')[0].brother.roster_number is roster_number:
+        return True
+    else:
+        return False
 
 
 def verify_president(user):
