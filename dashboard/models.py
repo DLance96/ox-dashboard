@@ -279,7 +279,7 @@ class CommitteeMeetingEvent(models.Model):
     committee = models.CharField(max_length=1, choices=COMMITTEE_CHOICES)
 
     def __str__(self):
-        return "%s - %s" % (self.type, self.date)
+        return "%s - %s" % (self.get_committee_display(), self.date)
 
 
 class StudyTableEvent(models.Model):

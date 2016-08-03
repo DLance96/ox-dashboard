@@ -8,6 +8,9 @@ ec = ['President', 'Vice President', 'Vice President of Health and Safety', 'Sec
 # Positions not on EC that have importance on the dashboard
 non_ec = ['Service Chair', 'Philanthropy Chair', 'Detail Manager']
 
+# Toggle dependant on whether you want position verification
+debug = False
+
 
 def get_semester():
     semester = Semester.objects.filter(season=get_season(), year=get_year())
@@ -62,8 +65,9 @@ def forms_is_valid(form_list):
 
 def verify_president(user):
     """ Verify user has President permissions """
-    roster_number = user.roster_number
-    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number:
+    roster_number = user.brother.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number == roster_number or \
+       debug:
         return True
     else:
         return False
@@ -71,9 +75,10 @@ def verify_president(user):
 
 def verify_vice_president(user):
     """ Verify user has Vice President permissions """
-    roster_number = user.roster_number
-    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
-       Position.objects.filter(title='Vice President')[0].brother.roster_number is roster_number:
+    roster_number = user.brother.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Vice President')[0].brother.roster_number == roster_number or \
+       debug:
         return True
     else:
         return False
@@ -81,10 +86,11 @@ def verify_vice_president(user):
 
 def verify_vphs(user):
     """ Verify user has Vice President of Health and Safety permissions """
-    roster_number = user.roster_number
-    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
-       Position.objects.filter(title='Vice President')[0].brother.roster_number is roster_number or \
-       Position.objects.filter(title='Vice President of Health and Safety')[0].brother.roster_number is roster_number:
+    roster_number = user.brother.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Vice President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Vice President of Health and Safety')[0].brother.roster_number == roster_number or \
+       debug:
         return True
     else:
         return False
@@ -92,10 +98,11 @@ def verify_vphs(user):
 
 def verify_secretary(user):
     """ Verify user has Secretary permissions """
-    roster_number = user.roster_number
-    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
-       Position.objects.filter(title='Vice President')[0].brother.roster_number is roster_number or \
-       Position.objects.filter(title='Secretary')[0].brother.roster_number is roster_number:
+    roster_number = user.brother.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Vice President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Secretary')[0].brother.roster_number == roster_number or \
+       debug:
         return True
     else:
         return False
@@ -103,9 +110,22 @@ def verify_secretary(user):
 
 def verify_treasurer(user):
     """ Verify user has Treasurer permissions """
-    roster_number = user.roster_number
-    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
-       Position.objects.filter(title='Treasurer')[0].brother.roster_number is roster_number:
+    roster_number = user.brother.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Treasurer')[0].brother.roster_number == roster_number or \
+       debug:
+        return True
+    else:
+        return False
+
+
+def verify_marshal(user):
+    """ Verify user has Marshal permissions """
+    roster_number = user.brother.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Vice President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Marshal')[0].brother.roster_number == roster_number or \
+       debug:
         return True
     else:
         return False
@@ -113,10 +133,11 @@ def verify_treasurer(user):
 
 def verify_recruitment_chair(user):
     """ Verify user has Recruitment Chair permissions """
-    roster_number = user.roster_number
-    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
-       Position.objects.filter(title='Vice President')[0].brother.roster_number is roster_number or \
-       Position.objects.filter(title='Recruitment Chair')[0].brother.roster_number is roster_number:
+    roster_number = user.brother.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Vice President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Recruitment Chair')[0].brother.roster_number == roster_number or \
+       debug:
         return True
     else:
         return False
@@ -124,9 +145,10 @@ def verify_recruitment_chair(user):
 
 def verify_scholarship_chair(user):
     """ Verify user has Scholarship Chair permissions """
-    roster_number = user.roster_number
-    if Position.objects.filter(title='President')[0].brother.roster_number is roster_number or \
-       Position.objects.filter(title='Scholarship Chair')[0].brother.roster_number is roster_number:
+    roster_number = user.brother.roster_number
+    if Position.objects.filter(title='President')[0].brother.roster_number == roster_number or \
+       Position.objects.filter(title='Scholarship Chair')[0].brother.roster_number == roster_number or \
+       debug:
         return True
     else:
         return False
@@ -134,9 +156,10 @@ def verify_scholarship_chair(user):
 
 def verify_service_chair(user):
     """ Verify user has Service Chair permissions """
-    roster_number = user.roster_number
+    roster_number = user.brother.roster_number
     if Position.objects.filter(roster_number=roster_number).ec or \
-       Position.objects.filter(title='Service Chair')[0].brother.roster_number is roster_number:
+       Position.objects.filter(title='Service Chair')[0].brother.roster_number == roster_number or \
+       debug:
         return True
     else:
         return False
@@ -144,9 +167,10 @@ def verify_service_chair(user):
 
 def verify_philanthropy_chair(user):
     """ Verify user has Philanthropy Chair permissions """
-    roster_number = user.roster_number
+    roster_number = user.brother.roster_number
     if Position.objects.filter(roster_number=roster_number).ec or \
-       Position.objects.filter(title='Philanthropy Chair')[0].brother.roster_number is roster_number:
+       Position.objects.filter(title='Philanthropy Chair')[0].brother.roster_number == roster_number  or \
+       debug:
         return True
     else:
         return False
@@ -154,18 +178,11 @@ def verify_philanthropy_chair(user):
 
 def verify_detail_manager(user):
     """ Verify user has Detail Manager permissions """
-    roster_number = user.roster_number
+    roster_number = user.brother.roster_number
     if Position.objects.filter(roster_number=roster_number).ec or \
-       Position.objects.filter(title='Detail Manager')[0].brother.roster_number is roster_number:
+       Position.objects.filter(title='Detail Manager')[0].brother.roster_number == roster_number or \
+       debug:
         return True
     else:
         return False
 
-
-def verify_president(user):
-    # TODO: create custom user with roster_number
-    roster_number = user.roster_number
-    if Position.objects.filter(roster_number=roster_number)[0].brother.roster_number is roster_number:
-        return True
-    else:
-        return False

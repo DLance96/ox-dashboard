@@ -1,9 +1,11 @@
-from django.contrib import auth, messages
+from django.contrib import messages
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import *
+from django.views.generic.edit import UpdateView, DeleteView
+
 import utils
 from .forms import *
 
@@ -458,25 +460,37 @@ class ServiceSubmissionEdit(UpdateView):
 
 def president(request):
     """ Renders the President page and all relevant information """
-    # TODO: verify that user is President
+    if not utils.verify_president(request.user):
+        messages.error(request, "President Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     return render(request, 'president.html', {})
 
 
 def vice_president(request):
     """ Renders the Vice President page and all relevant information, primarily committee related """
-    # TODO: verify that user is Vice President
+    if not utils.verify_vice_president(request.user):
+        messages.error(request, "Vice President Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     return render(request, 'vice-president.html', {})
 
 
 def treasurer(request):
     """ Renders all the transactional information on the site for the treasurer """
-    # TODO: verify that user is Treasurer
+    if not utils.verify_treasurer(request.user):
+        messages.error(request, "Treasurer Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
     return render(request, 'treasurer.html', {})
 
 
 def secretary(request):
     """ Renders the secretary page giving access to excuses and ChapterEvents """
-    # TODO: verify that user is Secretary
+    print utils.verify_secretary(request.user)
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='0').order_by("event__date")
     events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
 
@@ -489,6 +503,10 @@ def secretary(request):
 
 def secretary_attendance(request):
     """ Renders the secretary view for chapter attendance """
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
     events = ChapterEvent.objects.filter(semester=utils.get_semester()).exclude(pub_date__gt=datetime.date.today())
     excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='1')
@@ -518,7 +536,10 @@ def secretary_attendance(request):
 
 def secretary_event(request, event_id):
     """ Renders the attendance sheet for any event """
-    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     event = ChapterEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')
     form_list = []
@@ -556,7 +577,10 @@ def secretary_event(request, event_id):
 
 def secretary_excuse(request, excuse_id):
     """ Renders Excuse response form """
-    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     excuse = get_object_or_404(Excuse, pk=excuse_id)
     form = ExcuseResponseForm(request.POST or None)
 
@@ -595,7 +619,10 @@ def secretary_excuse(request, excuse_id):
 
 def secretary_all_excuses(request):
     """ Renders all excuses sorted by date then semester """
-    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     excuses = Excuse.objects.order_by('brother__last_name').order_by('event__date')
     context = {
         'excuses': excuses,
@@ -606,7 +633,10 @@ def secretary_all_excuses(request):
 
 def secretary_event_view(request, event_id):
     """ Renders the Secretary way of viewing old events """
-    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     event = ChapterEvent.objects.get(pk=event_id)
     attendees = event.attendees.all().order_by("last_name")
 
@@ -620,7 +650,10 @@ def secretary_event_view(request, event_id):
 
 def secretary_brother_list(request):
     """ Renders the Secretary way of viewing brothers """
-    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     brothers = Brother.objects.exclude(brother_status='2')
     context = {
         'position': 'Secretary',
@@ -631,7 +664,10 @@ def secretary_brother_list(request):
 
 def secretary_brother_view(request, brother_id):
     """ Renders the Secretary way of viewing a brother """
-    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     brother = Brother.objects.get(pk=brother_id)
     context = {
         'brother': brother
@@ -641,6 +677,10 @@ def secretary_brother_view(request, brother_id):
 
 def secretary_brother_add(request):
     """ Renders the Secretary way of viewing a brother """
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     form = BrotherForm(request.POST or None)
 
     if request.method == 'POST':
@@ -673,6 +713,12 @@ def secretary_brother_add(request):
 
 
 class SecretaryBrotherEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_secretary(request.user):
+            messages.error(request, "Secretary Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(SecretaryBrotherEdit, self).get(request, *args, **kwargs)
+
     model = Brother
     success_url = reverse_lazy('dashboard:secretary_brother_list')
     fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
@@ -683,7 +729,10 @@ class SecretaryBrotherEdit(UpdateView):
 
 def secretary_event_add(request):
     """ Renders the Secretary way of adding ChapterEvents """
-    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     form = ChapterEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -716,20 +765,34 @@ def secretary_event_add(request):
 
 
 class ChapterEventEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_secretary(request.user):
+            messages.error(request, "Secretary Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(ChapterEventEdit, self).get(request, *args, **kwargs)
+
     model = ChapterEvent
     success_url = reverse_lazy('dashboard:secretary')
     fields = ['name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes', 'notes']
 
 
 class ChapterEventDelete(DeleteView):
-    # TODO: verify secretary
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_secretary(request.user):
+            messages.error(request, "Secretary Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(ChapterEventDelete, self).get(request, *args, **kwargs)
+
     model = ChapterEvent
     success_url = reverse_lazy('dashboard:secretary')
 
 
 def secretary_all_events(request):
     """ Renders a secretary view with all the ChapterEvent models ordered by date grouped by semester """
-    # TODO: verify that user is Secretary (add a file with secretary verify function)
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     events_by_semester = []
     semesters = Semester.objects.order_by("season").order_by("year").all()
     for semester in semesters:
@@ -748,7 +811,9 @@ def secretary_all_events(request):
 
 def secretary_positions(request):
     """ Renders all of the positions currently in the chapter """
-    # TODO: Verify Secretary
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
 
     # Checking to make sure all of the EC and dashboard required positions are setup
     for position in utils.ec:
@@ -772,6 +837,10 @@ def secretary_positions(request):
 
 def secretary_position_add(request):
     """ Renders the Secretary way of viewing a brother """
+    if not utils.verify_secretary(request.user):
+        messages.error(request, "Secretary Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     form = PositionForm(request.POST or None)
 
     if request.method == 'POST':
@@ -787,20 +856,34 @@ def secretary_position_add(request):
 
 
 class PositionEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_secretary(request.user):
+            messages.error(request, "Secretary Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(PositionEdit, self).get(request, *args, **kwargs)
+
     model = Position
     success_url = reverse_lazy('dashboard:secretary_positions')
     fields = ['brother']
 
 
 class PositionDelete(DeleteView):
-    # TODO: verify secretary
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_secretary(request.user):
+            messages.error(request, "Secretary Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(PositionDelete, self).get(request, *args, **kwargs)
+
     model = Position
     success_url = reverse_lazy('dashboard:secretary_positions')
 
 
 def marshall(request):
     """ Renders the Marshall page listing all the candidates and relevant information to them """
-    # TODO: verify that user is Marshall
+    if not utils.verify_marshal(request.user):
+        messages.error(request, "Marshal Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     candidates = Brother.objects.filter(brother_status='0')
     context = {
         'candidates': candidates,
@@ -810,7 +893,10 @@ def marshall(request):
 
 def scholarship_c(request):
     """ Renders the Scholarship page listing all brother gpas and study table attendance """
-    # TODO: verify that user is Scholarship chair (add a file with scholarship verify function)
+    if not utils.verify_scholarship_chair(request.user):
+        messages.error(request, "Scholarship Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     events = StudyTableEvent.objects.filter(semester=utils.get_semester()).order_by("date")
 
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
@@ -836,7 +922,10 @@ def scholarship_c(request):
 
 def scholarship_c_event(request, event_id):
     """ Renders the scholarship chair way of view StudyTables """
-    # TODO: verify that user is Recruitment Chair
+    if not utils.verify_scholarship_chair(request.user):
+        messages.error(request, "Scholarship Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     event = StudyTableEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')
     brother_form_list = []
@@ -875,7 +964,10 @@ def scholarship_c_event(request, event_id):
 
 def scholarship_c_event_add(request):
     """ Renders the scholarship chair way of adding StudyTableEvents """
-    # TODO: verify that user is Recruitment Chair
+    if not utils.verify_scholarship_chair(request.user):
+        messages.error(request, "Scholarship Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     form = StudyTableEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -908,12 +1000,23 @@ def scholarship_c_event_add(request):
 
 
 class StudyEventDelete(DeleteView):
-    # TODO: verify scholarship chair
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_scholarship_chair(request.user):
+            messages.error(request, "Scholarship Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(StudyEventDelete, self).get(request, *args, **kwargs)
+
     model = StudyTableEvent
     success_url = reverse_lazy('dashboard:scholarship_c')
 
 
 class StudyEventEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_scholarship_chair(request.user):
+            messages.error(request, "Scholarship Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(StudyEventEdit, self).get(request, *args, **kwargs)
+
     model = StudyTableEvent
     success_url = reverse_lazy('dashboard:scholarship_c')
     fields = ['date', 'start_time', 'end_time', 'notes']
@@ -921,7 +1024,10 @@ class StudyEventEdit(UpdateView):
 
 def scholarship_c_plan(request, plan_id):
     """Renders Scholarship Plan page for the Scholarship Chair"""
-    # TODO: verify scholarship chair
+    if not utils.verify_scholarship_chair(request.user):
+        messages.error(request, "Scholarship Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     plan = ScholarshipReport.objects.get(pk=plan_id)
     events = StudyTableEvent.objects.filter(semester=utils.get_semester()).exclude(date__gt=datetime.date.today())
     study_tables_attended = 0
@@ -943,7 +1049,10 @@ def scholarship_c_plan(request, plan_id):
 
 def scholarship_c_gpa(request):
     """Renders Scholarship Gpa update page for the Scholarship Chair"""
-    # TODO: verify scholarship chair
+    if not utils.verify_scholarship_chair(request.user):
+        messages.error(request, "Scholarship Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     plans = ScholarshipReport.objects.filter(semester=utils.get_semester()).order_by("brother__last_name")
     form_list = []
 
@@ -973,6 +1082,12 @@ def scholarship_c_gpa(request):
 
 
 class ScholarshipReportEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_scholarship_chair(request.user):
+            messages.error(request, "Scholarship Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(ScholarshipReportEdit, self).get(request, *args, **kwargs)
+
     model = ScholarshipReport
     success_url = reverse_lazy('dashboard:scholarship_c')
     fields = ['cumulative_gpa', 'past_semester_gpa', 'scholarship_plan', 'active']
@@ -980,7 +1095,10 @@ class ScholarshipReportEdit(UpdateView):
 
 def recruitment_c(request):
     """ Renders Scholarship chair page with events for the current and following semester """
-    # TODO: verify that user is Recruitment Chair
+    if not utils.verify_recruitment_chair(request.user):
+        messages.error(request, "Recruitment Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     current_season = utils.get_season()
     if current_season is '0':
         semester_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year())
@@ -1001,7 +1119,10 @@ def recruitment_c(request):
 
 def recruitment_c_pnm(request, pnm_id):
     """ Renders PNM view for recruitment chair """
-    # TODO: verify that user is Recruitment chair
+    if not utils.verify_recruitment_chair(request.user):
+        messages.error(request, "Recruitment Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     pnm = PotentialNewMember.objects.get(pk=pnm_id)
     events = RecruitmentEvent.objects.filter(semester=utils.get_semester()).order_by("date").all()
 
@@ -1020,7 +1141,10 @@ def recruitment_c_pnm(request, pnm_id):
 
 def recruitment_c_pnm_add(request):
     """ Renders the recruitment chair way of adding PNMs """
-    # TODO: verify that user is Recruitment Chair
+    if not utils.verify_recruitment_chair(request.user):
+        messages.error(request, "Recruitment Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     form = PotentialNewMemberForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1036,11 +1160,23 @@ def recruitment_c_pnm_add(request):
 
 
 class PnmDelete(DeleteView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_recruitment_chair(request.user):
+            messages.error(request, "Recruitment Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(PnmDelete, self).get(request, *args, **kwargs)
+
     model = PotentialNewMember
     success_url = reverse_lazy('dashboard:recruitment_c')
 
 
 class PnmEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_recruitment_chair(request.user):
+            messages.error(request, "Recruitment Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(PnmEdit, self).get(request, *args, **kwargs)
+
     model = PotentialNewMember
     success_url = reverse_lazy('dashboard:recruitment_c')
     fields = ['first_name', 'last_name', 'case_ID', 'phone_number', 'primary_contact', 'secondary_contact',
@@ -1049,7 +1185,10 @@ class PnmEdit(UpdateView):
 
 def recruitment_c_event(request, event_id):
     """ Renders the recruitment chair way of view RecruitmentEvents """
-    # TODO: verify that user is Recruitment Chair
+    if not utils.verify_recruitment_chair(request.user):
+        messages.error(request, "Recruitment Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     event = RecruitmentEvent.objects.get(pk=event_id)
     pnms = PotentialNewMember.objects.all()
     brothers = Brother.objects.exclude(brother_status='2')
@@ -1108,7 +1247,10 @@ def recruitment_c_event(request, event_id):
 
 def recruitment_c_event_add(request):
     """ Renders the recruitment chair way of adding RecruitmentEvents """
-    # TODO: verify that user is Recruitment Chair
+    if not utils.verify_recruitment_chair(request.user):
+        messages.error(request, "Recruitment Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     form = RecruitmentEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1141,12 +1283,23 @@ def recruitment_c_event_add(request):
 
 
 class RecruitmentEventDelete(DeleteView):
-    # TODO: verify recruitment chair
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_recruitment_chair(request.user):
+            messages.error(request, "Recruitment Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(RecruitmentEventDelete, self).get(request, *args, **kwargs)
+
     model = RecruitmentEvent
     success_url = reverse_lazy('dashboard:recruitment_c')
 
 
 class RecruitmentEventEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_recruitment_chair(request.user):
+            messages.error(request, "Recruitment Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(RecruitmentEventEdit, self).get(request, *args, **kwargs)
+
     model = RecruitmentEvent
     success_url = reverse_lazy('dashboard:recruitment_c')
     fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'notes']
@@ -1154,7 +1307,10 @@ class RecruitmentEventEdit(UpdateView):
 
 def service_c(request):
     """ Renders the service chair page with service submissions """
-    # TODO: verify that user is Service Chair
+    if not utils.verify_service_chair(request.user):
+        messages.error(request, "Service Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     events = ServiceEvent.objects.filter(semester=utils.get_semester())
     submissions_pending = ServiceSubmission.objects.filter(semester=utils.get_semester(), status='0').order_by("date")
 
@@ -1184,7 +1340,10 @@ def service_c(request):
 
 def service_c_event(request, event_id):
     """ Renders the service chair way of adding ServiceEvent """
-    # TODO: verify that user is Service Chair
+    if not utils.verify_service_chair(request.user):
+        messages.error(request, "Service Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     event = ServiceEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')
     brothers_rsvp = event.rsvp_brothers.all()
@@ -1225,26 +1384,47 @@ def service_c_event(request, event_id):
 
 
 class ServiceEventDelete(DeleteView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_service_chair(request.user):
+            messages.error(request, "Service Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(ServiceEventDelete, self).get(request, *args, **kwargs)
+
     model = ServiceEvent
     success_url = reverse_lazy('dashboard:service_c')
 
 
 class ServiceEventEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_service_chair(request.user):
+            messages.error(request, "Service Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(ServiceEventEdit, self).get(request, *args, **kwargs)
+
     model = ServiceEvent
     success_url = reverse_lazy('dashboard:service_c')
     fields = ['name', 'date', 'start_time', 'end_time', 'notes']
 
 
 class ServiceSubmissionChairEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_service_chair(request.user):
+            messages.error(request, "Service Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(ServiceSubmissionChairEdit, self).get(request, *args, **kwargs)
+
     model = ServiceSubmission
     success_url = reverse_lazy('dashboard:service_c')
     fields = ['status']
-    template_name = 'dashboard/servicesubmission_chair_form.html'
+    template_name = 'dashboard/servicesubmission_form.html'
 
 
 def service_c_event_add(request):
     """ Renders the service chair way of adding ServiceEvent """
-    # TODO: verify that user is Service Chair
+    if not utils.verify_service_chair(request.user):
+        messages.error(request, "Service Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     form = ServiceEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1279,7 +1459,10 @@ def service_c_event_add(request):
 
 def service_c_hours(request):
     """ Renders the service chair way of viewing total service hours by brothers """
-    # TODO: verify that user is Service Chair
+    if not utils.verify_service_chair(request.user):
+        messages.error(request, "Service Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
     approved_submissions = ServiceSubmission.objects.filter(status='2')
     pending_submissions = ServiceSubmission.objects.exclude(status='2').exclude(status='3')
@@ -1311,7 +1494,10 @@ def service_c_hours(request):
 
 def philanthropy_c(request):
     """ Renders the philanthropy chair's RSVP page for different events """
-    # TODO: verify that user is Philanthropy Chair
+    if not utils.verify_philanthropy_chair(request.user):
+        messages.error(request, "Philanthropy Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     events = PhilanthropyEvent.objects.filter(semester=utils.get_semester())
     context = {
         'events': events,
@@ -1320,7 +1506,11 @@ def philanthropy_c(request):
 
 
 def philanthropy_c_event(request, event_id):
-    """"""
+    """ Renders the philanthropy event view """
+    if not utils.verify_philanthropy_chair(request.user):
+        messages.error(request, "Philanthropy Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     event = PhilanthropyEvent.objects.get(pk=event_id)
     brothers_rsvp = event.rsvp_brothers.all()
 
@@ -1335,7 +1525,10 @@ def philanthropy_c_event(request, event_id):
 
 def philanthropy_c_event_add(request):
     """ Renders the philanthropy chair way of adding PhilanthropyEvent """
-    # TODO: verify that user is Philanthropy Chair
+    if not utils.verify_philanthropy_chair(request.user):
+        messages.error(request, "Philanthropy Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     form = PhilanthropyEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1368,11 +1561,23 @@ def philanthropy_c_event_add(request):
 
 
 class PhilanthropyEventDelete(DeleteView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_philanthropy_chair(request.user):
+            messages.error(request, "Philanthropy Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(PhilanthropyEventDelete, self).get(request, *args, **kwargs)
+
     model = PhilanthropyEvent
     success_url = reverse_lazy('dashboard:philanthropy_c')
 
 
 class PhilanthropyEventEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_philanthropy_chair(request.user):
+            messages.error(request, "Philanthropy Chair Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(PhilanthropyEventEdit, self).get(request, *args, **kwargs)
+
     model = PhilanthropyEvent
     success_url = reverse_lazy('dashboard:philanthropy_c')
     fields = ['name', 'date', 'start_time', 'end_time', 'notes']
@@ -1380,5 +1585,8 @@ class PhilanthropyEventEdit(UpdateView):
 
 def detail_m(request):
     """ Renders the detail manager page"""
-    # TODO: verify that user is Detail Manager
+    if not utils.verify_detail_manager(request.user):
+        messages.error(request, "Detail Manager Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     return render(request, 'detail-manager.html', {})
