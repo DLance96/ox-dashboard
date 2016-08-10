@@ -375,6 +375,12 @@ class BrotherEdit(UpdateView):
               'address']
 
 
+class BrotherDelete(DeleteView):
+    model = Brother
+    template_name = 'dashboard/base_confirm_delete.html'
+    success_url = reverse_lazy('dashboard:brother')
+
+
 def brother_pnm(request, pnm_id):
     """ Renders the pnm page for brothers """
     # TODO:
@@ -882,8 +888,8 @@ class PositionDelete(DeleteView):
     success_url = reverse_lazy('dashboard:secretary_positions')
 
 
-def marshall(request):
-    """ Renders the Marshall page listing all the candidates and relevant information to them """
+def marshal(request):
+    """ Renders the marshal page listing all the candidates and relevant information to them """
     if not utils.verify_marshal(request.user):
         messages.error(request, "Marshal Access Denied!")
         return HttpResponseRedirect(reverse('dashboard:home'))
@@ -892,7 +898,59 @@ def marshall(request):
     context = {
         'candidates': candidates,
     }
-    return render(request, 'marshall.html.html', context)
+    return render(request, 'marshal.html', context)
+
+
+def marshal_candidate_add(request):
+    """ Renders the Marshal way of viewing a candidate """
+    if not utils.verify_marshal(request.user):
+        messages.error(request, "Marshal Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    form = BrotherForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.cleaned_data
+            if instance['password'] == instance['password2']:
+                user = User.objects.create_user(instance['case_ID'], instance['case_ID'] + "@case.edu",
+                                                instance['password'])
+                user.last_name = instance['last_name']
+                user.save()
+
+                brother = form.save(commit=False)
+                brother.user = user
+                brother.save()
+
+                return HttpResponseRedirect(reverse('dashboard:marshal'))
+            else:
+                context = {
+                    'error_message': "Please make sure your passwords match",
+                    'title': 'Add New Candidate',
+                    'form': form,
+                }
+                return render(request, 'model-add.html', context)
+
+    context = {
+        'title': 'Add New Candidate',
+        'form': form,
+    }
+    return render(request, 'model-add.html', context)
+
+
+class CandidateEdit(UpdateView):
+    model = Brother
+    success_url = reverse_lazy('dashboard:marshal')
+    fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
+              'major', 'minor', 't_shirt_size', 'case_ID', 'birthday', 'hometown', 'phone_number',
+              'emergency_contact_phone_number', 'emergency_contact', 'room_number',
+              'address']
+
+
+class CandidateDelete(DeleteView):
+    model = Brother
+    template_name = 'dashboard/base_confirm_delete.html'
+    success_url = reverse_lazy('dashboard:marshal')
 
 
 def scholarship_c(request):

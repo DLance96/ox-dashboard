@@ -63,8 +63,11 @@ urlpatterns = [
     url(r'^secretary/event/(?P<event_id>[0-9]+)/$', views.secretary_event, name="secretary_event"),
     url(r'^secretary/excuse/(?P<excuse_id>[0-9]+)/$', views.secretary_excuse, name="secretary_excuse"),
 
-    # Marshall URL section
-    url(r'^marshall/$', views.marshall, name="marshall"),
+    # Marshal URL section
+    url(r'^marshal/$', views.marshal, name="marshal"),
+    url(r'^marshal/candidate/add/$', views.marshal_candidate_add, name="marshal_candidate_add"),
+    url(r'^marshal/candidate/(?P<pk>\d+)/edit/$', views.CandidateEdit.as_view(), name="marshal_candidate_edit"),
+    url(r'^marshal/candidate/(?P<pk>\d+)/delete/$', views.CandidateDelete.as_view(), name="marshal_candidate_delete"),
 
     # Recruitment Chair URL section
     url(r'^recruitment-chair/$', views.recruitment_c, name="recruitment_c"),

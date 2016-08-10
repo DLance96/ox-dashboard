@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Marshall</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Candidates</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Candidate:</td>
+                    <td>Edit:</td>
+                    <td>Delete:</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for candidate in candidates %}
+                    <tr>
+                        <td><a href="">{{ candidate }}</a></td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:marshal_candidate_edit' candidate.id %}>X</a></td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:marshal_candidate_delete' candidate.id %}>X</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <a class="btn btn-default" href={% url 'dashboard:marshal_candidate_add' %} role="button">Add Candidate</a>
+        </div>
+    </div>
+{% endblock %}
