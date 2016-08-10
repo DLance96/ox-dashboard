@@ -356,6 +356,7 @@ def brother_excuse(request, excuse_id):
 class ExcuseDelete(DeleteView):
     # TODO: verify brother with excuse
     model = Excuse
+    template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:brother')
 
 
@@ -448,6 +449,7 @@ def brother_service_submission_add(request):
 
 class ServiceSubmissionDelete(DeleteView):
     # TODO: verify brother with submission
+    template_name = 'dashboard/base_confirm_delete.html'
     model = ServiceSubmission
     success_url = reverse_lazy('dashboard:brother')
 
@@ -784,6 +786,7 @@ class ChapterEventDelete(DeleteView):
         return super(ChapterEventDelete, self).get(request, *args, **kwargs)
 
     model = ChapterEvent
+    template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:secretary')
 
 
@@ -875,6 +878,7 @@ class PositionDelete(DeleteView):
         return super(PositionDelete, self).get(request, *args, **kwargs)
 
     model = Position
+    template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:secretary_positions')
 
 
@@ -1007,6 +1011,7 @@ class StudyEventDelete(DeleteView):
         return super(StudyEventDelete, self).get(request, *args, **kwargs)
 
     model = StudyTableEvent
+    template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:scholarship_c')
 
 
@@ -1167,6 +1172,7 @@ class PnmDelete(DeleteView):
         return super(PnmDelete, self).get(request, *args, **kwargs)
 
     model = PotentialNewMember
+    template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:recruitment_c')
 
 
@@ -1290,6 +1296,7 @@ class RecruitmentEventDelete(DeleteView):
         return super(RecruitmentEventDelete, self).get(request, *args, **kwargs)
 
     model = RecruitmentEvent
+    template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:recruitment_c')
 
 
@@ -1391,6 +1398,7 @@ class ServiceEventDelete(DeleteView):
         return super(ServiceEventDelete, self).get(request, *args, **kwargs)
 
     model = ServiceEvent
+    template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:service_c')
 
 
@@ -1568,6 +1576,7 @@ class PhilanthropyEventDelete(DeleteView):
         return super(PhilanthropyEventDelete, self).get(request, *args, **kwargs)
 
     model = PhilanthropyEvent
+    template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:philanthropy_c')
 
 

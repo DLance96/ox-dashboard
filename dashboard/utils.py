@@ -157,7 +157,7 @@ def verify_scholarship_chair(user):
 def verify_service_chair(user):
     """ Verify user has Service Chair permissions """
     roster_number = user.brother.roster_number
-    if Position.objects.filter(roster_number=roster_number).ec or \
+    if Position.objects.filter(brother__roster_number=roster_number)[0].ec or \
        Position.objects.filter(title='Service Chair')[0].brother.roster_number == roster_number or \
        debug:
         return True
@@ -168,7 +168,7 @@ def verify_service_chair(user):
 def verify_philanthropy_chair(user):
     """ Verify user has Philanthropy Chair permissions """
     roster_number = user.brother.roster_number
-    if Position.objects.filter(roster_number=roster_number).ec or \
+    if Position.objects.filter(brother__roster_number=roster_number)[0].ec or \
        Position.objects.filter(title='Philanthropy Chair')[0].brother.roster_number == roster_number  or \
        debug:
         return True
@@ -179,7 +179,7 @@ def verify_philanthropy_chair(user):
 def verify_detail_manager(user):
     """ Verify user has Detail Manager permissions """
     roster_number = user.brother.roster_number
-    if Position.objects.filter(roster_number=roster_number).ec or \
+    if Position.objects.filter(brother__roster_number=roster_number)[0].ec or \
        Position.objects.filter(title='Detail Manager')[0].brother.roster_number == roster_number or \
        debug:
         return True
