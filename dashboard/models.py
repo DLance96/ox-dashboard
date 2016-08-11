@@ -262,12 +262,7 @@ class RecruitmentEvent(models.Model):
         return self.name
 
 
-class CommitteeMeetingEvent(models.Model):
-    datetime = models.DateTimeField(default=django.utils.timezone.now)
-    attendees = models.ManyToManyField(Brother, blank=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
-
-    COMMITTEE_CHOICES = {
+COMMITTEE_CHOICES = {
         ('0', 'Recruitment'),
         ('1', 'Public Relations'),
         ('2', 'Health and Safety'),
@@ -276,6 +271,12 @@ class CommitteeMeetingEvent(models.Model):
         ('5', 'Membership Development'),
         ('6', 'Scholarship'),
     }
+
+
+class CommitteeMeetingEvent(models.Model):
+    datetime = models.DateTimeField(default=django.utils.timezone.now)
+    attendees = models.ManyToManyField(Brother, blank=True)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
 
     committee = models.CharField(max_length=1, choices=COMMITTEE_CHOICES)
     minutes = models.URLField(blank=True, null=True)

@@ -45,6 +45,14 @@
                             <td>{{ brother.get_brother_status_display }}</td>
                         </tr>
                         <tr>
+                            <td>Standing Committee:</td>
+                            <td>{{ brother.get_standing_committee_display }}</td>
+                        </tr>
+                        <tr>
+                            <td>Operational Committee:</td>
+                            <td>{{ brother.get_operational_committee_display }}</td>
+                        </tr>
+                        <tr>
                             <td>Major:</td>
                             <td>{{ brother.major }}</td>
                         </tr>
@@ -357,6 +365,32 @@
     <div class="panel panel-default">
         <div class="panel-heading">Committees</div>
         <div class="panel-body">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table class="table table-condensed">
+                    <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Committee:</td>
+                        <td>Date:</td>
+                        <td>Minutes:</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for meeting in committee_meetings %}
+                        <tr>
+                            <td><a href="">{{ meeting.get_committee_display }}</a></td>
+                            <td>{{ meeting.datetime.date }} - {{ meeting.datetime.time }}</td>
+                            {% if meeting.minutes %}
+                                <td><a href="{{ meeting.minutes }}">link</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-2"></div>
         </div>
     </div>
     <div class="panel panel-default">
