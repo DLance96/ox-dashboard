@@ -22,7 +22,7 @@
                 <tbody>
                 {% for candidate in candidates %}
                     <tr>
-                        <td><a href="">{{ candidate }}</a></td>
+                        <td><a href={% url 'dashboard:marshal_candidate' candidate.id %}>{{ candidate }}</a></td>
                         <td><a class="btn btn-default"
                                href={% url 'dashboard:marshal_candidate_edit' candidate.id %}>X</a></td>
                         <td><a class="btn btn-default"
@@ -48,7 +48,7 @@
                 <tbody>
                 {% for candidate, events_excused, events_unexcused in candidate_attendance %}
                     <tr>
-                        <td><a href="">{{ candidate.first_name }} {{ candidate.last_name }}</a></td>
+                        <td>{{ candidate.first_name }} {{ candidate.last_name }}</td>
                         <td>{{ events_excused }}</td>
                         <td>{{ events_unexcused }}</td>
                     </tr>

@@ -965,6 +965,19 @@ def marshal(request):
     return render(request, 'marshal.html', context)
 
 
+def marshal_candidate(request, brother_id):
+    """ Renders the marshal page to view candidate info """
+    if not utils.verify_marshal(request.user):
+        messages.error(request, "Marshal Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    brother = Brother.objects.get(pk=brother_id)
+    context = {
+        'brother': brother
+    }
+    return render(request, "brother-view.html", context)
+
+
 def marshal_candidate_add(request):
     """ Renders the Marshal way of viewing a candidate """
     if not utils.verify_marshal(request.user):

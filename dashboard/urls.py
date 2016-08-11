@@ -68,6 +68,7 @@ urlpatterns = [
     # Marshal URL section
     url(r'^marshal/$', views.marshal, name="marshal"),
     url(r'^marshal/candidate/add/$', views.marshal_candidate_add, name="marshal_candidate_add"),
+    url(r'^marshal/candidate/(?P<brother_id>[0-9]+)/$', views.marshal_candidate, name="marshal_candidate"),
     url(r'^marshal/candidate/(?P<pk>\d+)/edit/$', views.CandidateEdit.as_view(), name="marshal_candidate_edit"),
     url(r'^marshal/candidate/(?P<pk>\d+)/delete/$', views.CandidateDelete.as_view(), name="marshal_candidate_delete"),
 

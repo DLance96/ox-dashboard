@@ -36,6 +36,12 @@
                             <td>Semester Joined:</td>
                             <td>{{ brother.semester_joined }}</td>
                         </tr>
+                        {% if brother.date_pledged %}
+                            <tr>
+                                <td>Date Pledged:</td>
+                                <td>{{ brother.date_pledged }}</td>
+                            </tr>
+                        {% endif %}
                         <tr>
                             <td>School Status:</td>
                             <td>{{ brother.get_school_status_display }}</td>
