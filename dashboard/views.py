@@ -544,7 +544,7 @@ def secretary_attendance(request):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
-    events = ChapterEvent.objects.filter(semester=utils.get_semester()).exclude(pub_date__gt=datetime.date.today())
+    events = ChapterEvent.objects.filter(semester=utils.get_semester()).exclude(date__gt=datetime.date.today())
     excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='1')
     events_excused_list = []
     events_unexcused_list = []
@@ -580,7 +580,7 @@ def secretary_event(request, event_id):
     brothers = Brother.objects.exclude(brother_status='2')
     form_list = []
     for brother in brothers:
-        if event.attendees.filter(roster_number=brother.roster_number):
+        if event.attendees.filter(id=brother.id):
             new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
                                              prefix=brother.roster_number,
                                              brother="- %s %s" % (brother.first_name, brother.last_name))
@@ -934,9 +934,33 @@ def marshal(request):
         messages.error(request, "Marshal Access Denied!")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
-    candidates = Brother.objects.filter(brother_status='0')
+    candidates = Brother.objects.filter(brother_status='0').order_by("last_name")
+    events = ChapterEvent.objects.filter(semester=utils.get_semester()).exclude(date__gt=datetime.date.today())
+    excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='1')
+    events_excused_list = []
+    events_unexcused_list = []
+
+    for candidate in candidates:
+        events_excused = 0
+        events_unexcused = 0
+        if candidate.date_pledged:
+            expected_events = events.exclude(date_pledged__lt=datetime.date.today())
+        else:
+            expected_events = events
+        for event in expected_events:
+            if not event.attendees.filter(id=candidate.id).exists():
+                if excuses.filter(brother=candidate, event=event).exists():
+                    events_excused += 1
+                else:
+                    events_unexcused += 1
+        events_excused_list.append(events_excused)
+        events_unexcused_list.append(events_unexcused)
+
+    candidate_attendance = zip(candidates, events_excused_list, events_unexcused_list)
+
     context = {
         'candidates': candidates,
+        'candidate_attendance': candidate_attendance,
     }
     return render(request, 'marshal.html', context)
 
@@ -1045,7 +1069,7 @@ def scholarship_c_event(request, event_id):
     brother_form_list = []
 
     for brother in brothers:
-        if event.attendees.filter(roster_number=brother.roster_number):
+        if event.attendees.filter(id=brother.id):
             new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
                                              prefix=brother.roster_number,
                                              brother="- %s %s" % (brother.first_name, brother.last_name))
@@ -1321,7 +1345,7 @@ def recruitment_c_event(request, event_id):
             pnm_form_list.append(new_form)
 
     for brother in brothers:
-        if event.attendees_brothers.filter(roster_number=brother.roster_number):
+        if event.attendees_brothers.filter(id=brother.id):
             new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
                                              prefix=brother.roster_number,
                                              brother="- %s %s" % (brother.first_name, brother.last_name))
@@ -1467,7 +1491,7 @@ def service_c_event(request, event_id):
     form_list = []
 
     for brother in brothers:
-        if event.attendees.filter(roster_number=brother.roster_number):
+        if event.attendees.filter(id=brother.id):
             new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
                                              prefix=brother.roster_number,
                                              brother="- %s %s" % (brother.first_name, brother.last_name))

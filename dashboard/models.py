@@ -34,8 +34,9 @@ class Brother(models.Model):
     # General profile information
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45)
-    roster_number = models.IntegerField(default=1856)
+    roster_number = models.IntegerField(blank=True, null=True)
     semester_joined = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    date_pledged = models.DateField(blank=True, null=True)
 
     FRESHMAN = 'FR'
     SOPHOMORE = 'SO'
