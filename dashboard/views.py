@@ -181,7 +181,6 @@ def brother_view(request):
                                              Q(tertiary_contact=brother)).order_by("last_name")
     service_events = ServiceEvent.objects.filter(semester=utils.get_semester()).order_by("date")
     # Service submissions
-    approved_hours = 0  # TODO count approved hours
     submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(), status='0').order_by("date")
     submissions_submitted = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
                                                              status='1').order_by("date")
@@ -218,7 +217,6 @@ def brother_view(request):
         'recruitment_events_next': recruitment_events_next,
         'pnms': pnms,
         'service_events': service_events,
-        'approved_hours': approved_hours,
         'submissions_pending': submissions_pending,
         'submissions_submitted': submissions_submitted,
         'submissions_approved': submissions_approved,
@@ -354,19 +352,41 @@ def brother_excuse(request, excuse_id):
 
 
 class ExcuseDelete(DeleteView):
-    # TODO: verify brother with excuse
+    def get(self, request, *args, **kwargs):
+        excuse = Excuse.objects.get(pk=self.kwargs['pk'])
+        brother = excuse.brother
+        if not utils.verify_brother(brother, request.user):
+            messages.error(request, "Brother Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(ExcuseDelete, self).get(request, *args, **kwargs)
+
     model = Excuse
     template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:brother')
 
 
 class ExcuseEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        excuse = Excuse.objects.get(pk=self.kwargs['pk'])
+        brother = excuse.brother
+        if not utils.verify_brother(brother, request.user):
+            messages.error(request, "Brother Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(ExcuseEdit, self).get(request, *args, **kwargs)
+
     model = Excuse
     success_url = reverse_lazy('dashboard:brother')
     fields = ['description']
 
 
 class BrotherEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        brother = Brother.objects.get(pk=self.kwargs['pk'])
+        if not utils.verify_brother(brother, request.user):
+            messages.error(request, "Brother Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(BrotherEdit, self).get(request, *args, **kwargs)
+
     model = Brother
     success_url = reverse_lazy('dashboard:brother')
     fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
@@ -375,15 +395,8 @@ class BrotherEdit(UpdateView):
               'address']
 
 
-class BrotherDelete(DeleteView):
-    model = Brother
-    template_name = 'dashboard/base_confirm_delete.html'
-    success_url = reverse_lazy('dashboard:brother')
-
-
 def brother_pnm(request, pnm_id):
     """ Renders the pnm page for brothers """
-    # TODO:
     if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Please log in to view pnms")
         return HttpResponseRedirect(reverse('dashboard:home'))
@@ -454,13 +467,28 @@ def brother_service_submission_add(request):
 
 
 class ServiceSubmissionDelete(DeleteView):
-    # TODO: verify brother with submission
+    def get(self, request, *args, **kwargs):
+        submission = ServiceSubmission.objects.get(pk=self.kwargs['pk'])
+        brother = submission.brother
+        if not utils.verify_brother(brother, request.user):
+            messages.error(request, "Brother Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(ServiceSubmissionDelete, self).get(request, *args, **kwargs)
+
     template_name = 'dashboard/base_confirm_delete.html'
     model = ServiceSubmission
     success_url = reverse_lazy('dashboard:brother')
 
 
 class ServiceSubmissionEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        submission = ServiceSubmission.objects.get(pk=self.kwargs['pk'])
+        brother = submission.brother
+        if not utils.verify_brother(brother, request.user):
+            messages.error(request, "Brother Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(ServiceSubmissionEdit, self).get(request, *args, **kwargs)
+
     model = ServiceSubmission
     success_url = reverse_lazy('dashboard:brother')
     fields = ['name', 'date', 'description', 'hours', 'status']
@@ -735,6 +763,18 @@ class SecretaryBrotherEdit(UpdateView):
               'address']
 
 
+class SecretaryBrotherDelete(DeleteView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_secretary(request.user):
+            messages.error(request, "Secretary Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(SecretaryBrotherDelete, self).get(request, *args, **kwargs)
+
+    model = Brother
+    template_name = 'dashboard/base_confirm_delete.html'
+    success_url = reverse_lazy('dashboard:secretary')
+
+
 def secretary_event_add(request):
     """ Renders the Secretary way of adding ChapterEvents """
     if not utils.verify_secretary(request.user):
@@ -939,6 +979,12 @@ def marshal_candidate_add(request):
 
 
 class CandidateEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_marshal(request.user):
+            messages.error(request, "Marshal Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(CandidateEdit, self).get(request, *args, **kwargs)
+
     model = Brother
     success_url = reverse_lazy('dashboard:marshal')
     fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
@@ -948,6 +994,12 @@ class CandidateEdit(UpdateView):
 
 
 class CandidateDelete(DeleteView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_marshal(request.user):
+            messages.error(request, "Marshal Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(CandidateDelete, self).get(request, *args, **kwargs)
+
     model = Brother
     template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:marshal')

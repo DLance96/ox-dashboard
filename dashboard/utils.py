@@ -186,3 +186,11 @@ def verify_detail_manager(user):
     else:
         return False
 
+
+def verify_brother(brother, user):
+    """ Verify user is the same as brother """
+    if user.brother.roster_number == brother.roster_number:
+        return True
+    else:
+        return False
+
