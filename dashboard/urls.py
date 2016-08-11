@@ -54,6 +54,7 @@ urlpatterns = [
     url(r'^secretary/brother/list/$', views.secretary_brother_list, name="secretary_brother_list"),
     url(r'^secretary/brother/(?P<brother_id>[0-9]+)/$', views.secretary_brother_view, name="secretary_brother_view"),
     url(r'^secretary/brother/(?P<pk>\d+)/edit/$', views.SecretaryBrotherEdit.as_view(), name="secretary_brother_edit"),
+    url(r'^secretary/brother/(?P<pk>\d+)/delete/$', views.SecretaryBrotherDelete.as_view(), name="secretary_brother_delete"),
     url(r'^secretary/brother/add/$', views.secretary_brother_add, name="secretary_brother_add"),
     url(r'^secretary/event/add/$', views.secretary_event_add, name="secretary_event_add"),
     url(r'^secretary/event/all/$', views.secretary_all_events, name="secretary_event_all"),
