@@ -8,4 +8,33 @@
     <div class="jumbotron">
         <h1>Vice President</h1>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Committee Meeting</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Committee:</td>
+                    <td>Date:</td>
+                    <td>Edit?</td>
+                    <td>Delete?</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for meeting in committee_meetings %}
+                    <tr>
+                        <td>{{ meeting.get_committee_display }}</td>
+                        <td>{{ meeting.datetime }}</td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:vice_president_committee_meeting_edit' meeting.id %}>X</a></td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:vice_president_committee_meeting_delete' meeting.id %}>X</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <a class="btn btn-default" href={% url 'dashboard:vice_president_committee_meeting_add' %}
+                    role="button">Add Meeting</a>
+        </div>
+    </div>
 {% endblock %}

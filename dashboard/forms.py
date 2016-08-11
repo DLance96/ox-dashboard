@@ -17,15 +17,11 @@ class BrotherForm(forms.ModelForm):
                   'case_ID', 'major', 'minor', 'birthday', 'hometown', 't_shirt_size', 'phone_number', 'room_number',
                   'address', 'emergency_contact', 'emergency_contact_phone_number']
 
-# class BrotherStatusForm(forms.Form):
-
 
 class PositionForm(forms.ModelForm):
     class Meta:
         model = Position
         fields = ['title', 'brother']
-
-# class PositionChange(forms.Form):
 
 
 class ExcuseForm(forms.ModelForm):
@@ -81,6 +77,12 @@ class ServiceSubmissionForm(forms.ModelForm):
     class Meta:
         model = ServiceSubmission
         fields = ['name', 'date', 'hours', 'description']
+
+
+class CommitteeMeetingForm(forms.ModelForm):
+    class Meta:
+        model = CommitteeMeetingEvent
+        fields = ['datetime', 'committee', 'minutes']
 
 
 class BrotherAttendanceForm(forms.Form):

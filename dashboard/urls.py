@@ -41,7 +41,16 @@ urlpatterns = [
     url(r'^brother/pnm/(?P<pnm_id>[0-9]+)/$', views.brother_pnm, name="brother_pnm"),
 
     url(r'^president/', views.president, name="president"),
-    url(r'^vice-president/', views.vice_president, name="vice_president"),
+
+    # Vice President URL Section
+    url(r'^vice-president/$', views.vice_president, name="vice_president"),
+    url(r'^vice-president/committee-meeting/add/$', views.vice_president_committee_meeting_add,
+        name="vice_president_committee_meeting_add"),
+    url(r'^vice-president/committee-meeting/(?P<pk>\d+)/edit/$', views.CommitteeMeetingEdit.as_view(),
+        name="vice_president_committee_meeting_edit"),
+    url(r'^vice-president/committee-meeting/(?P<pk>\d+)/delete/$', views.CommitteeMeetingDelete.as_view(),
+        name="vice_president_committee_meeting_delete"),
+
     url(r'^treasurer/', views.treasurer, name="treasurer"),
 
     # Secretary URL section

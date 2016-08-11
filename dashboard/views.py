@@ -509,7 +509,69 @@ def vice_president(request):
         messages.error(request, "Vice President Access Denied!")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
-    return render(request, 'vice-president.html', {})
+    committee_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester()).order_by("datetime")
+
+    context = {
+        'committee_meetings': committee_meetings,
+    }
+
+    return render(request, 'vice-president.html', context)
+
+
+def vice_president_committee_meeting_add(request):
+    """ Renders the committee meeting add page """
+    if not utils.verify_vice_president(request.user):
+        messages.error(request, "Vice President Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+    print "Help"
+
+    form = CommitteeMeetingForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.save(commit=False)
+
+            try:
+                semester = Semester.objects.filter(season=utils.get_season_from(instance.datetime.month),
+                                                   year=instance.datetime.year)[0]
+            except IndexError:
+                semester = Semester(season=utils.get_season_from(instance.datetime.month),
+                                    year=instance.datetime.year)
+                semester.save()
+
+            instance.semester = semester
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:vice_president'))
+
+    context = {
+        'title': 'Committee Meeting',
+        'form': form,
+    }
+    return render(request, 'event-add.html', context)
+
+
+class CommitteeMeetingDelete(DeleteView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_vice_president(request.user):
+            messages.error(request, "Vice President Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(CommitteeMeetingDelete, self).get(request, *args, **kwargs)
+
+    model = CommitteeMeetingEvent
+    template_name = 'dashboard/base_confirm_delete.html'
+    success_url = reverse_lazy('dashboard:vice_president')
+
+
+class CommitteeMeetingEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        if not utils.verify_vice_president(request.user):
+            messages.error(request, "Vice President Access Denied!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+        return super(CommitteeMeetingEdit, self).get(request, *args, **kwargs)
+
+    model = CommitteeMeetingEvent
+    success_url = reverse_lazy('dashboard:vice_president')
+    fields = ['datetime', 'semester', 'committee', 'minutes']
 
 
 def treasurer(request):

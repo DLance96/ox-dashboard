@@ -263,7 +263,7 @@ class RecruitmentEvent(models.Model):
 
 
 class CommitteeMeetingEvent(models.Model):
-    date = models.DateTimeField(default=django.utils.timezone.now)
+    datetime = models.DateTimeField(default=django.utils.timezone.now)
     attendees = models.ManyToManyField(Brother, blank=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
 
@@ -278,9 +278,10 @@ class CommitteeMeetingEvent(models.Model):
     }
 
     committee = models.CharField(max_length=1, choices=COMMITTEE_CHOICES)
+    minutes = models.URLField(blank=True, null=True)
 
     def __str__(self):
-        return "%s - %s" % (self.get_committee_display(), self.date)
+        return "%s - %s" % (self.get_committee_display(), self.datetime)
 
 
 class StudyTableEvent(models.Model):
