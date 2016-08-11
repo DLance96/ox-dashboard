@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block dropdown %}
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+           aria-expanded="false">Vice President <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a href="">Past Meetings</a></li>
+        </ul>
+    </li>
 {% endblock %}
 
 {% block content %}
@@ -16,6 +23,7 @@
                 <tr>
                     <td>Committee:</td>
                     <td>Date:</td>
+                    <td>Minutes:</td>
                     <td>Edit?</td>
                     <td>Delete?</td>
                 </tr>
@@ -23,8 +31,13 @@
                 <tbody>
                 {% for meeting in committee_meetings %}
                     <tr>
-                        <td>{{ meeting.get_committee_display }}</td>
-                        <td>{{ meeting.datetime }}</td>
+                        <td><a href="">{{ meeting.get_committee_display }}</a></td>
+                        <td>{{ meeting.datetime.date }} - {{ meeting.datetime.time }}</td>
+                        {% if meeting.minutes %}
+                            <td><a href="{{ meeting.minutes }}">link</a></td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
                         <td><a class="btn btn-default"
                                href={% url 'dashboard:vice_president_committee_meeting_edit' meeting.id %}>X</a></td>
                         <td><a class="btn btn-default"

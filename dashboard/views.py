@@ -162,9 +162,22 @@ def brother_view(request):
             unexcused_events += 1
     chapter_attendance = "%s / %s" % (chapter_event_attendance, past_chapter_event_count)
 
+    committee_reverse = dict((v, k) for k, v in COMMITTEE_CHOICES)
+    standing_meetings = []
+    operational_meetings = []
+    if brother.get_operational_committee_display() != 'Unassigned':
+        operational_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester(),
+                                                                    committee=committee_reverse[
+                                                                        brother.get_operational_committee_display()])\
+            .order_by("datetime")
+    if brother.get_standing_committee_display() != 'Unassigned':
+        standing_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester(),
+                                                                 committee=committee_reverse[
+                                                                     brother.get_standing_committee_display()])\
+            .order_by("datetime")
+    committee_meetings = operational_meetings | standing_meetings
+    committee_meetings = committee_meetings.order_by("datetime")
 
-    # TODO: write util function to covert standing/operational committee # to standard #
-    # committee_meetings = CommitteeMeetingEvent.objects.filter()
     current_season = utils.get_season()
     if current_season is '0':
         recruitment_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year()) \
@@ -181,7 +194,8 @@ def brother_view(request):
                                              Q(tertiary_contact=brother)).order_by("last_name")
     service_events = ServiceEvent.objects.filter(semester=utils.get_semester()).order_by("date")
     # Service submissions
-    submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(), status='0').order_by("date")
+    submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+                                                           status='0').order_by("date")
     submissions_submitted = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
                                                              status='1').order_by("date")
     submissions_approved = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
@@ -199,7 +213,7 @@ def brother_view(request):
     for submission in submissions_approved:
         hours_approved += submission.hours
 
-    philanthropy_events = PhilanthropyEvent.objects.filter(semester=utils.get_semester())\
+    philanthropy_events = PhilanthropyEvent.objects.filter(semester=utils.get_semester()) \
         .order_by("start_time").order_by("date")
 
     context = {
@@ -207,7 +221,7 @@ def brother_view(request):
         'chapter_events': chapter_events,
         'chapter_attendance': chapter_attendance,
         'unexcused_events': unexcused_events,
-
+        'committee_meetings': committee_meetings,
         'excuses_pending': excuses_pending,
         'excuses_approved': excuses_approved,
         'excuses_denied': excuses_denied,
@@ -523,7 +537,6 @@ def vice_president_committee_meeting_add(request):
     if not utils.verify_vice_president(request.user):
         messages.error(request, "Vice President Access Denied!")
         return HttpResponseRedirect(reverse('dashboard:home'))
-    print "Help"
 
     form = CommitteeMeetingForm(request.POST or None)
 
@@ -821,8 +834,8 @@ class SecretaryBrotherEdit(UpdateView):
     success_url = reverse_lazy('dashboard:secretary_brother_list')
     fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
               'major', 'minor', 't_shirt_size', 'case_ID', 'birthday', 'hometown', 'phone_number',
-              'emergency_contact_phone_number', 'emergency_contact', 'room_number',
-              'address']
+              'emergency_contact_phone_number', 'emergency_contact', 'standing_committee', 'operational_committee',
+              'room_number', 'address']
 
 
 class SecretaryBrotherDelete(DeleteView):
@@ -1338,7 +1351,7 @@ def recruitment_c_rush_attendance(request):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
-    events = RecruitmentEvent.objects.filter(semester=utils.get_semester(), rush=True)\
+    events = RecruitmentEvent.objects.filter(semester=utils.get_semester(), rush=True) \
         .exclude(date__gt=datetime.date.today())
     events_attended_list = []
 
