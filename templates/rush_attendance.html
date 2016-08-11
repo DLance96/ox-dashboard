@@ -6,7 +6,7 @@
 {% block content %}
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <h1>Attendance</h1>
+        <h1>Rush Attendance</h1>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Brother Attendance</div>
@@ -15,16 +15,14 @@
                 <thead style="font-weight:bold;">
                 <tr>
                     <td>Brother:</td>
-                    <td>Events Excused:</td>
-                    <td>Events Unexcused:</td>
+                    <td>Events Attended:</td>
                 </tr>
                 </thead>
                 <tbody>
-                {% for brother, events_excused, events_unexcused in brother_attendance %}
+                {% for brother, events_attended in rush_attendance %}
                     <tr>
                         <td>{{ brother.first_name }} {{ brother.last_name }}</td>
-                        <td>{{ events_excused }}</td>
-                        <td>{{ events_unexcused }}</td>
+                        <td>{{ events_attended }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

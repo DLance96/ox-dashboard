@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 from . import views
 
 app_name = 'dashboard'
@@ -37,7 +38,6 @@ urlpatterns = [
         name="brother_service_submission_delete"),
     url(r'^brother/service-submission/add/$', views.brother_service_submission_add,
         name="brother_service_submission_add"),
-
     url(r'^brother/pnm/(?P<pnm_id>[0-9]+)/$', views.brother_pnm, name="brother_pnm"),
 
     url(r'^president/', views.president, name="president"),
@@ -54,7 +54,8 @@ urlpatterns = [
     url(r'^secretary/brother/list/$', views.secretary_brother_list, name="secretary_brother_list"),
     url(r'^secretary/brother/(?P<brother_id>[0-9]+)/$', views.secretary_brother_view, name="secretary_brother_view"),
     url(r'^secretary/brother/(?P<pk>\d+)/edit/$', views.SecretaryBrotherEdit.as_view(), name="secretary_brother_edit"),
-    url(r'^secretary/brother/(?P<pk>\d+)/delete/$', views.SecretaryBrotherDelete.as_view(), name="secretary_brother_delete"),
+    url(r'^secretary/brother/(?P<pk>\d+)/delete/$', views.SecretaryBrotherDelete.as_view(),
+        name="secretary_brother_delete"),
     url(r'^secretary/brother/add/$', views.secretary_brother_add, name="secretary_brother_add"),
     url(r'^secretary/event/add/$', views.secretary_event_add, name="secretary_event_add"),
     url(r'^secretary/event/all/$', views.secretary_all_events, name="secretary_event_all"),
@@ -72,6 +73,8 @@ urlpatterns = [
 
     # Recruitment Chair URL section
     url(r'^recruitment-chair/$', views.recruitment_c, name="recruitment_c"),
+    url(r'^recruitment-chair/rush-attendance/$', views.recruitment_c_rush_attendance,
+        name="recruitment_c_rush_attendance"),
     url(r'^recruitment-chair/event/(?P<event_id>[0-9]+)/$', views.recruitment_c_event, name="recruitment_c_event"),
     url(r'^recruitment-chair/event/add/$', views.recruitment_c_event_add, name="recruitment_c_event_add"),
     url(r'^recruitment-chair/event/(?P<pk>\d+)/edit/$', views.RecruitmentEventEdit.as_view(),

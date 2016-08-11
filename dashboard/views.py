@@ -1256,6 +1256,33 @@ def recruitment_c(request):
     return render(request, 'recruitment-chair.html', context)
 
 
+def recruitment_c_rush_attendance(request):
+    """ Renders Scholarship chair page with rush attendance """
+    if not utils.verify_recruitment_chair(request.user):
+        messages.error(request, "Recruitment Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+    events = RecruitmentEvent.objects.filter(semester=utils.get_semester(), rush=True)\
+        .exclude(date__gt=datetime.date.today())
+    events_attended_list = []
+
+    for brother in brothers:
+        events_attended = 0
+        for event in events:
+            if event.attendees_brothers.filter(id=brother.id).exists():
+                events_attended += 1
+        events_attended_list.append(events_attended)
+
+    rush_attendance = zip(brothers, events_attended_list)
+
+    context = {
+        'rush_attendance': rush_attendance,
+    }
+
+    return render(request, 'rush_attendance.html', context)
+
+
 def recruitment_c_pnm(request, pnm_id):
     """ Renders PNM view for recruitment chair """
     if not utils.verify_recruitment_chair(request.user):
