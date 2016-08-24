@@ -25,14 +25,17 @@ def get_semester():
 # get semester used for filtering throughout the views
 # based on SEASON_CHOICES in models (0,1,2) => ('Spring','Summer','Fall')
 def get_season():
-    return '0'
-    # month = datetime.datetime.now().month
-    # if month <= 5:
-    #     return '0'
-    # elif month <= 7:
-    #     return '1'
-    # else:
-    #     return '2'
+    #return '0'
+    if debug:
+     month = datetime.datetime.now().month
+     if month <= 5:
+         return '0'
+     elif month <= 7:
+         return '1'
+     else:
+         return '2'
+    else:
+    	return '0'
 
 
 def get_season_from(month):

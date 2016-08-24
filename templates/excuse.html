@@ -36,6 +36,22 @@
                             <td>Event Mandatory:</td>
                             <td>{{ excuse.event.mandatory }}</td>
                         </tr>
+                        {% if excuse.status == '0' %}
+                        <tr>
+                            <td>Excuse Status:</td>
+                            <td>Pending</td>
+                        </tr>
+                        {% elif excuse.status == '1' %}
+                        <tr>
+                            <td>Excuse Status:</td>
+                            <td>Approved</td>
+                        </tr>
+                        {% elif excuse.status == '2' %}
+                        <tr>
+                            <td>Excuse Status:</td>
+                            <td>Denied</td>
+                        </tr>
+                        {% endif %}
                         {% if excuse.status == '2' or excuse.status == '3' and excuse.response_message %}
                             <tr>
                                 <td>Response:</td>
