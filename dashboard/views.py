@@ -176,8 +176,6 @@ def brother_view(request):
                                                                  committee=committee_reverse[
                                                                      brother.get_standing_committee_display()]) \
             .order_by("datetime")
-    committee_meetings = operational_meetings | standing_meetings
-    committee_meetings = committee_meetings.order_by("datetime")
 
     current_season = utils.get_season()
     if current_season is '0':
@@ -222,12 +220,12 @@ def brother_view(request):
         'chapter_events': chapter_events,
         'chapter_attendance': chapter_attendance,
         'unexcused_events': unexcused_events,
-        'committee_meetings': committee_meetings,
+        'operational_meetings': operational_meetings,
+        'standing_meetings': standing_meetings,
         'excuses_pending': excuses_pending,
         'excuses_approved': excuses_approved,
         'excuses_denied': excuses_denied,
         'excuses_not_mandatory': excuses_not_mandatory,
-        # 'committee_meetings': committee_meetings,
         'recruitment_events': recruitment_events,
         'recruitment_events_next': recruitment_events_next,
         'pnms': pnms,

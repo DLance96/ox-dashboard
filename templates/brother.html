@@ -129,7 +129,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">Excuses</div>
         <div class="panel-body">
-        	<div class="row">
+            <div class="row">
                 <div class="col-md-6">
                     <div class="panel panel-warning">
                         <div class="panel-heading">Pending</div>
@@ -367,28 +367,56 @@
         <div class="panel-body">
             <div class="col-lg-2"></div>
             <div class="col-lg-8">
-                <table class="table table-condensed">
-                    <thead style="font-weight:bold;">
-                    <tr>
-                        <td>Committee:</td>
-                        <td>Date:</td>
-                        <td>Minutes:</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for meeting in committee_meetings %}
-                        <tr>
-                            <td><a href="">{{ meeting.get_committee_display }}</a></td>
-                            <td>{{ meeting.datetime.date }} - {{ meeting.datetime.time }}</td>
-                            {% if meeting.minutes %}
-                                <td><a href="{{ meeting.minutes }}">link</a></td>
-                            {% else %}
-                                <td></td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-condensed">
+                            <thead style="font-weight:bold;">
+                            <tr>
+                                <td>Operational:</td>
+                                <td>Date:</td>
+                                <td>Minutes:</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for meeting in operational_meetings %}
+                                <tr>
+                                    <td><a href="">{{ meeting.get_committee_display }}</a></td>
+                                    <td>{{ meeting.datetime.date }} - {{ meeting.datetime.time }}</td>
+                                    {% if meeting.minutes %}
+                                        <td><a href="{{ meeting.minutes }}">link</a></td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-condensed">
+                            <thead style="font-weight:bold;">
+                            <tr>
+                                <td>Standing:</td>
+                                <td>Date:</td>
+                                <td>Minutes:</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for meeting in standing_meetings %}
+                                <tr>
+                                    <td><a href="">{{ meeting.get_committee_display }}</a></td>
+                                    <td>{{ meeting.datetime.date }} - {{ meeting.datetime.time }}</td>
+                                    {% if meeting.minutes %}
+                                        <td><a href="{{ meeting.minutes }}">link</a></td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-2"></div>
         </div>
