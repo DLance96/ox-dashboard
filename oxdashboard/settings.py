@@ -20,15 +20,25 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "841dp9w*!q+o19&k28!r9-u^sc0mw0vc(qt_x#v*svs^e*_0*!i"
+if os.environ.get('SECRET_KEY'):
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+else:
+    SECRET_KEY = "841dp9w*!q+o19&k28!r9-u^sc0mw0vc(qt_x#v*svs^e*_0*!i"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if os.environ.get('DEBUG'):
-    DEBUG = os.environ.get('DEBUG')
+    DEBUG = os.environ.get('DEBUG') != 'False'
 else:
     DEBUG = True
 
-ALLOWED_HOSTS = []
+if os.environ.get('_DEBUG'):
+    _DEBUG = False
+else:
+    _DEBUG = True
+
+ALLOWED_HOSTS = [
+    '*',
+]
 
 
 # Application definition
@@ -78,13 +88,20 @@ WSGI_APPLICATION = 'oxdashboard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if DEBUG and _DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join('/db/db.sqlite3'),
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

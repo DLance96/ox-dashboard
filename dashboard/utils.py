@@ -10,9 +10,9 @@ non_ec = ['Service Chair', 'Philanthropy Chair', 'Detail Manager']
 
 # Toggle dependant on whether you want position verification
 if os.environ.get('DEBUG'):
-    DEBUG = os.environ.get('DEBUG')
+    debug = os.environ.get('DEBUG') != 'False'
 else:
-    DEBUG = False
+    debug = False
 
 
 def get_semester():
