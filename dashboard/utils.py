@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import os
 from .models import *
 
 # EC Positions
@@ -9,7 +9,10 @@ ec = ['President', 'Vice President', 'Vice President of Health and Safety', 'Sec
 non_ec = ['Service Chair', 'Philanthropy Chair', 'Detail Manager']
 
 # Toggle dependant on whether you want position verification
-debug = False
+if os.environ.get('DEBUG'):
+    DEBUG = os.environ.get('DEBUG')
+else:
+    DEBUG = False
 
 
 def get_semester():
