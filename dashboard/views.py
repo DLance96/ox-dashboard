@@ -168,12 +168,12 @@ def brother_view(request):
     if brother.get_operational_committee_display() != 'Unassigned':
         operational_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester(),
                                                                     committee=committee_reverse[
-                                                                        brother.get_operational_committee_display()])\
+                                                                        brother.get_operational_committee_display()]) \
             .order_by("datetime")
     if brother.get_standing_committee_display() != 'Unassigned':
         standing_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester(),
                                                                  committee=committee_reverse[
-                                                                     brother.get_standing_committee_display()])\
+                                                                     brother.get_standing_committee_display()]) \
             .order_by("datetime")
     committee_meetings = operational_meetings | standing_meetings
     committee_meetings = committee_meetings.order_by("datetime")
@@ -428,7 +428,7 @@ def brother_pnm(request, pnm_id):
         'pnm': pnm,
         'events': attended_events,
     }
-    return render(request, 'potential_new_member.html', context)
+    return render(request, 'potential-new-member.html', context)
 
 
 def brother_service_submission(request, submission_id):
@@ -530,6 +530,39 @@ def vice_president(request):
     }
 
     return render(request, 'vice-president.html', context)
+
+
+def vice_president_committee_assignments(request):
+    """Renders Committee assignment update page for the Vice President"""
+    if not utils.verify_scholarship_chair(request.user):
+        messages.error(request, "Vice President Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    form_list = []
+    brothers = Brother.objects.exclude(brother_status='2')
+    for brother in brothers:
+        new_form = CommitteeForm(request.POST or None, initial={'standing_committee': brother.standing_committee,
+                                                                'operational_committee': brother.operational_committee},
+                                 prefix=brother.id)
+        form_list.append(new_form)
+
+    brother_forms = zip(brothers, form_list)
+
+    if request.method == 'POST':
+        if utils.forms_is_valid(form_list):
+            for counter, form in enumerate(form_list):
+                instance = form.cleaned_data
+                brother = brothers[counter]
+                brother.standing_committee = instance['standing_committee']
+                brother.operational_committee = instance['operational_committee']
+                brother.save()
+            return HttpResponseRedirect(reverse('dashboard:vice_president'))
+
+    context = {
+        'brother_forms': brother_forms,
+    }
+
+    return render(request, 'committee-assignment.html', context)
 
 
 def vice_president_committee_meeting_add(request):
@@ -1294,7 +1327,6 @@ def scholarship_c_gpa(request):
         if utils.forms_is_valid(form_list):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
-                print instance
                 plan = plans[counter]
                 plan.cumulative_gpa = instance['cum_GPA']
                 plan.past_semester_gpa = instance['past_GPA']
@@ -1390,7 +1422,7 @@ def recruitment_c_pnm(request, pnm_id):
         'events': attended_events,
         'pnm': pnm,
     }
-    return render(request, 'potential_new_member.html', context)
+    return render(request, 'potential-new-member.html', context)
 
 
 def recruitment_c_pnm_add(request):

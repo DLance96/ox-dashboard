@@ -112,6 +112,26 @@ class GPAForm(forms.Form):
     past_GPA = forms.DecimalField(label="", max_digits=5, decimal_places=2)
 
 
+class CommitteeForm(forms.Form):
+    STANDING_COMMITTEE_CHOICES = {
+        ('0', 'Recruitment'),
+        ('1', 'Public Relations'),
+        ('2', 'Health and Safety'),
+        ('3', 'Social'),
+        ('4', 'Unassigned')
+    }
+
+    OPERATIONAL_COMMITTEE_CHOICES = {
+        ('0', 'Alumni Relations'),
+        ('1', 'Membership Development'),
+        ('2', 'Scholarship'),
+        ('3', 'Unassigned')
+    }
+
+    standing_committee = forms.ChoiceField(label="", choices=STANDING_COMMITTEE_CHOICES)
+    operational_committee = forms.ChoiceField(label="", choices=OPERATIONAL_COMMITTEE_CHOICES)
+
+
 class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))

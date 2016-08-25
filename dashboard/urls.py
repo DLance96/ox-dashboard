@@ -44,6 +44,8 @@ urlpatterns = [
 
     # Vice President URL Section
     url(r'^vice-president/$', views.vice_president, name="vice_president"),
+    url(r'^vice-president/committee-assignments/$', views.vice_president_committee_assignments,
+        name="vice_president_committee_assignments"),
     url(r'^vice-president/committee-meeting/add/$', views.vice_president_committee_meeting_add,
         name="vice_president_committee_meeting_add"),
     url(r'^vice-president/committee-meeting/(?P<pk>\d+)/edit/$', views.CommitteeMeetingEdit.as_view(),
