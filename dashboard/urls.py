@@ -73,6 +73,7 @@ urlpatterns = [
     url(r'^secretary/event/(?P<event_id>[0-9]+)/view/$', views.secretary_event_view, name="secretary_event_view"),
     url(r'^secretary/event/(?P<event_id>[0-9]+)/$', views.secretary_event, name="secretary_event"),
     url(r'^secretary/excuse/(?P<excuse_id>[0-9]+)/$', views.secretary_excuse, name="secretary_excuse"),
+    url(r'^secretary/excuses', views.secretary_all_excuses, name="secretary_excuses"),
 
     # Marshal URL section
     url(r'^marshal/$', views.marshal, name="marshal"),

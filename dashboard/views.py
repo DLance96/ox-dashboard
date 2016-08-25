@@ -729,17 +729,17 @@ def secretary_excuse(request, excuse_id):
 
 
 def secretary_all_excuses(request):
-    """ Renders all excuses sorted by date then semester """
+    """ Renders Excuse """
     if not utils.verify_secretary(request.user):
         messages.error(request, "Secretary Access Denied!")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
-    excuses = Excuse.objects.order_by('brother__last_name').order_by('event__date')
+    excuses = Excuse.objects.order_by('brother__last_name','event__date')
+
     context = {
-        'excuses': excuses,
+        'excuses': excuses
     }
-    # TODO: create secretary-excuses-all.html
-    return render(request, "home.html", context)
+    return render(request, 'secretary_excuses.html', context)
 
 
 def secretary_event_view(request, event_id):
