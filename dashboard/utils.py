@@ -9,10 +9,11 @@ ec = ['President', 'Vice President', 'Vice President of Health and Safety', 'Sec
 non_ec = ['Service Chair', 'Philanthropy Chair', 'Detail Manager']
 
 # Toggle dependant on whether you want position verification
-if os.environ.get('DEBUG'):
-    debug = os.environ.get('DEBUG')
-else:
-    debug = True
+# if os.environ.get('DEBUG'):
+#     debug = os.environ.get('DEBUG')
+# else:
+#     debug = True
+debug = False
 
 
 def get_semester():
