@@ -100,6 +100,8 @@ urlpatterns = [
     url(r'^recruitment-chair/pnm/add/$', views.recruitment_c_pnm_add, name="recruitment_c_pnm_add"),
     url(r'^recruitment-chair/pnm/(?P<pk>\d+)/delete/$', views.PnmDelete.as_view(), name="recruitment_c_pnm_delete"),
 
+    url(r'^recruitment-chair/pnm/all_pnms.csv$', views.all_pnm_csv, name="all_pmn_csv"),
+
     # Scholarship Chair URL Section
     url(r'^scholarship-chair/$', views.scholarship_c, name="scholarship_c"),
     url(r'^scholarship-chair/gpa/$', views.scholarship_c_gpa, name="scholarship_c_gpa"),

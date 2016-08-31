@@ -1,8 +1,10 @@
+import csv
+
 from django.contrib import messages
 from django.contrib import auth
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import *
 from django.views.generic.edit import UpdateView, DeleteView
@@ -1373,6 +1375,25 @@ def recruitment_c(request):
         'potential_new_members': potential_new_members,
     }
     return render(request, 'recruitment-chair.html', context)
+
+
+def all_pnm_csv(request):
+    """Returns a list of pnms as a csv"""
+    potential_new_members = PotentialNewMember.objects.all()
+    print(potential_new_members[0])
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="all_pnms.csv"'
+    writer = csv.writer(response)
+    fields = [f.name for f in PotentialNewMember._meta.get_fields()][1:]
+    writer.writerow(fields)
+    for pnm in potential_new_members:
+        row = []
+        for field in fields:
+            row.append(getattr(pnm, field))
+        writer.writerow(row)
+
+    return response
 
 
 def recruitment_c_rush_attendance(request):
