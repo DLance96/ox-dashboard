@@ -149,7 +149,7 @@ def brother_view(request):
                                                   status='3').order_by("event__date")
 
     # Chapter Attendance calculation
-    past_chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester()).exclude(
+    past_chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester(), mandatory=True).exclude(
         date__gt=datetime.date.today())
     past_chapter_event_count = len(past_chapter_events)
     chapter_event_attendance = 0
@@ -457,15 +457,7 @@ def brother_service_submission_add(request):
     if request.method == 'POST':
         if form.is_valid():
             instance = form.save(commit=False)
-
-            try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
-                                                   year=instance.date.year)[0]
-            except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
-                                    year=instance.date.year)
-                semester.save()
-
+            semester = utils.get_semester()
             brother = Brother.objects.filter(user=request.user)[0]
             instance.brother = brother
             instance.semester = semester
@@ -650,8 +642,9 @@ def secretary_attendance(request):
         messages.error(request, "Secretary Access Denied!")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
-    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
-    events = ChapterEvent.objects.filter(semester=utils.get_semester()).exclude(date__gt=datetime.date.today())
+    brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')
+    events = ChapterEvent.objects.filter(semester=utils.get_semester(), mandatory=True)\
+        .exclude(date__gt=datetime.date.today())
     excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='1')
     events_excused_list = []
     events_unexcused_list = []
@@ -684,7 +677,7 @@ def secretary_event(request, event_id):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     event = ChapterEvent.objects.get(pk=event_id)
-    brothers = Brother.objects.exclude(brother_status='2')
+    brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')
     form_list = []
     for brother in brothers:
         if event.attendees.filter(id=brother.id):
