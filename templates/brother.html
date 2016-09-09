@@ -199,7 +199,8 @@
                     {% for pnm in pnms %}
                         <tr>
                             <td>
-                                <a href={% url 'dashboard:brother_pnm' pnm.id %}>{{ pnm.first_name }} {{ pnm.last_name }}</a>
+                                <a href={% url 'dashboard:brother_pnm' pnm.id %}>{{ pnm.first_name }}
+                                    {{ pnm.last_name }}</a>
                             </td>
                             <td>{{ pnm.case_ID }}</td>
                             <td>{{ pnm.phone_number }}</td>
@@ -215,6 +216,8 @@
                     {% endfor %}
                     </tbody>
                 </table>
+            <a class="btn btn-default" href={% url 'dashboard:all_pnm_csv' %} role="button">
+                Download full list as csv</a>
             </div>
         </div>
     </div>

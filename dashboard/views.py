@@ -1373,7 +1373,6 @@ def recruitment_c(request):
 def all_pnm_csv(request):
     """Returns a list of pnms as a csv"""
     potential_new_members = PotentialNewMember.objects.all()
-    print(potential_new_members[0])
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="all_pnms.csv"'
