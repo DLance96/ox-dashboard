@@ -527,7 +527,7 @@ def vice_president(request):
 
 def vice_president_committee_assignments(request):
     """Renders Committee assignment update page for the Vice President"""
-    if not utils.verify_scholarship_chair(request.user):
+    if not utils.verify_vice_president(request.user):
         messages.error(request, "Vice President Access Denied!")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
