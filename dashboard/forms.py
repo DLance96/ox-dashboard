@@ -85,6 +85,12 @@ class CommitteeMeetingForm(forms.ModelForm):
         fields = ['datetime', 'committee', 'minutes']
 
 
+class SuppliesForm(forms.ModelForm):
+    class Meta:
+        model = Supplies
+        fields = ['what']
+
+
 class BrotherAttendanceForm(forms.Form):
     present = forms.BooleanField(label="", required=False, label_suffix='')
 
@@ -136,3 +142,12 @@ class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     retype_new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+
+class SuppliesFinishForm(forms.Form):
+    supplies = Supplies.objects.filter(done=False)
+
+    choices = forms.ModelMultipleChoiceField(
+        queryset=supplies,
+        widget=forms.CheckboxSelectMultiple,
+    )

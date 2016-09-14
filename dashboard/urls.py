@@ -139,4 +139,7 @@ urlpatterns = [
         name="philanthropy_c_event_edit"),
 
     url(r'^detail-manager/$', views.detail_m, name="detail_m"),
+    url(r'^detail-manager/supplies-request/$', views.supplies_request, name='supplies_request'),
+    url(r'^detail-manager/supplies-list/$', views.supplies_list, name='supplies_list'),
+    url(r'^detail-manager/supplies-finish/$', views.supplies_finish, name='supplies_finish'),
 ]

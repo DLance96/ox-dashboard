@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Requested Supplies List</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>What:</td>
+                    <td>When:</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for what, when in supplies %}
+                    <tr>
+                        <td>{{ what }}</td>
+                        <td>{{ when }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
