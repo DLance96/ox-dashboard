@@ -1892,3 +1892,39 @@ def detail_m(request):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     return render(request, 'detail-manager.html', {})
+
+
+def supplies_request(request):
+    form = SuppliesForm(request.POST or None)
+    context = {}
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save(commit=True)
+            context['message'] = 'Thanks!'
+
+    context['form'] = form
+    return render(request, 'request-supplies.html', context)
+
+def supplies_list(request):
+    supplies = Supplies.objects.filter(done=False)
+    supplies = [(e.what, e.when) for e in supplies]
+
+    context = {'supplies': supplies}
+
+    return render(request, 'list-supplies.html', context)
+
+def supplies_finish(request):
+    if not utils.verify_detail_manager(request.user):
+        messages.error(request, "Detail Manager Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+    form = SuppliesFinishForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            for supply in form.cleaned_data['choices']:
+                supply.done = True
+                supply.save()
+
+    context = {'form': form}
+    return render(request, 'finish-supplies.html', context)

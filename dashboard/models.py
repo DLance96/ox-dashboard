@@ -319,3 +319,11 @@ class Excuse(models.Model):
 
     def __str__(self):
         return self.brother.first_name + " " + self.brother.last_name + " - " + self.event.name
+
+class Supplies(models.Model):
+    what = models.CharField(max_length=256)
+    done = models.BooleanField(default=False)
+    when = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.what
