@@ -127,7 +127,7 @@ class Brother(models.Model):
     # TODO: determine if there are any detail manager models
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return (self.first_name + " " + self.last_name).encode('utf8')
 
 
 class Position(models.Model):
@@ -136,7 +136,7 @@ class Position(models.Model):
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return self.title
+        return self.title.encode('utf8')
 
 
 class PotentialNewMember(models.Model):
@@ -159,7 +159,7 @@ class PotentialNewMember(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return (self.first_name + " " + self.last_name).encode('utf8')
 
 
 class ServiceSubmission(models.Model):
@@ -186,7 +186,7 @@ class ServiceSubmission(models.Model):
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.name.encode('utf8')
 
 
 # Given separate section to prevent accidental viewing while in admin views
@@ -217,7 +217,7 @@ class ChapterEvent(models.Model):
     minutes = models.URLField(blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.name.encode('utf8')
 
 
 class PhilanthropyEvent(models.Model):
@@ -230,7 +230,7 @@ class PhilanthropyEvent(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.name.encode('utf8')
 
 
 class ServiceEvent(models.Model):
@@ -244,7 +244,7 @@ class ServiceEvent(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.name.encode('utf8')
 
 
 class RecruitmentEvent(models.Model):
@@ -259,7 +259,7 @@ class RecruitmentEvent(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.name.encode('utf8')
 
 
 COMMITTEE_CHOICES = {
@@ -326,4 +326,4 @@ class Supplies(models.Model):
     when = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return self.what
+        return self.what.encode('utf8')
