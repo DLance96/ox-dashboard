@@ -36,6 +36,10 @@
                             <td>Event Mandatory:</td>
                             <td>{{ excuse.event.mandatory }}</td>
                         </tr>
+                        <tr>
+                            <td>Excuse Reason:</td>
+                            <td>{{ excuse.description }}</td>
+                        </tr>
                         {% if excuse.status == '0' %}
                         <tr>
                             <td>Excuse Status:</td>
