@@ -79,6 +79,12 @@ class ServiceSubmissionForm(forms.ModelForm):
         fields = ['name', 'date', 'hours', 'description']
 
 
+class ServiceSubmissionResponseForm(forms.ModelForm):
+    class Meta:
+        model = ServiceSubmission
+        fields = ['status']
+
+
 class CommitteeMeetingForm(forms.ModelForm):
     class Meta:
         model = CommitteeMeetingEvent

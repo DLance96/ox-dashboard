@@ -1707,17 +1707,29 @@ class ServiceEventEdit(UpdateView):
     fields = ['name', 'date', 'start_time', 'end_time', 'notes']
 
 
-class ServiceSubmissionChairEdit(UpdateView):
-    def get(self, request, *args, **kwargs):
-        if not utils.verify_service_chair(request.user):
-            messages.error(request, "Service Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
-        return super(ServiceSubmissionChairEdit, self).get(request, *args, **kwargs)
+def service_c_submission_response(request, submission_id):
+    """ Renders the service chair way of responding to submissions """
+    if not utils.verify_service_chair(request.user):
+        messages.error(request, "Service Chair Access Denied!")
+        return HttpResponseRedirect(reverse('dashboard:home'))
 
-    model = ServiceSubmission
-    success_url = reverse_lazy('dashboard:service_c')
-    fields = ['status']
-    template_name = 'dashboard/servicesubmission_form.html'
+    submission = ServiceSubmission.objects.get(pk=submission_id)
+    form = ServiceSubmissionResponseForm(request.POST or None, initial={'status': submission.status})
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.cleaned_data
+            submission.status = instance['status']
+            submission.save()
+            return HttpResponseRedirect(reverse('dashboard:service_c'))
+
+    context = {
+        'submission': submission,
+        'type': 'response',
+        'form': form,
+    }
+
+    return render(request, 'service-submission.html', context)
 
 
 def service_c_event_add(request):

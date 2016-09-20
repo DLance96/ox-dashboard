@@ -117,7 +117,7 @@ urlpatterns = [
 
     # Service Chair URL section
     url(r'^service-chair/$', views.service_c, name="service_c"),
-    url(r'^service-chair/(?P<pk>\d+)/response/$', views.ServiceSubmissionChairEdit.as_view(),
+    url(r'^service-chair/(?P<submission_id>[0-9]+)/response/$', views.service_c_submission_response,
         name="service_c_submission_response"),
     url(r'^service-chair/event/(?P<event_id>[0-9]+)/$', views.service_c_event,
         name="service_c_event"),
