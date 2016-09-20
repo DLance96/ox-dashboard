@@ -1,5 +1,5 @@
 from datetime import datetime
-import os
+
 from .models import *
 
 # EC Positions
@@ -72,8 +72,8 @@ def forms_is_valid(form_list):
 
 def verify_president(user):
     """ Verify user has President permissions """
-    id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(title='President')[0].brother.id == user_id or \
             debug:
         return True
     else:
@@ -82,9 +82,9 @@ def verify_president(user):
 
 def verify_vice_president(user):
     """ Verify user has Vice President permissions """
-    id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == id or \
-                    Position.objects.filter(title='Vice President')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(title='President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Vice President')[0].brother.id == user_id or \
             debug:
         return True
     else:
@@ -93,10 +93,10 @@ def verify_vice_president(user):
 
 def verify_vphs(user):
     """ Verify user has Vice President of Health and Safety permissions """
-    id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == id or \
-                    Position.objects.filter(title='Vice President')[0].brother.id == id or \
-                    Position.objects.filter(title='Vice President of Health and Safety')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(title='President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Vice President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Vice President of Health and Safety')[0].brother.id == user_id or \
             debug:
         return True
     else:
@@ -105,10 +105,10 @@ def verify_vphs(user):
 
 def verify_secretary(user):
     """ Verify user has Secretary permissions """
-    id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == id or \
-                    Position.objects.filter(title='Vice President')[0].brother.id == id or \
-                    Position.objects.filter(title='Secretary')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(title='President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Vice President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Secretary')[0].brother.id == user_id or \
             debug:
         return True
     else:
@@ -117,9 +117,9 @@ def verify_secretary(user):
 
 def verify_treasurer(user):
     """ Verify user has Treasurer permissions """
-    id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == id or \
-                    Position.objects.filter(title='Treasurer')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(title='President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Treasurer')[0].brother.id == user_id or \
             debug:
         return True
     else:
@@ -128,10 +128,10 @@ def verify_treasurer(user):
 
 def verify_marshal(user):
     """ Verify user has Marshal permissions """
-    id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == id or \
-                    Position.objects.filter(title='Vice President')[0].brother.id == id or \
-                    Position.objects.filter(title='Marshal')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(title='President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Vice President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Marshal')[0].brother.id == user_id or \
             debug:
         return True
     else:
@@ -140,10 +140,10 @@ def verify_marshal(user):
 
 def verify_recruitment_chair(user):
     """ Verify user has Recruitment Chair permissions """
-    id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == id or \
-                    Position.objects.filter(title='Vice President')[0].brother.id == id or \
-                    Position.objects.filter(title='Recruitment Chair')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(title='President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Vice President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Recruitment Chair')[0].brother.id == user_id or \
             debug:
         return True
     else:
@@ -152,9 +152,9 @@ def verify_recruitment_chair(user):
 
 def verify_scholarship_chair(user):
     """ Verify user has Scholarship Chair permissions """
-    id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == id or \
-                    Position.objects.filter(title='Scholarship Chair')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(title='President')[0].brother.id == user_id or \
+        Position.objects.filter(title='Scholarship Chair')[0].brother.id == user_id or \
             debug:
         return True
     else:
@@ -163,9 +163,9 @@ def verify_scholarship_chair(user):
 
 def verify_service_chair(user):
     """ Verify user has Service Chair permissions """
-    id = user.brother.id
-    if Position.objects.filter(brother__id=id)[0].ec or \
-                    Position.objects.filter(title='Service Chair')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(brother__id=user_id)[0].ec or \
+        Position.objects.filter(title='Service Chair')[0].brother.id == user_id or \
             debug:
         return True
     else:
@@ -174,9 +174,9 @@ def verify_service_chair(user):
 
 def verify_philanthropy_chair(user):
     """ Verify user has Philanthropy Chair permissions """
-    id = user.brother.id
-    if Position.objects.filter(brother__id=id)[0].ec or \
-                    Position.objects.filter(title='Philanthropy Chair')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(brother__id=user_id)[0].ec or \
+        Position.objects.filter(title='Philanthropy Chair')[0].brother.id == user_id or \
             debug:
         return True
     else:
@@ -185,9 +185,9 @@ def verify_philanthropy_chair(user):
 
 def verify_detail_manager(user):
     """ Verify user has Detail Manager permissions """
-    id = user.brother.id
-    if Position.objects.filter(brother__id=id)[0].ec or \
-                    Position.objects.filter(title='Detail Manager')[0].brother.id == id or \
+    user_id = user.brother.id
+    if Position.objects.filter(brother__id=user_id)[0].ec or \
+        Position.objects.filter(title='Detail Manager')[0].brother.id == user_id or \
             debug:
         return True
     else:
