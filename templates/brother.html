@@ -107,15 +107,17 @@
                     <tr>
                         <td>Event</td>
                         <td>Date</td>
+                        <td></td>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for event in chapter_events %}
+                    {% for event, attendance in event_attendance %}
                         <tr>
                             <td>
                                 <a href={% url 'dashboard:brother_chapter_event' event.id %}>{{ event.name }}</a>
                             </td>
                             <td>{{ event.date }}</td>
+                            <td>{{ attendance }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

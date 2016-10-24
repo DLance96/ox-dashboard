@@ -1,7 +1,6 @@
 import csv
 
 from django.contrib import messages
-from django.contrib import auth
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
@@ -150,19 +149,31 @@ def brother_view(request):
     excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
                                                   status='3').order_by("event__date")
 
-    # Chapter Attendance calculation
-    past_chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester(), mandatory=True).exclude(
-        date__gt=datetime.date.today())
-    past_chapter_event_count = len(past_chapter_events)
+    # Event attendance value
+    attendance = []
+    past_chapter_event_count = 0
     chapter_event_attendance = 0
     unexcused_events = 0
-    for event in past_chapter_events:
-        if event.attendees.filter(id=brother.id):
-            chapter_event_attendance += 1
-        elif excuses_approved.filter(event=event):
-            pass
+    for event in chapter_events:
+        if event.date > datetime.date.today():
+            attendance.append('')
+        elif not event.mandatory:
+            attendance.append('Not Mandatory')
         else:
-            unexcused_events += 1
+            past_chapter_event_count += 1
+            if event.attendees.filter(id=brother.id):
+                attendance.append('Attended')
+                chapter_event_attendance += 1
+            elif excuses_approved.filter(event=event):
+                attendance.append('Excused')
+                chapter_event_attendance += 1
+            elif excuses_pending.filter(event=event):
+                attendance.append('Pending')
+            else:
+                attendance.append('Unexcused')
+                unexcused_events += 1
+
+    event_attendance = zip(chapter_events, attendance)
     chapter_attendance = "%s / %s" % (chapter_event_attendance, past_chapter_event_count)
 
     committee_reverse = dict((v, k) for k, v in COMMITTEE_CHOICES)
@@ -219,7 +230,7 @@ def brother_view(request):
 
     context = {
         'brother': brother,
-        'chapter_events': chapter_events,
+        'event_attendance': event_attendance,
         'chapter_attendance': chapter_attendance,
         'unexcused_events': unexcused_events,
         'operational_meetings': operational_meetings,
@@ -1918,6 +1929,7 @@ def supplies_request(request):
     context['form'] = form
     return render(request, 'request-supplies.html', context)
 
+
 def supplies_list(request):
     supplies = Supplies.objects.filter(done=False)
     supplies = [(e.what, e.when) for e in supplies]
@@ -1925,6 +1937,7 @@ def supplies_list(request):
     context = {'supplies': supplies}
 
     return render(request, 'list-supplies.html', context)
+
 
 def supplies_finish(request):
     if not utils.verify_detail_manager(request.user):
