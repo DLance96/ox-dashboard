@@ -155,7 +155,7 @@ def brother_view(request):
     chapter_event_attendance = 0
     unexcused_events = 0
     for event in chapter_events:
-        if event.date > datetime.date.today():
+        if int(event.date.strftime("%s")) > int(datetime.datetime.now().strftime("%s")):
             attendance.append('')
         elif not event.mandatory:
             attendance.append('Not Mandatory')
