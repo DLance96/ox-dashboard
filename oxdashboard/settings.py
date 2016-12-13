@@ -127,3 +127,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
     #'/var/www/static/',
 )
+
+# EMAIL
+EMAIL_HOST = 'smtp.case.edu'
+EMAIL_PORT = 25
