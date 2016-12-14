@@ -17,12 +17,12 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
-from django_cas_ng import views as django_cas_ngviews
+from cas import views as casviews
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^accounts/login', django_cas_ngviews.login, name='cas_ng_login'),
-    url(r'^accounts/logout', django_cas_ngviews.logout, name='cas_ng_logout'),
+    url(r'^accounts/login', casviews.login, name='cas_login'),
+    url(r'^accounts/logout', casviews.logout, name='cas_logout'),
     url(r'', include('dashboard.urls', namespace='dashboard')),
 ]
 

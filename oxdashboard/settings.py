@@ -51,7 +51,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dashboard',
-    'django_cas_ng',
+    'cas',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -61,6 +61,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'cas.middleware.CASMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
@@ -135,12 +136,12 @@ EMAIL_PORT = 25
 
 
 # CAS
-CAS_SERVER_URL = "https://login.case.edu/cas"
+CAS_SERVER_URL = "https://login.case.edu/cas/"
 CAS_VERSION = '1'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'django_cas_ng.backends.CASBackend',
+    'cas.backends.CASBackend',
 )
 
 LOGGING = {
@@ -153,11 +154,11 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
         },
         'cas.backends': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
         },
     },
 }
