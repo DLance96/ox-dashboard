@@ -1,6 +1,7 @@
 import datetime
 import django.utils.timezone
-from django.contrib.auth.models import *
+from django.db import models
+from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 
 
@@ -35,7 +36,9 @@ class Brother(models.Model):
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45)
     roster_number = models.IntegerField(blank=True, null=True)
-    semester_joined = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    semester_joined = models.ForeignKey(
+        Semester, on_delete=models.CASCADE, blank=True, null=True
+    )
     date_pledged = models.DateField(blank=True, null=True)
 
     FRESHMAN = 'FR'
@@ -80,14 +83,22 @@ class Brother(models.Model):
     t_shirt_size = models.CharField(max_length=5, default="M")
 
     # regex for proper phone number entry
-    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
-                                 message="Phone number must be entered in the format: "
-                                         "'+999999999'. Up to 15 digits allowed.")
-    phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=15)  # validators should be a list
+    phone_regex = RegexValidator(
+        regex=r'^\+?1?\d{9,15}$',
+        message="Phone number must be entered in the format: "
+                "'+999999999'. Up to 15 digits allowed.")
+    # validators should be a list
+    phone_number = models.CharField(
+        validators=[phone_regex], blank=True, max_length=15
+    )
 
     # President Information
-    emergency_contact = models.CharField(max_length=200, default="Chapter President")
-    emergency_contact_phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=15)
+    emergency_contact = models.CharField(
+        max_length=200, default="Chapter President"
+    )
+    emergency_contact_phone_number = models.CharField(
+        validators=[phone_regex], blank=True, max_length=15
+    )
 
     # Vice President Information
     room_number = models.CharField(max_length=3, default="NA")
@@ -108,8 +119,12 @@ class Brother(models.Model):
         ('3', 'Unassigned')
     }
 
-    standing_committee = models.CharField(max_length=1, choices=STANDING_COMMITTEE_CHOICES, default='4')
-    operational_committee = models.CharField(max_length=1, choices=OPERATIONAL_COMMITTEE_CHOICES, default='3')
+    standing_committee = models.CharField(
+        max_length=1, choices=STANDING_COMMITTEE_CHOICES, default='4'
+    )
+    operational_committee = models.CharField(
+        max_length=1, choices=OPERATIONAL_COMMITTEE_CHOICES, default='3'
+    )
 
     # Treasurer Information
     # TODO: Add treasury models
@@ -133,7 +148,9 @@ class Brother(models.Model):
 class Position(models.Model):
     title = models.CharField(max_length=45)
     ec = models.BooleanField(default=False)
-    brother = models.ForeignKey(Brother, on_delete=models.CASCADE, blank=True, null=True)
+    brother = models.ForeignKey(
+        Brother, on_delete=models.CASCADE, blank=True, null=True
+    )
 
     def __str__(self):
         return self.title.encode('utf8')
@@ -145,17 +162,26 @@ class PotentialNewMember(models.Model):
     case_ID = models.CharField(max_length=10, blank=True, null=True)
 
     # regex for proper phone number entry
-    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
-                                 message="Phone number must be entered in the format: "
-                                         "'+999999999'. Up to 15 digits allowed.")
-    phone_number = models.CharField(validators=[phone_regex], blank=True, null=True, max_length=15)
+    phone_regex = RegexValidator(
+        regex=r'^\+?1?\d{9,15}$',
+        message="Phone number must be entered in the format: "
+                "'+999999999'. Up to 15 digits allowed.")
+    phone_number = models.CharField(
+        validators=[phone_regex], blank=True, null=True, max_length=15
+    )
     # validators should be a list
 
-    primary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, related_name="primary")
-    secondary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, blank=True, null=True,
-                                          related_name="secondary")
-    tertiary_contact = models.ForeignKey(Brother, on_delete=models.CASCADE, blank=True, null=True,
-                                         related_name="tertiary")
+    primary_contact = models.ForeignKey(
+        Brother, on_delete=models.CASCADE, related_name="primary"
+        )
+    secondary_contact = models.ForeignKey(
+        Brother, on_delete=models.CASCADE, blank=True, null=True,
+        related_name="secondary"
+    )
+    tertiary_contact = models.ForeignKey(
+        Brother, on_delete=models.CASCADE, blank=True, null=True,
+        related_name="tertiary"
+    )
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -194,15 +220,23 @@ class ScholarshipReport(models.Model):
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
     active = models.BooleanField(default=False)
-    past_semester_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
-    cumulative_gpa = models.DecimalField(max_digits=5, decimal_places=2, default=4.0)
-    scholarship_plan = models.TextField(default="Scholarship plan has not been setup yet if you past semester GPA "
-                                                "or cum GPA are below 3.0 you should "
-                                                "setup a meeting to have this corrected")
+    past_semester_gpa = models.DecimalField(
+        max_digits=5, decimal_places=2, default=4.0
+    )
+    cumulative_gpa = models.DecimalField(
+        max_digits=5, decimal_places=2, default=4.0
+    )
+    scholarship_plan = models.TextField(
+        default="Scholarship plan has not been setup yet if you past semester "
+                "GPA or cum GPA are below 3.0 you should "
+                "setup a meeting to have this corrected"
+    )
 
     def __str__(self):
-        return "%s %s - %s %s" % (self.brother.first_name, self.brother.last_name,
-                                  self.semester.get_season_display(), self.semester.year)
+        return "%s %s - %s %s" % (self.brother.first_name,
+                                  self.brother.last_name,
+                                  self.semester.get_season_display(),
+                                  self.semester.year)
 
 
 class ChapterEvent(models.Model):
@@ -210,7 +244,9 @@ class ChapterEvent(models.Model):
     date = models.DateField(default=django.utils.timezone.now)
     start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
     end_time = models.TimeField(blank=True, null=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    semester = models.ForeignKey(
+        Semester, on_delete=models.CASCADE, blank=True, null=True
+    )
     mandatory = models.BooleanField(default=True)
     attendees = models.ManyToManyField(Brother, blank=True)
     notes = models.TextField(blank=True, null=True)
@@ -225,7 +261,9 @@ class PhilanthropyEvent(models.Model):
     date = models.DateField(default=django.utils.timezone.now)
     start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
     end_time = models.TimeField(blank=True, null=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    semester = models.ForeignKey(
+        Semester, on_delete=models.CASCADE, blank=True, null=True
+    )
     rsvp_brothers = models.ManyToManyField(Brother, blank=True)
     notes = models.TextField(blank=True, null=True)
 
@@ -238,9 +276,16 @@ class ServiceEvent(models.Model):
     date = models.DateField(default=django.utils.timezone.now)
     start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
     end_time = models.TimeField(blank=True, null=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
-    rsvp_brothers = models.ManyToManyField(Brother, blank=True, related_name="rsvp")
-    attendees = models.ManyToManyField(Brother, blank=True, related_name="attended")
+    semester = models.ForeignKey(
+        Semester, on_delete=models.CASCADE, blank=True, null=True
+    )
+    rsvp_brothers = models.ManyToManyField(
+        Brother, blank=True, related_name="rsvp"
+    )
+
+    attendees = models.ManyToManyField(
+        Brother, blank=True, related_name="attended"
+    )
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -252,7 +297,9 @@ class RecruitmentEvent(models.Model):
     date = models.DateField(default=django.utils.timezone.now)
     start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
     end_time = models.TimeField(blank=True, null=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    semester = models.ForeignKey(
+        Semester, on_delete=models.CASCADE, blank=True, null=True
+    )
     attendees_pnms = models.ManyToManyField(PotentialNewMember, blank=True)
     attendees_brothers = models.ManyToManyField(Brother, blank=True)
     rush = models.BooleanField(default=True)
@@ -276,7 +323,9 @@ COMMITTEE_CHOICES = {
 class CommitteeMeetingEvent(models.Model):
     datetime = models.DateTimeField(default=django.utils.timezone.now)
     attendees = models.ManyToManyField(Brother, blank=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    semester = models.ForeignKey(
+        Semester, on_delete=models.CASCADE, blank=True, null=True
+    )
 
     committee = models.CharField(max_length=1, choices=COMMITTEE_CHOICES)
     minutes = models.URLField(blank=True, null=True)
@@ -290,7 +339,9 @@ class StudyTableEvent(models.Model):
     start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
     end_time = models.TimeField(blank=True, null=True)
     attendees = models.ManyToManyField(Brother, blank=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+    semester = models.ForeignKey(
+        Semester, on_delete=models.CASCADE, blank=True, null=True
+    )
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -301,7 +352,9 @@ class Excuse(models.Model):
     event = models.ForeignKey(ChapterEvent, on_delete=models.CASCADE)
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
     date_submitted = models.DateTimeField(default=django.utils.timezone.now)
-    description = models.TextField("Reasoning", default="I will not be attending because")
+    description = models.TextField(
+        "Reasoning", default="I will not be attending because"
+    )
     response_message = models.TextField(blank=True, null=True)
 
     STATUS_CHOICES = (
@@ -318,7 +371,9 @@ class Excuse(models.Model):
     )
 
     def __str__(self):
-        return self.brother.first_name + " " + self.brother.last_name + " - " + self.event.name
+        return self.brother.first_name \
+            + " " + self.brother.last_name + " - " + self.event.name
+
 
 class Supplies(models.Model):
     what = models.CharField(max_length=256)
