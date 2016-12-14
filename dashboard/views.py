@@ -1779,10 +1779,7 @@ def supplies_list(request):
     return render(request, 'list-supplies.html', context)
 
 
-<<<<<<< HEAD
-=======
 @verify_position(['Detail Manager'])
->>>>>>> 35a9ea5d97e5307673a98a620d2ef61dc4bd7841
 def supplies_finish(request):
     form = SuppliesFinishForm(request.POST or None)
 
