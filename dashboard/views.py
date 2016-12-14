@@ -1,6 +1,6 @@
 import csv
 
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
