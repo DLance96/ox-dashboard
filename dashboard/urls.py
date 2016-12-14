@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^brother/c-event/(?P<event_id>[0-9]+)/$', views.brother_chapter_event, name="brother_chapter_event"),
     url(r'^brother/r-event/(?P<event_id>[0-9]+)/$', views.brother_recruitment_event, name="brother_recruitment_event"),
     url(r'^brother/s-event/(?P<event_id>[0-9]+)/$', views.brother_service_event, name="brother_service_event"),
+    url(r'^brother/hs-event/(?P<event_id>[0-9]+)/$', views.brother_hs_event, name="brother_hs_event"),
     url(r'^brother/p-event/(?P<event_id>[0-9]+)/$', views.brother_philanthropy_event,
         name="brother_philanthropy_event"),
     url(r'^brother/excuse/(?P<excuse_id>[0-9]+)/$', views.brother_excuse, name="brother_excuse"),

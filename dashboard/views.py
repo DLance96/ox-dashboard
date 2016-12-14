@@ -140,6 +140,7 @@ def brother_view(request):
         messages.error(request, "Brother needs to be logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
     brother = Brother.objects.filter(user=request.user)[0]
+    hs_events = HealthAndSafteyEvent.objects.filter(semester=get_semester()).order_by("date")
     chapter_events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
 
     excuses_pending = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
@@ -241,6 +242,7 @@ def brother_view(request):
         'excuses_approved': excuses_approved,
         'excuses_denied': excuses_denied,
         'excuses_not_mandatory': excuses_not_mandatory,
+        'hs_events': hs_events,
         'recruitment_events': recruitment_events,
         'recruitment_events_next': recruitment_events_next,
         'pnms': pnms,
@@ -363,6 +365,21 @@ def brother_recruitment_event(request, event_id):
         'event': event,
     }
     return render(request, "recruitment-event.html", context)
+
+
+def brother_hs_event(request, event_id):
+    """ Renders the brother page for recruitment event with a excuse form """
+    if not request.user.is_authenticated():  # brother auth check
+        messages.error(request, "Brother not logged in before viewing brother Health and Safety events")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    event = HealthAndSafteyEvent.objects.get(pk=event_id)
+
+    context = {
+        'type': 'brother-view',
+        'event': event,
+    }
+    return render(request, "hs-event.html", context)
 
 
 def brother_excuse(request, excuse_id):

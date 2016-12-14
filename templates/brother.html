@@ -320,6 +320,32 @@
         </div>
     </div>
     <div class="panel panel-default">
+        <div class="panel-heading">Health and Safety Events</div>
+        <div class="panel-body">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table class="table table-condensed">
+                    <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Event</td>
+                        <td>Date</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for event in hs_events %}
+                        <tr>
+                            <td>
+                                <a href={% url 'dashboard:brother_hs_event' event.id %}>{{ event.name }}</a>
+                            </td>
+                            <td>{{ event.date }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
         <div class="panel-heading">Recruitment Events</div>
         <div class="panel-body">
             <div class="col-lg-2"></div>
