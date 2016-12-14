@@ -8,7 +8,8 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import *
 from django.views.generic.edit import UpdateView, DeleteView
 
-from .utils import verify_position
+from .utils import verify_position, get_semester, verify_brother,\
+        get_season, get_year
 from datetime import datetime
 from .forms import *
 
@@ -118,10 +119,10 @@ def emergency_contact_list(request):
 
 def event_list(request):
     """Renders all the semester events"""
-    chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
-    recruitment_events = RecruitmentEvent.objects.filter(semester=utils.get_semester()).order_by("date")
-    service_events = ServiceEvent.objects.filter(semester=utils.get_semester()).order_by("date")
-    philanthropy_events = PhilanthropyEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    chapter_events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
+    recruitment_events = RecruitmentEvent.objects.filter(semester=get_semester()).order_by("date")
+    service_events = ServiceEvent.objects.filter(semester=get_semester()).order_by("date")
+    philanthropy_events = PhilanthropyEvent.objects.filter(semester=get_semester()).order_by("date")
 
     context = {
         'chapter_events': chapter_events,
@@ -139,15 +140,15 @@ def brother_view(request):
         messages.error(request, "Brother needs to be logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
     brother = Brother.objects.filter(user=request.user)[0]
-    chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    chapter_events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
 
-    excuses_pending = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+    excuses_pending = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
                                             status='0').order_by("event__date")
-    excuses_approved = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+    excuses_approved = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
                                              status='1').order_by("event__date")
-    excuses_denied = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+    excuses_denied = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
                                            status='2').order_by("event__date")
-    excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+    excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
                                                   status='3').order_by("event__date")
 
     # Event attendance value
@@ -181,39 +182,39 @@ def brother_view(request):
     standing_meetings = []
     operational_meetings = []
     if brother.get_operational_committee_display() != 'Unassigned':
-        operational_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester(),
+        operational_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester(),
                                                                     committee=committee_reverse[
                                                                         brother.get_operational_committee_display()]) \
             .order_by("start_time").order_by("date")
     if brother.get_standing_committee_display() != 'Unassigned':
-        standing_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester(),
+        standing_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester(),
                                                                  committee=committee_reverse[
                                                                      brother.get_standing_committee_display()]) \
             .order_by("start_time").order_by("date")
 
-    current_season = utils.get_season()
+    current_season = get_season()
     if current_season is '0':
-        recruitment_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year()) \
+        recruitment_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year()) \
             .order_by("date")
-        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year()) \
+        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=get_year()) \
             .order_by("date")
     else:
-        recruitment_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year()) \
+        recruitment_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=get_year()) \
             .order_by("date")
-        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year()) \
+        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year()) \
             .order_by("date")
     pnms = PotentialNewMember.objects.filter(Q(primary_contact=brother) |
                                              Q(secondary_contact=brother) |
                                              Q(tertiary_contact=brother)).order_by("last_name")
-    service_events = ServiceEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    service_events = ServiceEvent.objects.filter(semester=get_semester()).order_by("date")
     # Service submissions
-    submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+    submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
                                                            status='0').order_by("date")
-    submissions_submitted = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+    submissions_submitted = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
                                                              status='1').order_by("date")
-    submissions_approved = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+    submissions_approved = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
                                                             status='2').order_by("date")
-    submissions_denied = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+    submissions_denied = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
                                                           status='3').order_by("date")
 
     hours_pending = 0
@@ -226,7 +227,7 @@ def brother_view(request):
     for submission in submissions_approved:
         hours_approved += submission.hours
 
-    philanthropy_events = PhilanthropyEvent.objects.filter(semester=utils.get_semester()) \
+    philanthropy_events = PhilanthropyEvent.objects.filter(semester=get_semester()) \
         .order_by("start_time").order_by("date")
 
     context = {
@@ -382,7 +383,7 @@ class ExcuseDelete(DeleteView):
     def get(self, request, *args, **kwargs):
         excuse = Excuse.objects.get(pk=self.kwargs['pk'])
         brother = excuse.brother
-        if not utils.verify_brother(brother, request.user):
+        if not verify_brother(brother, request.user):
             messages.error(request, "Brother Access Denied!")
             return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ExcuseDelete, self).get(request, *args, **kwargs)
@@ -396,7 +397,7 @@ class ExcuseEdit(UpdateView):
     def get(self, request, *args, **kwargs):
         excuse = Excuse.objects.get(pk=self.kwargs['pk'])
         brother = excuse.brother
-        if not utils.verify_brother(brother, request.user):
+        if not verify_brother(brother, request.user):
             messages.error(request, "Brother Access Denied!")
             return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ExcuseEdit, self).get(request, *args, **kwargs)
@@ -409,7 +410,7 @@ class ExcuseEdit(UpdateView):
 class BrotherEdit(UpdateView):
     def get(self, request, *args, **kwargs):
         brother = Brother.objects.get(pk=self.kwargs['pk'])
-        if not utils.verify_brother(brother, request.user):
+        if not verify_brother(brother, request.user):
             messages.error(request, "Brother Access Denied!")
             return HttpResponseRedirect(reverse('dashboard:home'))
         return super(BrotherEdit, self).get(request, *args, **kwargs)
@@ -429,7 +430,7 @@ def brother_pnm(request, pnm_id):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     pnm = PotentialNewMember.objects.get(pk=pnm_id)
-    events = RecruitmentEvent.objects.filter(semester=utils.get_season()).order_by("date").all()
+    events = RecruitmentEvent.objects.filter(semester=get_season()).order_by("date").all()
 
     attended_events = []
     for event in events:
@@ -471,7 +472,7 @@ def brother_service_submission_add(request):
     if request.method == 'POST':
         if form.is_valid():
             instance = form.save(commit=False)
-            semester = utils.get_semester()
+            semester = get_semester()
             brother = Brother.objects.filter(user=request.user)[0]
             instance.brother = brother
             instance.semester = semester
@@ -489,7 +490,7 @@ class ServiceSubmissionDelete(DeleteView):
     def get(self, request, *args, **kwargs):
         submission = ServiceSubmission.objects.get(pk=self.kwargs['pk'])
         brother = submission.brother
-        if not utils.verify_brother(brother, request.user):
+        if not verify_brother(brother, request.user):
             messages.error(request, "Brother Access Denied!")
             return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ServiceSubmissionDelete, self).get(request, *args, **kwargs)
@@ -503,7 +504,7 @@ class ServiceSubmissionEdit(UpdateView):
     def get(self, request, *args, **kwargs):
         submission = ServiceSubmission.objects.get(pk=self.kwargs['pk'])
         brother = submission.brother
-        if not utils.verify_brother(brother, request.user):
+        if not verify_brother(brother, request.user):
             messages.error(request, "Brother Access Denied!")
             return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ServiceSubmissionEdit, self).get(request, *args, **kwargs)
@@ -522,7 +523,7 @@ def president(request):
 @verify_position(['Vice President', 'President'])
 def vice_president(request):
     """ Renders the Vice President page and all relevant information, primarily committee related """
-    committee_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester())\
+    committee_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester())\
         .order_by("start_time").order_by("date")
 
     context = {
@@ -546,7 +547,7 @@ def vice_president_committee_assignments(request):
     brother_forms = zip(brothers, form_list)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(form_list):
+        if forms_is_valid(form_list):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 brother = brothers[counter]
@@ -572,10 +573,10 @@ def vice_president_committee_meeting_add(request):
             instance = form.save(commit=False)
 
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
 
@@ -619,8 +620,8 @@ def treasurer(request):
 @verify_position(['Secretary', 'Vice President', 'President'])
 def secretary(request):
     """ Renders the secretary page giving access to excuses and ChapterEvents """
-    excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='0').order_by("event__date")
-    events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    excuses = Excuse.objects.filter(event__semester=get_semester(), status='0').order_by("event__date")
+    events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
 
     context = {
         'excuses': excuses,
@@ -633,9 +634,9 @@ def secretary(request):
 def secretary_attendance(request):
     """ Renders the secretary view for chapter attendance """
     brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')
-    events = ChapterEvent.objects.filter(semester=utils.get_semester(), mandatory=True)\
+    events = ChapterEvent.objects.filter(semester=get_semester(), mandatory=True)\
         .exclude(date__gt=datetime.date.today())
-    excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='1')
+    excuses = Excuse.objects.filter(event__semester=get_semester(), status='1')
     events_excused_list = []
     events_unexcused_list = []
 
@@ -679,7 +680,7 @@ def secretary_event(request, event_id):
             form_list.append(new_form)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(form_list):
+        if forms_is_valid(form_list):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
@@ -850,10 +851,10 @@ def secretary_event_add(request):
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
@@ -917,11 +918,11 @@ def secretary_all_events(request):
 def secretary_positions(request):
     """ Renders all of the positions currently in the chapter """
     # Checking to make sure all of the EC and dashboard required positions are setup
-    for position in utils.ec:
+    for position in ec:
         if not Position.objects.filter(title=position).exists():
             new_position = Position(title=position, ec=True)
             new_position.save()
-    for position in utils.non_ec:
+    for position in non_ec:
         if not Position.objects.filter(title=position).exists():
             new_position = Position(title=position)
             new_position.save()
@@ -977,8 +978,8 @@ class PositionDelete(DeleteView):
 def marshal(request):
     """ Renders the marshal page listing all the candidates and relevant information to them """
     candidates = Brother.objects.filter(brother_status='0').order_by("last_name")
-    events = ChapterEvent.objects.filter(semester=utils.get_semester()).exclude(date__gt=datetime.date.today())
-    excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='1')
+    events = ChapterEvent.objects.filter(semester=get_semester()).exclude(date__gt=datetime.date.today())
+    excuses = Excuse.objects.filter(event__semester=get_semester(), status='1')
     events_excused_list = []
     events_unexcused_list = []
 
@@ -1080,17 +1081,17 @@ class CandidateDelete(DeleteView):
 @verify_position(['Scholarship Chair', 'President'])
 def scholarship_c(request):
     """ Renders the Scholarship page listing all brother gpas and study table attendance """
-    events = StudyTableEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    events = StudyTableEvent.objects.filter(semester=get_semester()).order_by("date")
 
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
     plans = []
 
     for brother in brothers:
-        plan = ScholarshipReport.objects.filter(semester=utils.get_semester(), brother__id=brother.id)
+        plan = ScholarshipReport.objects.filter(semester=get_semester(), brother__id=brother.id)
         if plan.exists():
             plan = plan[0]
         else:
-            plan = ScholarshipReport(brother=brother, semester=utils.get_semester())
+            plan = ScholarshipReport(brother=brother, semester=get_semester())
             plan.save()
         plans.append(plan)
 
@@ -1123,7 +1124,7 @@ def scholarship_c_event(request, event_id):
             brother_form_list.append(new_form)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(brother_form_list):
+        if forms_is_valid(brother_form_list):
             for counter, form in enumerate(brother_form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
@@ -1152,10 +1153,10 @@ def scholarship_c_event_add(request):
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
@@ -1200,7 +1201,7 @@ class StudyEventEdit(UpdateView):
 def scholarship_c_plan(request, plan_id):
     """Renders Scholarship Plan page for the Scholarship Chair"""
     plan = ScholarshipReport.objects.get(pk=plan_id)
-    events = StudyTableEvent.objects.filter(semester=utils.get_semester()).exclude(date__gt=datetime.date.today())
+    events = StudyTableEvent.objects.filter(semester=get_semester()).exclude(date__gt=datetime.date.today())
     study_tables_attended = 0
     study_tables_count = len(events)
 
@@ -1221,7 +1222,7 @@ def scholarship_c_plan(request, plan_id):
 @verify_position(['Scholarship Chair', 'President'])
 def scholarship_c_gpa(request):
     """Renders Scholarship Gpa update page for the Scholarship Chair"""
-    plans = ScholarshipReport.objects.filter(semester=utils.get_semester()).order_by("brother__last_name")
+    plans = ScholarshipReport.objects.filter(semester=get_semester()).order_by("brother__last_name")
     form_list = []
 
     for plan in plans:
@@ -1232,7 +1233,7 @@ def scholarship_c_gpa(request):
     form_plans = zip(form_list, plans)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(form_list):
+        if forms_is_valid(form_list):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 plan = plans[counter]
@@ -1261,13 +1262,13 @@ class ScholarshipReportEdit(UpdateView):
 @verify_position(['Recruitment Chair', 'Vice President', 'President'])
 def recruitment_c(request):
     """ Renders Scholarship chair page with events for the current and following semester """
-    current_season = utils.get_season()
+    current_season = get_season()
     if current_season is '0':
-        semester_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year())
-        semester_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year())
+        semester_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year())
+        semester_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=get_year())
     else:
-        semester_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year())
-        semester_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year())
+        semester_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=get_year())
+        semester_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year())
 
     potential_new_members = PotentialNewMember.objects.all()
 
@@ -1301,7 +1302,7 @@ def all_pnm_csv(request):
 def recruitment_c_rush_attendance(request):
     """ Renders Scholarship chair page with rush attendance """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
-    events = RecruitmentEvent.objects.filter(semester=utils.get_semester(), rush=True) \
+    events = RecruitmentEvent.objects.filter(semester=get_semester(), rush=True) \
         .exclude(date__gt=datetime.date.today())
     events_attended_list = []
 
@@ -1325,7 +1326,7 @@ def recruitment_c_rush_attendance(request):
 def recruitment_c_pnm(request, pnm_id):
     """ Renders PNM view for recruitment chair """
     pnm = PotentialNewMember.objects.get(pk=pnm_id)
-    events = RecruitmentEvent.objects.filter(semester=utils.get_semester()).order_by("date").all()
+    events = RecruitmentEvent.objects.filter(semester=get_semester()).order_by("date").all()
 
     attended_events = []
     for event in events:
@@ -1409,7 +1410,7 @@ def recruitment_c_event(request, event_id):
             brother_form_list.append(new_form)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(pnm_form_list) and utils.forms_is_valid(brother_form_list):
+        if forms_is_valid(pnm_form_list) and forms_is_valid(brother_form_list):
             for counter, form in enumerate(pnm_form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
@@ -1447,10 +1448,10 @@ def recruitment_c_event_add(request):
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
@@ -1494,10 +1495,10 @@ class RecruitmentEventEdit(UpdateView):
 @verify_position(['Service Chair', 'ec'])
 def service_c(request):
     """ Renders the service chair page with service submissions """
-    events = ServiceEvent.objects.filter(semester=utils.get_semester())
-    submissions_pending = ServiceSubmission.objects.filter(semester=utils.get_semester(), status='0').order_by("date")
+    events = ServiceEvent.objects.filter(semester=get_semester())
+    submissions_pending = ServiceSubmission.objects.filter(semester=get_semester(), status='0').order_by("date")
 
-    submissions_submitted = ServiceSubmission.objects.filter(semester=utils.get_semester(), status='1').order_by(
+    submissions_submitted = ServiceSubmission.objects.filter(semester=get_semester(), status='1').order_by(
         "date")
 
     hours_pending = 0
@@ -1507,7 +1508,7 @@ def service_c(request):
         hours_pending += submission.hours
 
     hours_approved = 0
-    submissions_approved = ServiceSubmission.objects.filter(semester=utils.get_semester(), status='2')
+    submissions_approved = ServiceSubmission.objects.filter(semester=get_semester(), status='2')
     for submission in submissions_approved:
         hours_approved += submission.hours
 
@@ -1542,7 +1543,7 @@ def service_c_event(request, event_id):
             form_list.append(new_form)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(form_list):
+        if forms_is_valid(form_list):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
@@ -1615,10 +1616,10 @@ def service_c_event_add(request):
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
@@ -1675,7 +1676,7 @@ def service_c_hours(request):
 @verify_position(['Philanthropy Chair', 'ec'])
 def philanthropy_c(request):
     """ Renders the philanthropy chair's RSVP page for different events """
-    events = PhilanthropyEvent.objects.filter(semester=utils.get_semester())
+    events = PhilanthropyEvent.objects.filter(semester=get_semester())
     context = {
         'events': events,
     }
@@ -1707,10 +1708,10 @@ def philanthropy_c_event_add(request):
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
