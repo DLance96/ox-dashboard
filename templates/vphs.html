@@ -24,7 +24,7 @@
                 <tbody>
                 {% for event in events %}
                     <tr>
-                        <td><a href="">{{ event.name }}</a></td>
+                        <td><a href={% url 'dashboard:health_safety_event' event.id %}>{{ event.name }}</a></td>
                         <td>{{ event.date }} - {{ event.start_time }}</td>
                         {% if event.minutes %}
                             <td><a href="{{ event.minutes }}">link</a></td>

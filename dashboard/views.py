@@ -675,6 +675,44 @@ class HealthAndSafteyDelete(DeleteView):
     success_url = reverse_lazy('dashboard:vphs')
 
 
+def health_and_saftey_event(request, event_id):
+    """ Renders the scholarship chair way of view StudyTables """
+    event = HealthAndSafteyEvent.objects.get(pk=event_id)
+    brothers = Brother.objects.exclude(brother_status='2')
+    brother_form_list = []
+
+    for brother in brothers:
+        if event.attendees_brothers.filter(id=brother.id):
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
+            brother_form_list.append(new_form)
+        else:
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
+            brother_form_list.append(new_form)
+
+    if request.method == 'POST':
+        if forms_is_valid(brother_form_list):
+            for counter, form in enumerate(brother_form_list):
+                instance = form.cleaned_data
+                if instance['present'] is True:
+                    event.attendees_brothers.add(brothers[counter])
+                    event.save()
+                if instance['present'] is False:
+                    event.attendees_brothers.remove(brothers[counter])
+                    event.save()
+            return HttpResponseRedirect(reverse('dashboard:scholarship_c'))
+
+    context = {
+        'type': 'attendance',
+        'brother_form_list': brother_form_list,
+        'event': event,
+    }
+    return render(request, "hs-event.html", context)
+
+
 @verify_position(['Treasurer', 'President'])
 def treasurer(request):
     """ Renders all the transactional information on the site for the treasurer """
@@ -1169,7 +1207,7 @@ def scholarship_c(request):
 
 
 @verify_position(['Scholarship Chair', 'President'])
-def scholarship_c_event(request, event_id):
+def study_table_event(request, event_id):
     """ Renders the scholarship chair way of view StudyTables """
     event = StudyTableEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')

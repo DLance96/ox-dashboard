@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>{{ event.name }}</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Event</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class=" col-lg-2 "></div>
+                <div class=" col-lg-8 ">
+                    <table class="table table-event-information">
+                        <tbody>
+                        <tr>
+                            <td>Date:</td>
+                            <td>{{ event.date }}</td>
+                        </tr>
+                        <tr>
+                            <td>Time Start:
+                                {% if event.end_time %}
+                                    <br>End:
+                                {% endif %}</td>
+                            </td>
+                            <td>{{ event.start_time }}
+                                {% if event.end_time %}
+                                    <br>{{ event.end_time }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if event.notes %}
+                            <tr>
+                                <td>Notes</td>
+                                <td>{{ event.notes }}</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                    {% if type == 'attendance' or type == 'ec-view' %}
+                        <a class="btn btn-default" href={% url 'dashboard:health_and_saftey_event_edit' event.id %} role="button">Edit event</a>
+                    {% endif %}
+                </div>
+                <div class=" col-lg-2 "></div>
+            </div>
+        </div>
+    </div>
+    {% if type == 'attendance' %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Attendance</div>
+            <div class="panel-body">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {% for form in brother_form_list %}
+                        {% for field in form %}
+                            {{ field }}{{ field.label_tag }}
+                        {% endfor %}
+                        <br>
+                    {% endfor %}
+                    <input type="submit" value="Update"/>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+    {% if type == 'ec-view' %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Event Attendance</div>
+            <div class="panel-body">
+                {% for brother in attendees %}
+                    {{ brother }}<br>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

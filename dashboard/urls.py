@@ -61,6 +61,7 @@ urlpatterns = [
         name="health_and_saftey_event_edit"),
     url(r'^vphs/hs_event/(?P<pk>\d+)/delete/$', views.HealthAndSafteyDelete.as_view(),
         name="health_and_saftey_event_delete"),
+    url(r'^vphs/hs_event/(?P<event_id>[0-9]+)/$', views.health_and_saftey_event, name="health_safety_event"),
 
     url(r'^treasurer/', views.treasurer, name="treasurer"),
 
@@ -114,7 +115,7 @@ urlpatterns = [
     # Scholarship Chair URL Section
     url(r'^scholarship-chair/$', views.scholarship_c, name="scholarship_c"),
     url(r'^scholarship-chair/gpa/$', views.scholarship_c_gpa, name="scholarship_c_gpa"),
-    url(r'^scholarship-chair/event/(?P<event_id>[0-9]+)/$', views.scholarship_c_event, name="scholarship_c_event"),
+    url(r'^scholarship-chair/event/(?P<event_id>[0-9]+)/$', views.study_table_event, name="scholarship_c_event"),
     url(r'^scholarship-chair/event/add/$', views.scholarship_c_event_add, name="scholarship_c_event_add"),
     url(r'^scholarship-chair/event/(?P<pk>\d+)/edit/$', views.StudyEventEdit.as_view(),
         name="scholarship_c_event_edit"),
