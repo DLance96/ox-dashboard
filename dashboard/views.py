@@ -368,7 +368,7 @@ def brother_recruitment_event(request, event_id):
 
 
 def brother_hs_event(request, event_id):
-    """ Renders the brother page for recruitment event with a excuse form """
+    """ Renders the brother page for health and safety event with a excuse form """
     if not request.user.is_authenticated():  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother Health and Safety events")
         return HttpResponseRedirect(reverse('dashboard:home'))
@@ -641,7 +641,7 @@ def vphs(request):
 
 @verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
 def health_and_saftey_event_add(request):
-    """ Renders the Secretary way of viewing a brother """
+    """ Renders the VPHS adding an event """
     form = HealthAndSafetyEventForm(request.POST or None)
 
     if form.is_valid():
@@ -693,7 +693,7 @@ class HealthAndSafteyDelete(DeleteView):
 
 
 def health_and_saftey_event(request, event_id):
-    """ Renders the scholarship chair way of view StudyTables """
+    """ Renders the vphs way of view events """
     event = HealthAndSafteyEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')
     brother_form_list = []
