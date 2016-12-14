@@ -163,7 +163,7 @@ def brother_view(request):
             attendance.append('Not Mandatory')
         else:
             past_chapter_event_count += 1
-            if event.attendees.filter(id=brother.id):
+            if event.attendees_brothers.filter(id=brother.id):
                 attendance.append('Attended')
                 chapter_event_attendance += 1
             elif excuses_approved.filter(event=event):
@@ -644,7 +644,7 @@ def secretary_attendance(request):
         events_excused = 0
         events_unexcused = 0
         for event in events:
-            if not event.attendees.filter(id=brother.id).exists():
+            if not event.attendees_brothers.filter(id=brother.id).exists():
                 if excuses.filter(brother=brother, event=event).exists():
                     events_excused += 1
                 else:
@@ -668,7 +668,7 @@ def secretary_event(request, event_id):
     brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')
     form_list = []
     for brother in brothers:
-        if event.attendees.filter(id=brother.id):
+        if event.attendees_brothers.filter(id=brother.id):
             new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
                                              prefix=brother.roster_number,
                                              brother="- %s %s" % (brother.first_name, brother.last_name))
@@ -684,10 +684,10 @@ def secretary_event(request, event_id):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
-                    event.attendees.add(brothers[counter])
+                    event.attendees_brothers.add(brothers[counter])
                     event.save()
                 if instance['present'] is False:
-                    event.attendees.remove(brothers[counter])
+                    event.attendees_brothers.remove(brothers[counter])
                     event.save()
             return HttpResponseRedirect(reverse('dashboard:secretary'))
 
@@ -753,7 +753,7 @@ def secretary_all_excuses(request):
 def secretary_event_view(request, event_id):
     """ Renders the Secretary way of viewing old events """
     event = ChapterEvent.objects.get(pk=event_id)
-    attendees = event.attendees.all().order_by("last_name")
+    attendees = event.attendees_brothers.all().order_by("last_name")
 
     context = {
         'type': 'ec-view',
