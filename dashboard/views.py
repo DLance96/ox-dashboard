@@ -184,12 +184,12 @@ def brother_view(request):
         operational_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester(),
                                                                     committee=committee_reverse[
                                                                         brother.get_operational_committee_display()]) \
-            .order_by("datetime")
+            .order_by("start_time").order_by("date")
     if brother.get_standing_committee_display() != 'Unassigned':
         standing_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester(),
                                                                  committee=committee_reverse[
                                                                      brother.get_standing_committee_display()]) \
-            .order_by("datetime")
+            .order_by("start_time").order_by("date")
 
     current_season = utils.get_season()
     if current_season is '0':
@@ -528,7 +528,8 @@ def vice_president(request):
         messages.error(request, "Vice President Access Denied!")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
-    committee_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester()).order_by("datetime")
+    committee_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester())\
+        .order_by("start_time").order_by("date")
 
     context = {
         'committee_meetings': committee_meetings,
@@ -583,11 +584,11 @@ def vice_president_committee_meeting_add(request):
             instance = form.save(commit=False)
 
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.datetime.month),
-                                                   year=instance.datetime.year)[0]
+                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                                                   year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.datetime.month),
-                                    year=instance.datetime.year)
+                semester = Semester(season=utils.get_season_from(instance.date.month),
+                                    year=instance.date.year)
                 semester.save()
 
             instance.semester = semester
@@ -622,7 +623,7 @@ class CommitteeMeetingEdit(UpdateView):
 
     model = CommitteeMeetingEvent
     success_url = reverse_lazy('dashboard:vice_president')
-    fields = ['datetime', 'semester', 'committee', 'minutes']
+    fields = ['date', 'start_time', 'semester', 'committee', 'minutes']
 
 
 def treasurer(request):
