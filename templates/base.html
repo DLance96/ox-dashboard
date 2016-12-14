@@ -87,13 +87,10 @@
                     <a href="{% url "dashboard:logout" %}" style="display:inline-block">logout</a>
                 </li>
             {% else %}
-                <ul class="navbar-form navbar-right">
-                <form method="post" action="{% url "dashboard:login" %}">
-                    {% csrf_token %}
-                    <label for="id_username">User:</label><input id="id_username" name="username" type="text" />
-                    <label for="id_password">Password:</label><input id="id_password" name="password" type="password" />
-                    <input type="submit" value="Log in"/>
-                </form>
+                <ul class="nav navbar-nav navbar-right">
+                <li>
+                <a href="/accounts/login" stype="display:inline-block">login</a>
+                </li>
             {% endif %}
             </li>
             </ul>

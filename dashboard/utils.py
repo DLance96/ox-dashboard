@@ -90,14 +90,14 @@ def verify_position(positions):
             for pos in positions:
                 try:
                     uid = request.user.brother.id
+                    # TODO: allow multiple brothers to hold a position
+                    if (
+                        pos == 'ec' and \
+                        Position.objects.filter(brother__id=uid)[0].ec
+                    ) or Position.objects.filter(title=pos)[0].brother.id == uid:
+                        return f(*args, **kwargs)
                 except AttributeError:
                     return error(request)
-                # TODO: allow multiple brothers to hold a position
-                if (
-                    pos == 'ec' and \
-                    Position.objects.filter(brother__id=uid)[0].ec
-                ) or Position.objects.filter(title=pos)[0].brother.id == uid:
-                    return f(*args, **kwargs)
 
             return error(request)
 
