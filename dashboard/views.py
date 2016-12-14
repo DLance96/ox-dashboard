@@ -1,6 +1,6 @@
 import csv
 
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
@@ -8,7 +8,8 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import *
 from django.views.generic.edit import UpdateView, DeleteView
 
-import utils
+from .utils import verify_position, get_semester, verify_brother,\
+        get_season, get_year, forms_is_valid, get_season_from, ec, non_ec
 from datetime import datetime
 from .forms import *
 
@@ -118,10 +119,10 @@ def emergency_contact_list(request):
 
 def event_list(request):
     """Renders all the semester events"""
-    chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
-    recruitment_events = RecruitmentEvent.objects.filter(semester=utils.get_semester()).order_by("date")
-    service_events = ServiceEvent.objects.filter(semester=utils.get_semester()).order_by("date")
-    philanthropy_events = PhilanthropyEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    chapter_events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
+    recruitment_events = RecruitmentEvent.objects.filter(semester=get_semester()).order_by("date")
+    service_events = ServiceEvent.objects.filter(semester=get_semester()).order_by("date")
+    philanthropy_events = PhilanthropyEvent.objects.filter(semester=get_semester()).order_by("date")
 
     context = {
         'chapter_events': chapter_events,
@@ -139,15 +140,15 @@ def brother_view(request):
         messages.error(request, "Brother needs to be logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
     brother = Brother.objects.filter(user=request.user)[0]
-    chapter_events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    chapter_events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
 
-    excuses_pending = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+    excuses_pending = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
                                             status='0').order_by("event__date")
-    excuses_approved = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+    excuses_approved = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
                                              status='1').order_by("event__date")
-    excuses_denied = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+    excuses_denied = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
                                            status='2').order_by("event__date")
-    excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester=utils.get_semester(),
+    excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
                                                   status='3').order_by("event__date")
 
     # Event attendance value
@@ -162,7 +163,7 @@ def brother_view(request):
             attendance.append('Not Mandatory')
         else:
             past_chapter_event_count += 1
-            if event.attendees.filter(id=brother.id):
+            if event.attendees_brothers.filter(id=brother.id):
                 attendance.append('Attended')
                 chapter_event_attendance += 1
             elif excuses_approved.filter(event=event):
@@ -181,39 +182,39 @@ def brother_view(request):
     standing_meetings = []
     operational_meetings = []
     if brother.get_operational_committee_display() != 'Unassigned':
-        operational_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester(),
+        operational_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester(),
                                                                     committee=committee_reverse[
                                                                         brother.get_operational_committee_display()]) \
-            .order_by("datetime")
+            .order_by("start_time").order_by("date")
     if brother.get_standing_committee_display() != 'Unassigned':
-        standing_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester(),
+        standing_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester(),
                                                                  committee=committee_reverse[
                                                                      brother.get_standing_committee_display()]) \
-            .order_by("datetime")
+            .order_by("start_time").order_by("date")
 
-    current_season = utils.get_season()
+    current_season = get_season()
     if current_season is '0':
-        recruitment_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year()) \
+        recruitment_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year()) \
             .order_by("date")
-        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year()) \
+        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=get_year()) \
             .order_by("date")
     else:
-        recruitment_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year()) \
+        recruitment_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=get_year()) \
             .order_by("date")
-        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year()) \
+        recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year()) \
             .order_by("date")
     pnms = PotentialNewMember.objects.filter(Q(primary_contact=brother) |
                                              Q(secondary_contact=brother) |
                                              Q(tertiary_contact=brother)).order_by("last_name")
-    service_events = ServiceEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    service_events = ServiceEvent.objects.filter(semester=get_semester()).order_by("date")
     # Service submissions
-    submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+    submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
                                                            status='0').order_by("date")
-    submissions_submitted = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+    submissions_submitted = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
                                                              status='1').order_by("date")
-    submissions_approved = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+    submissions_approved = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
                                                             status='2').order_by("date")
-    submissions_denied = ServiceSubmission.objects.filter(brother=brother, semester=utils.get_semester(),
+    submissions_denied = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
                                                           status='3').order_by("date")
 
     hours_pending = 0
@@ -226,7 +227,7 @@ def brother_view(request):
     for submission in submissions_approved:
         hours_approved += submission.hours
 
-    philanthropy_events = PhilanthropyEvent.objects.filter(semester=utils.get_semester()) \
+    philanthropy_events = PhilanthropyEvent.objects.filter(semester=get_semester()) \
         .order_by("start_time").order_by("date")
 
     context = {
@@ -382,7 +383,7 @@ class ExcuseDelete(DeleteView):
     def get(self, request, *args, **kwargs):
         excuse = Excuse.objects.get(pk=self.kwargs['pk'])
         brother = excuse.brother
-        if not utils.verify_brother(brother, request.user):
+        if not verify_brother(brother, request.user):
             messages.error(request, "Brother Access Denied!")
             return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ExcuseDelete, self).get(request, *args, **kwargs)
@@ -396,7 +397,7 @@ class ExcuseEdit(UpdateView):
     def get(self, request, *args, **kwargs):
         excuse = Excuse.objects.get(pk=self.kwargs['pk'])
         brother = excuse.brother
-        if not utils.verify_brother(brother, request.user):
+        if not verify_brother(brother, request.user):
             messages.error(request, "Brother Access Denied!")
             return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ExcuseEdit, self).get(request, *args, **kwargs)
@@ -409,7 +410,7 @@ class ExcuseEdit(UpdateView):
 class BrotherEdit(UpdateView):
     def get(self, request, *args, **kwargs):
         brother = Brother.objects.get(pk=self.kwargs['pk'])
-        if not utils.verify_brother(brother, request.user):
+        if not verify_brother(brother, request.user):
             messages.error(request, "Brother Access Denied!")
             return HttpResponseRedirect(reverse('dashboard:home'))
         return super(BrotherEdit, self).get(request, *args, **kwargs)
@@ -429,7 +430,7 @@ def brother_pnm(request, pnm_id):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     pnm = PotentialNewMember.objects.get(pk=pnm_id)
-    events = RecruitmentEvent.objects.filter(semester=utils.get_season()).order_by("date").all()
+    events = RecruitmentEvent.objects.filter(semester=get_season()).order_by("date").all()
 
     attended_events = []
     for event in events:
@@ -471,7 +472,7 @@ def brother_service_submission_add(request):
     if request.method == 'POST':
         if form.is_valid():
             instance = form.save(commit=False)
-            semester = utils.get_semester()
+            semester = get_semester()
             brother = Brother.objects.filter(user=request.user)[0]
             instance.brother = brother
             instance.semester = semester
@@ -489,7 +490,7 @@ class ServiceSubmissionDelete(DeleteView):
     def get(self, request, *args, **kwargs):
         submission = ServiceSubmission.objects.get(pk=self.kwargs['pk'])
         brother = submission.brother
-        if not utils.verify_brother(brother, request.user):
+        if not verify_brother(brother, request.user):
             messages.error(request, "Brother Access Denied!")
             return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ServiceSubmissionDelete, self).get(request, *args, **kwargs)
@@ -503,7 +504,7 @@ class ServiceSubmissionEdit(UpdateView):
     def get(self, request, *args, **kwargs):
         submission = ServiceSubmission.objects.get(pk=self.kwargs['pk'])
         brother = submission.brother
-        if not utils.verify_brother(brother, request.user):
+        if not verify_brother(brother, request.user):
             messages.error(request, "Brother Access Denied!")
             return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ServiceSubmissionEdit, self).get(request, *args, **kwargs)
@@ -513,22 +514,17 @@ class ServiceSubmissionEdit(UpdateView):
     fields = ['name', 'date', 'description', 'hours', 'status']
 
 
+@verify_position(['President'])
 def president(request):
     """ Renders the President page and all relevant information """
-    if not utils.verify_president(request.user):
-        messages.error(request, "President Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     return render(request, 'president.html', {})
 
 
+@verify_position(['Vice President', 'President'])
 def vice_president(request):
     """ Renders the Vice President page and all relevant information, primarily committee related """
-    if not utils.verify_vice_president(request.user):
-        messages.error(request, "Vice President Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
-    committee_meetings = CommitteeMeetingEvent.objects.filter(semester=utils.get_semester()).order_by("datetime")
+    committee_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester())\
+        .order_by("start_time").order_by("date")
 
     context = {
         'committee_meetings': committee_meetings,
@@ -537,12 +533,9 @@ def vice_president(request):
     return render(request, 'vice-president.html', context)
 
 
+@verify_position(['Vice President', 'President'])
 def vice_president_committee_assignments(request):
     """Renders Committee assignment update page for the Vice President"""
-    if not utils.verify_vice_president(request.user):
-        messages.error(request, "Vice President Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form_list = []
     brothers = Brother.objects.exclude(brother_status='2')
     for brother in brothers:
@@ -554,7 +547,7 @@ def vice_president_committee_assignments(request):
     brother_forms = zip(brothers, form_list)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(form_list):
+        if forms_is_valid(form_list):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 brother = brothers[counter]
@@ -570,12 +563,9 @@ def vice_president_committee_assignments(request):
     return render(request, 'committee-assignment.html', context)
 
 
+@verify_position(['Vice President', 'President'])
 def vice_president_committee_meeting_add(request):
     """ Renders the committee meeting add page """
-    if not utils.verify_vice_president(request.user):
-        messages.error(request, "Vice President Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form = CommitteeMeetingForm(request.POST or None)
 
     if request.method == 'POST':
@@ -583,11 +573,11 @@ def vice_president_committee_meeting_add(request):
             instance = form.save(commit=False)
 
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.datetime.month),
-                                                   year=instance.datetime.year)[0]
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
+                                                   year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.datetime.month),
-                                    year=instance.datetime.year)
+                semester = Semester(season=get_season_from(instance.date.month),
+                                    year=instance.date.year)
                 semester.save()
 
             instance.semester = semester
@@ -602,10 +592,8 @@ def vice_president_committee_meeting_add(request):
 
 
 class CommitteeMeetingDelete(DeleteView):
+    @verify_position(['Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_vice_president(request.user):
-            messages.error(request, "Vice President Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(CommitteeMeetingDelete, self).get(request, *args, **kwargs)
 
     model = CommitteeMeetingEvent
@@ -614,34 +602,26 @@ class CommitteeMeetingDelete(DeleteView):
 
 
 class CommitteeMeetingEdit(UpdateView):
+    @verify_position(['Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_vice_president(request.user):
-            messages.error(request, "Vice President Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(CommitteeMeetingEdit, self).get(request, *args, **kwargs)
 
     model = CommitteeMeetingEvent
     success_url = reverse_lazy('dashboard:vice_president')
-    fields = ['datetime', 'semester', 'committee', 'minutes']
+    fields = ['date', 'start_time', 'semester', 'committee', 'minutes']
 
 
+@verify_position(['Treasurer', 'President'])
 def treasurer(request):
     """ Renders all the transactional information on the site for the treasurer """
-    if not utils.verify_treasurer(request.user):
-        messages.error(request, "Treasurer Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
     return render(request, 'treasurer.html', {})
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary(request):
     """ Renders the secretary page giving access to excuses and ChapterEvents """
-    print utils.verify_secretary(request.user)
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
-    excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='0').order_by("event__date")
-    events = ChapterEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    excuses = Excuse.objects.filter(event__semester=get_semester(), status='0').order_by("event__date")
+    events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
 
     context = {
         'excuses': excuses,
@@ -650,16 +630,13 @@ def secretary(request):
     return render(request, 'secretary.html', context)
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_attendance(request):
     """ Renders the secretary view for chapter attendance """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')
-    events = ChapterEvent.objects.filter(semester=utils.get_semester(), mandatory=True)\
+    events = ChapterEvent.objects.filter(semester=get_semester(), mandatory=True)\
         .exclude(date__gt=datetime.date.today())
-    excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='1')
+    excuses = Excuse.objects.filter(event__semester=get_semester(), status='1')
     events_excused_list = []
     events_unexcused_list = []
 
@@ -667,7 +644,7 @@ def secretary_attendance(request):
         events_excused = 0
         events_unexcused = 0
         for event in events:
-            if not event.attendees.filter(id=brother.id).exists():
+            if not event.attendees_brothers.filter(id=brother.id).exists():
                 if excuses.filter(brother=brother, event=event).exists():
                     events_excused += 1
                 else:
@@ -684,17 +661,14 @@ def secretary_attendance(request):
     return render(request, 'chapter-event-attendance.html', context)
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_event(request, event_id):
     """ Renders the attendance sheet for any event """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     event = ChapterEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')
     form_list = []
     for brother in brothers:
-        if event.attendees.filter(id=brother.id):
+        if event.attendees_brothers.filter(id=brother.id):
             new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
                                              prefix=brother.roster_number,
                                              brother="- %s %s" % (brother.first_name, brother.last_name))
@@ -706,14 +680,14 @@ def secretary_event(request, event_id):
             form_list.append(new_form)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(form_list):
+        if forms_is_valid(form_list):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
-                    event.attendees.add(brothers[counter])
+                    event.attendees_brothers.add(brothers[counter])
                     event.save()
                 if instance['present'] is False:
-                    event.attendees.remove(brothers[counter])
+                    event.attendees_brothers.remove(brothers[counter])
                     event.save()
             return HttpResponseRedirect(reverse('dashboard:secretary'))
 
@@ -725,12 +699,9 @@ def secretary_event(request, event_id):
     return render(request, "chapter-event.html", context)
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_excuse(request, excuse_id):
     """ Renders Excuse response form """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     excuse = get_object_or_404(Excuse, pk=excuse_id)
     form = ExcuseResponseForm(request.POST or None)
 
@@ -767,12 +738,9 @@ def secretary_excuse(request, excuse_id):
     return render(request, "excuse.html", context)
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_all_excuses(request):
     """ Renders Excuse """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     excuses = Excuse.objects.order_by('brother__last_name','event__date')
 
     context = {
@@ -781,14 +749,11 @@ def secretary_all_excuses(request):
     return render(request, 'secretary_excuses.html', context)
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_event_view(request, event_id):
     """ Renders the Secretary way of viewing old events """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     event = ChapterEvent.objects.get(pk=event_id)
-    attendees = event.attendees.all().order_by("last_name")
+    attendees = event.attendees_brothers.all().order_by("last_name")
 
     context = {
         'type': 'ec-view',
@@ -798,12 +763,9 @@ def secretary_event_view(request, event_id):
     return render(request, "chapter-event.html", context)
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_brother_list(request):
     """ Renders the Secretary way of viewing brothers """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     brothers = Brother.objects.exclude(brother_status='2')
     context = {
         'position': 'Secretary',
@@ -812,12 +774,9 @@ def secretary_brother_list(request):
     return render(request, "brother-list.html", context)
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_brother_view(request, brother_id):
     """ Renders the Secretary way of viewing a brother """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     brother = Brother.objects.get(pk=brother_id)
     context = {
         'brother': brother
@@ -825,12 +784,9 @@ def secretary_brother_view(request, brother_id):
     return render(request, "brother-view.html", context)
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_brother_add(request):
     """ Renders the Secretary way of viewing a brother """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form = BrotherForm(request.POST or None)
 
     if request.method == 'POST':
@@ -863,10 +819,8 @@ def secretary_brother_add(request):
 
 
 class SecretaryBrotherEdit(UpdateView):
+    @verify_position(['Secretary', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_secretary(request.user):
-            messages.error(request, "Secretary Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(SecretaryBrotherEdit, self).get(request, *args, **kwargs)
 
     model = Brother
@@ -878,10 +832,8 @@ class SecretaryBrotherEdit(UpdateView):
 
 
 class SecretaryBrotherDelete(DeleteView):
+    @verify_position(['Secretary', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_secretary(request.user):
-            messages.error(request, "Secretary Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(SecretaryBrotherDelete, self).get(request, *args, **kwargs)
 
     model = Brother
@@ -889,12 +841,9 @@ class SecretaryBrotherDelete(DeleteView):
     success_url = reverse_lazy('dashboard:secretary')
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_event_add(request):
     """ Renders the Secretary way of adding ChapterEvents """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form = ChapterEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -902,10 +851,10 @@ def secretary_event_add(request):
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
@@ -927,10 +876,8 @@ def secretary_event_add(request):
 
 
 class ChapterEventEdit(UpdateView):
+    @verify_position(['Secretary', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_secretary(request.user):
-            messages.error(request, "Secretary Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ChapterEventEdit, self).get(request, *args, **kwargs)
 
     model = ChapterEvent
@@ -939,10 +886,8 @@ class ChapterEventEdit(UpdateView):
 
 
 class ChapterEventDelete(DeleteView):
+    @verify_position(['Secretary', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_secretary(request.user):
-            messages.error(request, "Secretary Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ChapterEventDelete, self).get(request, *args, **kwargs)
 
     model = ChapterEvent
@@ -950,12 +895,9 @@ class ChapterEventDelete(DeleteView):
     success_url = reverse_lazy('dashboard:secretary')
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_all_events(request):
     """ Renders a secretary view with all the ChapterEvent models ordered by date grouped by semester """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     events_by_semester = []
     semesters = Semester.objects.order_by("season").order_by("year").all()
     for semester in semesters:
@@ -972,18 +914,15 @@ def secretary_all_events(request):
     return render(request, "chapter-event-all.html", context)
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_positions(request):
     """ Renders all of the positions currently in the chapter """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     # Checking to make sure all of the EC and dashboard required positions are setup
-    for position in utils.ec:
+    for position in ec:
         if not Position.objects.filter(title=position).exists():
             new_position = Position(title=position, ec=True)
             new_position.save()
-    for position in utils.non_ec:
+    for position in non_ec:
         if not Position.objects.filter(title=position).exists():
             new_position = Position(title=position)
             new_position.save()
@@ -998,12 +937,9 @@ def secretary_positions(request):
     return render(request, "positions.html", context)
 
 
+@verify_position(['Secretary', 'Vice President', 'President'])
 def secretary_position_add(request):
     """ Renders the Secretary way of viewing a brother """
-    if not utils.verify_secretary(request.user):
-        messages.error(request, "Secretary Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form = PositionForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1019,10 +955,8 @@ def secretary_position_add(request):
 
 
 class PositionEdit(UpdateView):
+    @verify_position(['Secretary', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_secretary(request.user):
-            messages.error(request, "Secretary Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(PositionEdit, self).get(request, *args, **kwargs)
 
     model = Position
@@ -1031,10 +965,8 @@ class PositionEdit(UpdateView):
 
 
 class PositionDelete(DeleteView):
+    @verify_position(['Secretary', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_secretary(request.user):
-            messages.error(request, "Secretary Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(PositionDelete, self).get(request, *args, **kwargs)
 
     model = Position
@@ -1042,15 +974,12 @@ class PositionDelete(DeleteView):
     success_url = reverse_lazy('dashboard:secretary_positions')
 
 
+@verify_position(['Marshal', 'Vice President', 'President'])
 def marshal(request):
     """ Renders the marshal page listing all the candidates and relevant information to them """
-    if not utils.verify_marshal(request.user):
-        messages.error(request, "Marshal Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     candidates = Brother.objects.filter(brother_status='0').order_by("last_name")
-    events = ChapterEvent.objects.filter(semester=utils.get_semester()).exclude(date__gt=datetime.date.today())
-    excuses = Excuse.objects.filter(event__semester=utils.get_semester(), status='1')
+    events = ChapterEvent.objects.filter(semester=get_semester()).exclude(date__gt=datetime.date.today())
+    excuses = Excuse.objects.filter(event__semester=get_semester(), status='1')
     events_excused_list = []
     events_unexcused_list = []
 
@@ -1062,7 +991,7 @@ def marshal(request):
         else:
             expected_events = events
         for event in expected_events:
-            if not event.attendees.filter(id=candidate.id).exists():
+            if not event.attendees_brothers.filter(id=candidate.id).exists():
                 if excuses.filter(brother=candidate, event=event).exists():
                     events_excused += 1
                 else:
@@ -1079,12 +1008,9 @@ def marshal(request):
     return render(request, 'marshal.html', context)
 
 
+@verify_position(['Marshal', 'Vice President', 'President'])
 def marshal_candidate(request, brother_id):
     """ Renders the marshal page to view candidate info """
-    if not utils.verify_marshal(request.user):
-        messages.error(request, "Marshal Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     brother = Brother.objects.get(pk=brother_id)
     context = {
         'brother': brother
@@ -1092,12 +1018,9 @@ def marshal_candidate(request, brother_id):
     return render(request, "brother-view.html", context)
 
 
+@verify_position(['Marshal', 'Vice President', 'President'])
 def marshal_candidate_add(request):
     """ Renders the Marshal way of viewing a candidate """
-    if not utils.verify_marshal(request.user):
-        messages.error(request, "Marshal Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form = BrotherForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1130,25 +1053,24 @@ def marshal_candidate_add(request):
 
 
 class CandidateEdit(UpdateView):
+    @verify_position(['Marshal', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_marshal(request.user):
-            messages.error(request, "Marshal Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(CandidateEdit, self).get(request, *args, **kwargs)
 
     model = Brother
     success_url = reverse_lazy('dashboard:marshal')
-    fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
-              'major', 'minor', 't_shirt_size', 'case_ID', 'birthday', 'hometown', 'phone_number',
-              'emergency_contact_phone_number', 'emergency_contact', 'room_number',
-              'address']
+    fields = [
+        'first_name', 'last_name', 'roster_number', 'semester_joined',
+        'school_status', 'brother_status', 'major', 'minor', 't_shirt_size',
+        'case_ID', 'birthday', 'hometown', 'phone_number',
+        'emergency_contact_phone_number', 'emergency_contact', 'room_number',
+        'address'
+    ]
 
 
 class CandidateDelete(DeleteView):
+    @verify_position(['Marshal', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_marshal(request.user):
-            messages.error(request, "Marshal Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(CandidateDelete, self).get(request, *args, **kwargs)
 
     model = Brother
@@ -1156,23 +1078,20 @@ class CandidateDelete(DeleteView):
     success_url = reverse_lazy('dashboard:marshal')
 
 
+@verify_position(['Scholarship Chair', 'President'])
 def scholarship_c(request):
     """ Renders the Scholarship page listing all brother gpas and study table attendance """
-    if not utils.verify_scholarship_chair(request.user):
-        messages.error(request, "Scholarship Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
-    events = StudyTableEvent.objects.filter(semester=utils.get_semester()).order_by("date")
+    events = StudyTableEvent.objects.filter(semester=get_semester()).order_by("date")
 
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
     plans = []
 
     for brother in brothers:
-        plan = ScholarshipReport.objects.filter(semester=utils.get_semester(), brother__id=brother.id)
+        plan = ScholarshipReport.objects.filter(semester=get_semester(), brother__id=brother.id)
         if plan.exists():
             plan = plan[0]
         else:
-            plan = ScholarshipReport(brother=brother, semester=utils.get_semester())
+            plan = ScholarshipReport(brother=brother, semester=get_semester())
             plan.save()
         plans.append(plan)
 
@@ -1185,18 +1104,15 @@ def scholarship_c(request):
     return render(request, "scholarship-chair.html", context)
 
 
+@verify_position(['Scholarship Chair', 'President'])
 def scholarship_c_event(request, event_id):
     """ Renders the scholarship chair way of view StudyTables """
-    if not utils.verify_scholarship_chair(request.user):
-        messages.error(request, "Scholarship Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     event = StudyTableEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')
     brother_form_list = []
 
     for brother in brothers:
-        if event.attendees.filter(id=brother.id):
+        if event.attendees_brothers.filter(id=brother.id):
             new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
                                              prefix=brother.roster_number,
                                              brother="- %s %s" % (brother.first_name, brother.last_name))
@@ -1208,14 +1124,14 @@ def scholarship_c_event(request, event_id):
             brother_form_list.append(new_form)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(brother_form_list):
+        if forms_is_valid(brother_form_list):
             for counter, form in enumerate(brother_form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
-                    event.attendees.add(brothers[counter])
+                    event.attendees_brothers.add(brothers[counter])
                     event.save()
                 if instance['present'] is False:
-                    event.attendees.remove(brothers[counter])
+                    event.attendees_brothers.remove(brothers[counter])
                     event.save()
             return HttpResponseRedirect(reverse('dashboard:scholarship_c'))
 
@@ -1227,12 +1143,9 @@ def scholarship_c_event(request, event_id):
     return render(request, "studytable-event.html", context)
 
 
+@verify_position(['Scholarship Chair', 'President'])
 def scholarship_c_event_add(request):
     """ Renders the scholarship chair way of adding StudyTableEvents """
-    if not utils.verify_scholarship_chair(request.user):
-        messages.error(request, "Scholarship Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form = StudyTableEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1240,10 +1153,10 @@ def scholarship_c_event_add(request):
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
@@ -1265,10 +1178,8 @@ def scholarship_c_event_add(request):
 
 
 class StudyEventDelete(DeleteView):
+    @verify_position(['Scholarship Chair', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_scholarship_chair(request.user):
-            messages.error(request, "Scholarship Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(StudyEventDelete, self).get(request, *args, **kwargs)
 
     model = StudyTableEvent
@@ -1277,10 +1188,8 @@ class StudyEventDelete(DeleteView):
 
 
 class StudyEventEdit(UpdateView):
+    @verify_position(['Scholarship Chair', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_scholarship_chair(request.user):
-            messages.error(request, "Scholarship Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(StudyEventEdit, self).get(request, *args, **kwargs)
 
     model = StudyTableEvent
@@ -1288,19 +1197,16 @@ class StudyEventEdit(UpdateView):
     fields = ['date', 'start_time', 'end_time', 'notes']
 
 
+@verify_position(['Scholarship Chair', 'President'])
 def scholarship_c_plan(request, plan_id):
     """Renders Scholarship Plan page for the Scholarship Chair"""
-    if not utils.verify_scholarship_chair(request.user):
-        messages.error(request, "Scholarship Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     plan = ScholarshipReport.objects.get(pk=plan_id)
-    events = StudyTableEvent.objects.filter(semester=utils.get_semester()).exclude(date__gt=datetime.date.today())
+    events = StudyTableEvent.objects.filter(semester=get_semester()).exclude(date__gt=datetime.date.today())
     study_tables_attended = 0
     study_tables_count = len(events)
 
     for event in events:
-        if event.attendees.filter(id=plan.brother.id).exists():
+        if event.attendees_brothers.filter(id=plan.brother.id).exists():
             study_tables_attended += 1
 
     context = {
@@ -1313,13 +1219,10 @@ def scholarship_c_plan(request, plan_id):
     return render(request, 'scholarship-report.html', context)
 
 
+@verify_position(['Scholarship Chair', 'President'])
 def scholarship_c_gpa(request):
     """Renders Scholarship Gpa update page for the Scholarship Chair"""
-    if not utils.verify_scholarship_chair(request.user):
-        messages.error(request, "Scholarship Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
-    plans = ScholarshipReport.objects.filter(semester=utils.get_semester()).order_by("brother__last_name")
+    plans = ScholarshipReport.objects.filter(semester=get_semester()).order_by("brother__last_name")
     form_list = []
 
     for plan in plans:
@@ -1330,7 +1233,7 @@ def scholarship_c_gpa(request):
     form_plans = zip(form_list, plans)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(form_list):
+        if forms_is_valid(form_list):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 plan = plans[counter]
@@ -1347,10 +1250,8 @@ def scholarship_c_gpa(request):
 
 
 class ScholarshipReportEdit(UpdateView):
+    @verify_position(['Scholarship Chair', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_scholarship_chair(request.user):
-            messages.error(request, "Scholarship Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ScholarshipReportEdit, self).get(request, *args, **kwargs)
 
     model = ScholarshipReport
@@ -1358,19 +1259,16 @@ class ScholarshipReportEdit(UpdateView):
     fields = ['cumulative_gpa', 'past_semester_gpa', 'scholarship_plan', 'active']
 
 
+@verify_position(['Recruitment Chair', 'Vice President', 'President'])
 def recruitment_c(request):
     """ Renders Scholarship chair page with events for the current and following semester """
-    if not utils.verify_recruitment_chair(request.user):
-        messages.error(request, "Recruitment Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
-    current_season = utils.get_season()
+    current_season = get_season()
     if current_season is '0':
-        semester_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year())
-        semester_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year())
+        semester_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year())
+        semester_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=get_year())
     else:
-        semester_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=utils.get_year())
-        semester_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=utils.get_year())
+        semester_events = RecruitmentEvent.objects.filter(semester__season='2', semester__year=get_year())
+        semester_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year())
 
     potential_new_members = PotentialNewMember.objects.all()
 
@@ -1400,14 +1298,11 @@ def all_pnm_csv(request):
     return response
 
 
+@verify_position(['Recruitment Chair', 'Vice President', 'President'])
 def recruitment_c_rush_attendance(request):
     """ Renders Scholarship chair page with rush attendance """
-    if not utils.verify_recruitment_chair(request.user):
-        messages.error(request, "Recruitment Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
-    events = RecruitmentEvent.objects.filter(semester=utils.get_semester(), rush=True) \
+    events = RecruitmentEvent.objects.filter(semester=get_semester(), rush=True) \
         .exclude(date__gt=datetime.date.today())
     events_attended_list = []
 
@@ -1427,14 +1322,11 @@ def recruitment_c_rush_attendance(request):
     return render(request, 'rush_attendance.html', context)
 
 
+@verify_position(['Recruitment Chair', 'Vice President', 'President'])
 def recruitment_c_pnm(request, pnm_id):
     """ Renders PNM view for recruitment chair """
-    if not utils.verify_recruitment_chair(request.user):
-        messages.error(request, "Recruitment Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     pnm = PotentialNewMember.objects.get(pk=pnm_id)
-    events = RecruitmentEvent.objects.filter(semester=utils.get_semester()).order_by("date").all()
+    events = RecruitmentEvent.objects.filter(semester=get_semester()).order_by("date").all()
 
     attended_events = []
     for event in events:
@@ -1449,12 +1341,9 @@ def recruitment_c_pnm(request, pnm_id):
     return render(request, 'potential-new-member.html', context)
 
 
+@verify_position(['Recruitment Chair', 'Vice President', 'President'])
 def recruitment_c_pnm_add(request):
     """ Renders the recruitment chair way of adding PNMs """
-    if not utils.verify_recruitment_chair(request.user):
-        messages.error(request, "Recruitment Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form = PotentialNewMemberForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1470,10 +1359,8 @@ def recruitment_c_pnm_add(request):
 
 
 class PnmDelete(DeleteView):
+    @verify_position(['Recruitment Chair', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_recruitment_chair(request.user):
-            messages.error(request, "Recruitment Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(PnmDelete, self).get(request, *args, **kwargs)
 
     model = PotentialNewMember
@@ -1482,10 +1369,8 @@ class PnmDelete(DeleteView):
 
 
 class PnmEdit(UpdateView):
+    @verify_position(['Recruitment Chair', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_recruitment_chair(request.user):
-            messages.error(request, "Recruitment Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(PnmEdit, self).get(request, *args, **kwargs)
 
     model = PotentialNewMember
@@ -1494,12 +1379,9 @@ class PnmEdit(UpdateView):
               'tertiary_contact', 'notes']
 
 
+@verify_position(['Recruitment Chair', 'Vice President', 'President'])
 def recruitment_c_event(request, event_id):
     """ Renders the recruitment chair way of view RecruitmentEvents """
-    if not utils.verify_recruitment_chair(request.user):
-        messages.error(request, "Recruitment Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     event = RecruitmentEvent.objects.get(pk=event_id)
     pnms = PotentialNewMember.objects.all()
     brothers = Brother.objects.exclude(brother_status='2')
@@ -1528,7 +1410,7 @@ def recruitment_c_event(request, event_id):
             brother_form_list.append(new_form)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(pnm_form_list) and utils.forms_is_valid(brother_form_list):
+        if forms_is_valid(pnm_form_list) and forms_is_valid(brother_form_list):
             for counter, form in enumerate(pnm_form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
@@ -1556,12 +1438,9 @@ def recruitment_c_event(request, event_id):
     return render(request, "recruitment-event.html", context)
 
 
+@verify_position(['Recruitment Chair', 'Vice President', 'President'])
 def recruitment_c_event_add(request):
     """ Renders the recruitment chair way of adding RecruitmentEvents """
-    if not utils.verify_recruitment_chair(request.user):
-        messages.error(request, "Recruitment Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form = RecruitmentEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1569,10 +1448,10 @@ def recruitment_c_event_add(request):
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
@@ -1594,10 +1473,8 @@ def recruitment_c_event_add(request):
 
 
 class RecruitmentEventDelete(DeleteView):
+    @verify_position(['Recruitment Chair', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_recruitment_chair(request.user):
-            messages.error(request, "Recruitment Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(RecruitmentEventDelete, self).get(request, *args, **kwargs)
 
     model = RecruitmentEvent
@@ -1606,10 +1483,8 @@ class RecruitmentEventDelete(DeleteView):
 
 
 class RecruitmentEventEdit(UpdateView):
+    @verify_position(['Recruitment Chair', 'Vice President', 'President'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_recruitment_chair(request.user):
-            messages.error(request, "Recruitment Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(RecruitmentEventEdit, self).get(request, *args, **kwargs)
 
     model = RecruitmentEvent
@@ -1617,16 +1492,13 @@ class RecruitmentEventEdit(UpdateView):
     fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'notes']
 
 
+@verify_position(['Service Chair', 'ec'])
 def service_c(request):
     """ Renders the service chair page with service submissions """
-    if not utils.verify_service_chair(request.user):
-        messages.error(request, "Service Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
+    events = ServiceEvent.objects.filter(semester=get_semester())
+    submissions_pending = ServiceSubmission.objects.filter(semester=get_semester(), status='0').order_by("date")
 
-    events = ServiceEvent.objects.filter(semester=utils.get_semester())
-    submissions_pending = ServiceSubmission.objects.filter(semester=utils.get_semester(), status='0').order_by("date")
-
-    submissions_submitted = ServiceSubmission.objects.filter(semester=utils.get_semester(), status='1').order_by(
+    submissions_submitted = ServiceSubmission.objects.filter(semester=get_semester(), status='1').order_by(
         "date")
 
     hours_pending = 0
@@ -1636,7 +1508,7 @@ def service_c(request):
         hours_pending += submission.hours
 
     hours_approved = 0
-    submissions_approved = ServiceSubmission.objects.filter(semester=utils.get_semester(), status='2')
+    submissions_approved = ServiceSubmission.objects.filter(semester=get_semester(), status='2')
     for submission in submissions_approved:
         hours_approved += submission.hours
 
@@ -1650,19 +1522,16 @@ def service_c(request):
     return render(request, 'service-chair.html', context)
 
 
+@verify_position(['Service Chair', 'ec'])
 def service_c_event(request, event_id):
     """ Renders the service chair way of adding ServiceEvent """
-    if not utils.verify_service_chair(request.user):
-        messages.error(request, "Service Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     event = ServiceEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')
     brothers_rsvp = event.rsvp_brothers.all()
     form_list = []
 
     for brother in brothers:
-        if event.attendees.filter(id=brother.id):
+        if event.attendees_brothers.filter(id=brother.id):
             new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
                                              prefix=brother.roster_number,
                                              brother="- %s %s" % (brother.first_name, brother.last_name))
@@ -1674,14 +1543,14 @@ def service_c_event(request, event_id):
             form_list.append(new_form)
 
     if request.method == 'POST':
-        if utils.forms_is_valid(form_list):
+        if forms_is_valid(form_list):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
-                    event.attendees.add(brothers[counter])
+                    event.attendees_brothers.add(brothers[counter])
                     event.save()
                 if instance['present'] is False:
-                    event.attendees.remove(brothers[counter])
+                    event.attendees_brothers.remove(brothers[counter])
                     event.save()
             return HttpResponseRedirect(reverse('dashboard:service_c'))
 
@@ -1696,10 +1565,8 @@ def service_c_event(request, event_id):
 
 
 class ServiceEventDelete(DeleteView):
+    @verify_position(['Service Chair', 'ec'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_service_chair(request.user):
-            messages.error(request, "Service Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ServiceEventDelete, self).get(request, *args, **kwargs)
 
     model = ServiceEvent
@@ -1708,10 +1575,8 @@ class ServiceEventDelete(DeleteView):
 
 
 class ServiceEventEdit(UpdateView):
+    @verify_position(['Service Chair', 'ec'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_service_chair(request.user):
-            messages.error(request, "Service Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(ServiceEventEdit, self).get(request, *args, **kwargs)
 
     model = ServiceEvent
@@ -1719,12 +1584,9 @@ class ServiceEventEdit(UpdateView):
     fields = ['name', 'date', 'start_time', 'end_time', 'notes']
 
 
+@verify_position(['Service Chair', 'ec'])
 def service_c_submission_response(request, submission_id):
     """ Renders the service chair way of responding to submissions """
-    if not utils.verify_service_chair(request.user):
-        messages.error(request, "Service Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     submission = ServiceSubmission.objects.get(pk=submission_id)
     form = ServiceSubmissionResponseForm(request.POST or None, initial={'status': submission.status})
 
@@ -1744,12 +1606,9 @@ def service_c_submission_response(request, submission_id):
     return render(request, 'service-submission.html', context)
 
 
+@verify_position(['Service Chair', 'ec'])
 def service_c_event_add(request):
     """ Renders the service chair way of adding ServiceEvent """
-    if not utils.verify_service_chair(request.user):
-        messages.error(request, "Service Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form = ServiceEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1757,10 +1616,10 @@ def service_c_event_add(request):
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
@@ -1782,12 +1641,9 @@ def service_c_event_add(request):
     return render(request, 'event-add.html', context)
 
 
+@verify_position(['Service Chair', 'ec'])
 def service_c_hours(request):
     """ Renders the service chair way of viewing total service hours by brothers """
-    if not utils.verify_service_chair(request.user):
-        messages.error(request, "Service Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
     approved_submissions = ServiceSubmission.objects.filter(status='2')
     pending_submissions = ServiceSubmission.objects.exclude(status='2').exclude(status='3')
@@ -1817,25 +1673,19 @@ def service_c_hours(request):
     return render(request, "service-hours-list.html", context)
 
 
+@verify_position(['Philanthropy Chair', 'ec'])
 def philanthropy_c(request):
     """ Renders the philanthropy chair's RSVP page for different events """
-    if not utils.verify_philanthropy_chair(request.user):
-        messages.error(request, "Philanthropy Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
-    events = PhilanthropyEvent.objects.filter(semester=utils.get_semester())
+    events = PhilanthropyEvent.objects.filter(semester=get_semester())
     context = {
         'events': events,
     }
     return render(request, 'philanthropy-chair.html', context)
 
 
+@verify_position(['Philanthropy Chair', 'ec'])
 def philanthropy_c_event(request, event_id):
     """ Renders the philanthropy event view """
-    if not utils.verify_philanthropy_chair(request.user):
-        messages.error(request, "Philanthropy Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     event = PhilanthropyEvent.objects.get(pk=event_id)
     brothers_rsvp = event.rsvp_brothers.all()
 
@@ -1848,12 +1698,9 @@ def philanthropy_c_event(request, event_id):
     return render(request, 'philanthropy-event.html', context)
 
 
+@verify_position(['Philanthropy Chair', 'ec'])
 def philanthropy_c_event_add(request):
     """ Renders the philanthropy chair way of adding PhilanthropyEvent """
-    if not utils.verify_philanthropy_chair(request.user):
-        messages.error(request, "Philanthropy Chair Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     form = PhilanthropyEventForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1861,10 +1708,10 @@ def philanthropy_c_event_add(request):
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
             try:
-                semester = Semester.objects.filter(season=utils.get_season_from(instance.date.month),
+                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
                                                    year=instance.date.year)[0]
             except IndexError:
-                semester = Semester(season=utils.get_season_from(instance.date.month),
+                semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
             if instance.end_time is not None and instance.end_time < instance.start_time:
@@ -1886,10 +1733,8 @@ def philanthropy_c_event_add(request):
 
 
 class PhilanthropyEventDelete(DeleteView):
+    @verify_position(['Philanthropy Chair', 'ec'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_philanthropy_chair(request.user):
-            messages.error(request, "Philanthropy Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(PhilanthropyEventDelete, self).get(request, *args, **kwargs)
 
     model = PhilanthropyEvent
@@ -1898,10 +1743,8 @@ class PhilanthropyEventDelete(DeleteView):
 
 
 class PhilanthropyEventEdit(UpdateView):
+    @verify_position(['Philanthropy Chair', 'ec'])
     def get(self, request, *args, **kwargs):
-        if not utils.verify_philanthropy_chair(request.user):
-            messages.error(request, "Philanthropy Chair Access Denied!")
-            return HttpResponseRedirect(reverse('dashboard:home'))
         return super(PhilanthropyEventEdit, self).get(request, *args, **kwargs)
 
     model = PhilanthropyEvent
@@ -1909,12 +1752,9 @@ class PhilanthropyEventEdit(UpdateView):
     fields = ['name', 'date', 'start_time', 'end_time', 'notes']
 
 
+@verify_position(['Detail Manager'])
 def detail_m(request):
     """ Renders the detail manager page"""
-    if not utils.verify_detail_manager(request.user):
-        messages.error(request, "Detail Manager Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
-
     return render(request, 'detail-manager.html', {})
 
 
@@ -1940,10 +1780,8 @@ def supplies_list(request):
     return render(request, 'list-supplies.html', context)
 
 
+@verify_position(['Detail Manager'])
 def supplies_finish(request):
-    if not utils.verify_detail_manager(request.user):
-        messages.error(request, "Detail Manager Access Denied!")
-        return HttpResponseRedirect(reverse('dashboard:home'))
     form = SuppliesFinishForm(request.POST or None)
 
     if request.method == 'POST':

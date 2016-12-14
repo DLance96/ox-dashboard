@@ -33,7 +33,7 @@
                 {% for meeting in committee_meetings %}
                     <tr>
                         <td><a href="">{{ meeting.get_committee_display }}</a></td>
-                        <td>{{ meeting.datetime.date }} - {{ meeting.datetime.time }}</td>
+                        <td>{{ meeting.date }} - {{ meeting.start_time }}</td>
                         {% if meeting.minutes %}
                             <td><a href="{{ meeting.minutes }}">link</a></td>
                         {% else %}
