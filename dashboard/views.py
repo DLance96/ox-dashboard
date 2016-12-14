@@ -9,7 +9,7 @@ from django.views.generic import *
 from django.views.generic.edit import UpdateView, DeleteView
 
 from .utils import verify_position, get_semester, verify_brother,\
-        get_season, get_year
+        get_season, get_year, forms_is_valid, get_season_from, ec, non_ec
 from datetime import datetime
 from .forms import *
 
@@ -991,7 +991,7 @@ def marshal(request):
         else:
             expected_events = events
         for event in expected_events:
-            if not event.attendees.filter(id=candidate.id).exists():
+            if not event.attendees_brothers.filter(id=candidate.id).exists():
                 if excuses.filter(brother=candidate, event=event).exists():
                     events_excused += 1
                 else:
@@ -1112,7 +1112,7 @@ def scholarship_c_event(request, event_id):
     brother_form_list = []
 
     for brother in brothers:
-        if event.attendees.filter(id=brother.id):
+        if event.attendees_brothers.filter(id=brother.id):
             new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
                                              prefix=brother.roster_number,
                                              brother="- %s %s" % (brother.first_name, brother.last_name))
@@ -1128,10 +1128,10 @@ def scholarship_c_event(request, event_id):
             for counter, form in enumerate(brother_form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
-                    event.attendees.add(brothers[counter])
+                    event.attendees_brothers.add(brothers[counter])
                     event.save()
                 if instance['present'] is False:
-                    event.attendees.remove(brothers[counter])
+                    event.attendees_brothers.remove(brothers[counter])
                     event.save()
             return HttpResponseRedirect(reverse('dashboard:scholarship_c'))
 
@@ -1206,7 +1206,7 @@ def scholarship_c_plan(request, plan_id):
     study_tables_count = len(events)
 
     for event in events:
-        if event.attendees.filter(id=plan.brother.id).exists():
+        if event.attendees_brothers.filter(id=plan.brother.id).exists():
             study_tables_attended += 1
 
     context = {
@@ -1531,7 +1531,7 @@ def service_c_event(request, event_id):
     form_list = []
 
     for brother in brothers:
-        if event.attendees.filter(id=brother.id):
+        if event.attendees_brothers.filter(id=brother.id):
             new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
                                              prefix=brother.roster_number,
                                              brother="- %s %s" % (brother.first_name, brother.last_name))
@@ -1547,10 +1547,10 @@ def service_c_event(request, event_id):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
-                    event.attendees.add(brothers[counter])
+                    event.attendees_brothers.add(brothers[counter])
                     event.save()
                 if instance['present'] is False:
-                    event.attendees.remove(brothers[counter])
+                    event.attendees_brothers.remove(brothers[counter])
                     event.save()
             return HttpResponseRedirect(reverse('dashboard:service_c'))
 
