@@ -1,4 +1,8 @@
 from datetime import datetime
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.core.handlers.wsgi import WSGIRequest
 
 from .models import *
 
@@ -70,117 +74,35 @@ def forms_is_valid(form_list):
     return True
 
 
-def verify_president(user):
-    """ Verify user has President permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
+def verify_position(positions):
+    def verify_decorator(f):
+        def error(request):
+            messages.error(request, "%s access denied" % positions)
+            return HttpResponseRedirect(reverse('dashboard:home'))
 
+        def wrapper(*args, **kwargs):
+            request = None
+            for a in args:
+                if type(a) == WSGIRequest:
+                    request = a
+                    break
 
-def verify_vice_president(user):
-    """ Verify user has Vice President permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Vice President')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
+            for pos in positions:
+                try:
+                    uid = request.user.brother.id
+                except AttributeError:
+                    return error(request)
+                # TODO: allow multiple brothers to hold a position
+                if (
+                    pos == 'ec' and \
+                    Position.objects.filter(brother__id=uid)[0].ec
+                ) or Position.objects.filter(title=pos)[0].brother.id == uid:
+                    return f(*args, **kwargs)
 
+            return error(request)
 
-def verify_vphs(user):
-    """ Verify user has Vice President of Health and Safety permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Vice President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Vice President of Health and Safety')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
-
-
-def verify_secretary(user):
-    """ Verify user has Secretary permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Vice President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Secretary')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
-
-
-def verify_treasurer(user):
-    """ Verify user has Treasurer permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Treasurer')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
-
-
-def verify_marshal(user):
-    """ Verify user has Marshal permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Vice President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Marshal')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
-
-
-def verify_recruitment_chair(user):
-    """ Verify user has Recruitment Chair permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Vice President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Recruitment Chair')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
-
-
-def verify_scholarship_chair(user):
-    """ Verify user has Scholarship Chair permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(title='President')[0].brother.id == user_id or \
-        Position.objects.filter(title='Scholarship Chair')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
-
-
-def verify_service_chair(user):
-    """ Verify user has Service Chair permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(brother__id=user_id)[0].ec or \
-        Position.objects.filter(title='Service Chair')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
-
-
-def verify_philanthropy_chair(user):
-    """ Verify user has Philanthropy Chair permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(brother__id=user_id)[0].ec or \
-        Position.objects.filter(title='Philanthropy Chair')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
+        return wrapper
+    return verify_decorator
 
 
 def verify_detail_manager(user):
@@ -196,7 +118,4 @@ def verify_detail_manager(user):
 
 def verify_brother(brother, user):
     """ Verify user is the same as brother """
-    if user.brother.id == brother.id:
-        return True
-    else:
-        return False
+    return user.brother.id == brother.id
