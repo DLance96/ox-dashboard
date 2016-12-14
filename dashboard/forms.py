@@ -49,6 +49,18 @@ class StudyTableEventForm(forms.ModelForm):
         fields = ['date', 'start_time', 'end_time', 'notes']
 
 
+class ScholarshipEventForm(forms.ModelForm):
+    class Meta:
+        model = ScholarshipEvent
+        fields = ['name', 'date', 'start_time', 'end_time', 'notes']
+
+
+class HealthAndSafetyEventForm(forms.ModelForm):
+    class Meta:
+        model = HealthAndSafteyEvent
+        fields = ['name', 'date', 'start_time', 'end_time', 'notes']
+
+
 class ChapterEventForm(forms.ModelForm):
     class Meta:
         model = ChapterEvent

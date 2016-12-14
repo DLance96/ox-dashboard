@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Vice President of Health and Safety</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Health and Safety Events</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Event:</td>
+                    <td>Date - Time:</td>
+                    <td>Minutes:</td>
+                    <td>Edit?</td>
+                    <td>Delete?</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td><a href={% url 'dashboard:health_safety_event' event.id %}>{{ event.name }}</a></td>
+                        <td>{{ event.date }} - {{ event.start_time }}</td>
+                        {% if event.minutes %}
+                            <td><a href="{{ event.minutes }}">link</a></td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:health_and_saftey_event_edit' event.id %}>X</a></td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:health_and_saftey_event_delete' event.id %}>X</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <a class="btn btn-default" href={% url 'dashboard:health_and_saftey_event_add' %}
+                    role="button">Add Event</a>
+        </div>
+    </div>
+{% endblock %}

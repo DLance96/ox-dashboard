@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^brother/c-event/(?P<event_id>[0-9]+)/$', views.brother_chapter_event, name="brother_chapter_event"),
     url(r'^brother/r-event/(?P<event_id>[0-9]+)/$', views.brother_recruitment_event, name="brother_recruitment_event"),
     url(r'^brother/s-event/(?P<event_id>[0-9]+)/$', views.brother_service_event, name="brother_service_event"),
+    url(r'^brother/hs-event/(?P<event_id>[0-9]+)/$', views.brother_hs_event, name="brother_hs_event"),
     url(r'^brother/p-event/(?P<event_id>[0-9]+)/$', views.brother_philanthropy_event,
         name="brother_philanthropy_event"),
     url(r'^brother/excuse/(?P<excuse_id>[0-9]+)/$', views.brother_excuse, name="brother_excuse"),
@@ -52,6 +53,16 @@ urlpatterns = [
         name="vice_president_committee_meeting_edit"),
     url(r'^vice-president/committee-meeting/(?P<pk>\d+)/delete/$', views.CommitteeMeetingDelete.as_view(),
         name="vice_president_committee_meeting_delete"),
+
+    # Vice President Health and Safety URL Section
+    url(r'^vphs/$', views.vphs, name="vphs"),
+    url(r'^vphs/hs_event/add/$', views.health_and_saftey_event_add,
+        name="health_and_saftey_event_add"),
+    url(r'^vphs/hs_event/(?P<pk>\d+)/edit/$', views.HealthAndSafteyEdit.as_view(),
+        name="health_and_saftey_event_edit"),
+    url(r'^vphs/hs_event/(?P<pk>\d+)/delete/$', views.HealthAndSafteyDelete.as_view(),
+        name="health_and_saftey_event_delete"),
+    url(r'^vphs/hs_event/(?P<event_id>[0-9]+)/$', views.health_and_saftey_event, name="health_safety_event"),
 
     url(r'^treasurer/', views.treasurer, name="treasurer"),
 
@@ -105,7 +116,7 @@ urlpatterns = [
     # Scholarship Chair URL Section
     url(r'^scholarship-chair/$', views.scholarship_c, name="scholarship_c"),
     url(r'^scholarship-chair/gpa/$', views.scholarship_c_gpa, name="scholarship_c_gpa"),
-    url(r'^scholarship-chair/event/(?P<event_id>[0-9]+)/$', views.scholarship_c_event, name="scholarship_c_event"),
+    url(r'^scholarship-chair/event/(?P<event_id>[0-9]+)/$', views.study_table_event, name="scholarship_c_event"),
     url(r'^scholarship-chair/event/add/$', views.scholarship_c_event_add, name="scholarship_c_event_add"),
     url(r'^scholarship-chair/event/(?P<pk>\d+)/edit/$', views.StudyEventEdit.as_view(),
         name="scholarship_c_event_edit"),

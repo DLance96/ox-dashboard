@@ -140,6 +140,7 @@ def brother_view(request):
         messages.error(request, "Brother needs to be logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
     brother = Brother.objects.filter(user=request.user)[0]
+    hs_events = HealthAndSafteyEvent.objects.filter(semester=get_semester()).order_by("date")
     chapter_events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
 
     excuses_pending = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
@@ -241,6 +242,7 @@ def brother_view(request):
         'excuses_approved': excuses_approved,
         'excuses_denied': excuses_denied,
         'excuses_not_mandatory': excuses_not_mandatory,
+        'hs_events': hs_events,
         'recruitment_events': recruitment_events,
         'recruitment_events_next': recruitment_events_next,
         'pnms': pnms,
@@ -363,6 +365,21 @@ def brother_recruitment_event(request, event_id):
         'event': event,
     }
     return render(request, "recruitment-event.html", context)
+
+
+def brother_hs_event(request, event_id):
+    """ Renders the brother page for health and safety event with a excuse form """
+    if not request.user.is_authenticated():  # brother auth check
+        messages.error(request, "Brother not logged in before viewing brother Health and Safety events")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
+    event = HealthAndSafteyEvent.objects.get(pk=event_id)
+
+    context = {
+        'type': 'brother-view',
+        'event': event,
+    }
+    return render(request, "hs-event.html", context)
 
 
 def brother_excuse(request, excuse_id):
@@ -611,6 +628,108 @@ class CommitteeMeetingEdit(UpdateView):
     fields = ['date', 'start_time', 'semester', 'committee', 'minutes']
 
 
+@verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+def vphs(request):
+    """ Renders the VPHS and the events they can create """
+    events = HealthAndSafteyEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
+
+    context = {
+        'events': events,
+    }
+    return render(request, 'vphs.html', context)
+
+
+@verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+def health_and_saftey_event_add(request):
+    """ Renders the VPHS adding an event """
+    form = HealthAndSafetyEventForm(request.POST or None)
+
+    if form.is_valid():
+        # TODO: add google calendar event adding
+        instance = form.save(commit=False)
+        try:
+            semester = Semester.objects.filter(season=get_season_from(instance.date.month),
+                                               year=instance.date.year)[0]
+        except IndexError:
+            semester = Semester(season=get_season_from(instance.date.month),
+                                year=instance.date.year)
+            semester.save()
+        if instance.end_time is not None and instance.end_time < instance.start_time:
+            context = {
+                'position': 'Vice President of Health and Safety',
+                'form': form,
+                'error_message': "Start time after end time!",
+            }
+            return render(request, "event-add.html", context)
+        instance.semester = semester
+        instance.save()
+        return HttpResponseRedirect(reverse('dashboard:vphs'))
+
+    context = {
+        'title': 'Add New Health and Safety Event',
+        'form': form,
+    }
+    return render(request, 'model-add.html', context)
+
+
+class HealthAndSafteyEdit(UpdateView):
+    @verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+    def get(self, request, *args, **kwargs):
+        return super(HealthAndSafteyEdit, self).get(request, *args, **kwargs)
+
+    model = HealthAndSafteyEvent
+    success_url = reverse_lazy('dashboard:vphs')
+    fields = ['name', 'date', 'start_time', 'end_time', 'notes', 'minutes']
+
+
+class HealthAndSafteyDelete(DeleteView):
+    @verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+    def get(self, request, *args, **kwargs):
+        return super(HealthAndSafteyDelete, self).get(request, *args, **kwargs)
+
+    model = HealthAndSafteyEvent
+    template_name = 'dashboard/base_confirm_delete.html'
+    success_url = reverse_lazy('dashboard:vphs')
+
+
+def health_and_saftey_event(request, event_id):
+    """ Renders the vphs way of view events """
+    event = HealthAndSafteyEvent.objects.get(pk=event_id)
+    brothers = Brother.objects.exclude(brother_status='2')
+    brother_form_list = []
+
+    for brother in brothers:
+        if event.attendees_brothers.filter(id=brother.id):
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
+            brother_form_list.append(new_form)
+        else:
+            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
+                                             prefix=brother.roster_number,
+                                             brother="- %s %s" % (brother.first_name, brother.last_name))
+            brother_form_list.append(new_form)
+
+    if request.method == 'POST':
+        if forms_is_valid(brother_form_list):
+            for counter, form in enumerate(brother_form_list):
+                instance = form.cleaned_data
+                if instance['present'] is True:
+                    event.attendees_brothers.add(brothers[counter])
+                    event.save()
+                if instance['present'] is False:
+                    event.attendees_brothers.remove(brothers[counter])
+                    event.save()
+            return HttpResponseRedirect(reverse('dashboard:scholarship_c'))
+
+    context = {
+        'type': 'attendance',
+        'brother_form_list': brother_form_list,
+        'event': event,
+    }
+    return render(request, "hs-event.html", context)
+
+
 @verify_position(['Treasurer', 'President'])
 def treasurer(request):
     """ Renders all the transactional information on the site for the treasurer """
@@ -621,7 +740,7 @@ def treasurer(request):
 def secretary(request):
     """ Renders the secretary page giving access to excuses and ChapterEvents """
     excuses = Excuse.objects.filter(event__semester=get_semester(), status='0').order_by("event__date")
-    events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
+    events = ChapterEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
 
     context = {
         'excuses': excuses,
@@ -1105,7 +1224,7 @@ def scholarship_c(request):
 
 
 @verify_position(['Scholarship Chair', 'President'])
-def scholarship_c_event(request, event_id):
+def study_table_event(request, event_id):
     """ Renders the scholarship chair way of view StudyTables """
     event = StudyTableEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')
