@@ -205,61 +205,48 @@ class ScholarshipReport(models.Model):
                                   self.semester.get_season_display(), self.semester.year)
 
 
-class ChapterEvent(models.Model):
-    name = models.CharField(max_length=200, default="Chapter Event")
+class Event(models.Model):
+    name = models.CharField(max_length=200, default="Event")
     date = models.DateField(default=django.utils.timezone.now)
+    all_day = models.BooleanField(default=False)
     start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
     end_time = models.TimeField(blank=True, null=True)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
-    mandatory = models.BooleanField(default=True)
-    attendees = models.ManyToManyField(Brother, blank=True)
+    attendees_brothers = models.ManyToManyField(Brother, blank=True)
     notes = models.TextField(blank=True, null=True)
     minutes = models.URLField(blank=True, null=True)
 
-    def __str__(self):
-        return self.name.encode('utf8')
-
-
-class PhilanthropyEvent(models.Model):
-    name = models.CharField(max_length=200, default="Philanthropy Event")
-    date = models.DateField(default=django.utils.timezone.now)
-    start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
-    end_time = models.TimeField(blank=True, null=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
-    rsvp_brothers = models.ManyToManyField(Brother, blank=True)
-    notes = models.TextField(blank=True, null=True)
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return self.name.encode('utf8')
 
 
-class ServiceEvent(models.Model):
-    name = models.CharField(max_length=200, default="Service Event")
-    date = models.DateField(default=django.utils.timezone.now)
-    start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
-    end_time = models.TimeField(blank=True, null=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
-    rsvp_brothers = models.ManyToManyField(Brother, blank=True, related_name="rsvp")
-    attendees = models.ManyToManyField(Brother, blank=True, related_name="attended")
-    notes = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.name.encode('utf8')
+class ChapterEvent(Event):
+    mandatory = models.BooleanField(default=True)
 
 
-class RecruitmentEvent(models.Model):
-    name = models.CharField(max_length=200, default="Recruitment Event")
-    date = models.DateField(default=django.utils.timezone.now)
-    start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
-    end_time = models.TimeField(blank=True, null=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
+class PhilanthropyEvent(Event):
+    rsvp_brothers = models.ManyToManyField(Brother, blank=True, related_name="rsvp_philanthropy")
+
+
+class ServiceEvent(Event):
+    rsvp_brothers = models.ManyToManyField(Brother, blank=True, related_name="rsvp_service")
+
+
+class RecruitmentEvent(Event):
     attendees_pnms = models.ManyToManyField(PotentialNewMember, blank=True)
-    attendees_brothers = models.ManyToManyField(Brother, blank=True)
     rush = models.BooleanField(default=True)
-    notes = models.TextField(blank=True, null=True)
 
+
+class ScholarshipEvent(Event):
+    pass
+
+
+class StudyTableEvent(Event):
     def __str__(self):
-        return self.name.encode('utf8')
+        return "Study Tables - %s" % self.date
 
 
 COMMITTEE_CHOICES = {
@@ -273,28 +260,11 @@ COMMITTEE_CHOICES = {
     }
 
 
-class CommitteeMeetingEvent(models.Model):
-    datetime = models.DateTimeField(default=django.utils.timezone.now)
-    attendees = models.ManyToManyField(Brother, blank=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
-
+class CommitteeMeetingEvent(Event):
     committee = models.CharField(max_length=1, choices=COMMITTEE_CHOICES)
-    minutes = models.URLField(blank=True, null=True)
 
     def __str__(self):
-        return "%s - %s" % (self.get_committee_display(), self.datetime)
-
-
-class StudyTableEvent(models.Model):
-    date = models.DateField(default=django.utils.timezone.now)
-    start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
-    end_time = models.TimeField(blank=True, null=True)
-    attendees = models.ManyToManyField(Brother, blank=True)
-    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return "%s" % self.date
+        return "%s - %s" % (self.get_committee_display(), self.date)
 
 
 class Excuse(models.Model):
@@ -319,6 +289,7 @@ class Excuse(models.Model):
 
     def __str__(self):
         return self.brother.first_name + " " + self.brother.last_name + " - " + self.event.name
+
 
 class Supplies(models.Model):
     what = models.CharField(max_length=256)
