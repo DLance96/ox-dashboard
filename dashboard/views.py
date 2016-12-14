@@ -611,6 +611,70 @@ class CommitteeMeetingEdit(UpdateView):
     fields = ['date', 'start_time', 'semester', 'committee', 'minutes']
 
 
+@verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+def vphs(request):
+    """ Renders the VPHS and the events they can create """
+    events = HealthAndSafteyEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
+
+    context = {
+        'events': events,
+    }
+    return render(request, 'vphs.html', context)
+
+
+@verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+def health_and_saftey_event_add(request):
+    """ Renders the Secretary way of viewing a brother """
+    form = HealthAndSafetyEventForm(request.POST or None)
+
+    if form.is_valid():
+        # TODO: add google calendar event adding
+        instance = form.save(commit=False)
+        try:
+            semester = Semester.objects.filter(season=get_season_from(instance.date.month),
+                                               year=instance.date.year)[0]
+        except IndexError:
+            semester = Semester(season=get_season_from(instance.date.month),
+                                year=instance.date.year)
+            semester.save()
+        if instance.end_time is not None and instance.end_time < instance.start_time:
+            context = {
+                'position': 'Vice President of Health and Safety',
+                'form': form,
+                'error_message': "Start time after end time!",
+            }
+            return render(request, "event-add.html", context)
+        instance.semester = semester
+        instance.save()
+        return HttpResponseRedirect(reverse('dashboard:vphs'))
+
+    context = {
+        'title': 'Add New Health and Safety Event',
+        'form': form,
+    }
+    return render(request, 'model-add.html', context)
+
+
+class HealthAndSafteyEdit(UpdateView):
+    @verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+    def get(self, request, *args, **kwargs):
+        return super(HealthAndSafteyEdit, self).get(request, *args, **kwargs)
+
+    model = HealthAndSafteyEvent
+    success_url = reverse_lazy('dashboard:vphs')
+    fields = ['name', 'date', 'start_time', 'end_time', 'notes', 'minutes']
+
+
+class HealthAndSafteyDelete(DeleteView):
+    @verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+    def get(self, request, *args, **kwargs):
+        return super(HealthAndSafteyDelete, self).get(request, *args, **kwargs)
+
+    model = HealthAndSafteyEvent
+    template_name = 'dashboard/base_confirm_delete.html'
+    success_url = reverse_lazy('dashboard:vphs')
+
+
 @verify_position(['Treasurer', 'President'])
 def treasurer(request):
     """ Renders all the transactional information on the site for the treasurer """
@@ -621,7 +685,7 @@ def treasurer(request):
 def secretary(request):
     """ Renders the secretary page giving access to excuses and ChapterEvents """
     excuses = Excuse.objects.filter(event__semester=get_semester(), status='0').order_by("event__date")
-    events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
+    events = ChapterEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
 
     context = {
         'excuses': excuses,

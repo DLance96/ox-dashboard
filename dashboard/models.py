@@ -279,6 +279,10 @@ class RecruitmentEvent(Event):
     rush = models.BooleanField(default=True)
 
 
+class HealthAndSafteyEvent(Event):
+    pass
+
+
 class ScholarshipEvent(Event):
     pass
 

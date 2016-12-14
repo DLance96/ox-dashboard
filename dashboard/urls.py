@@ -53,6 +53,15 @@ urlpatterns = [
     url(r'^vice-president/committee-meeting/(?P<pk>\d+)/delete/$', views.CommitteeMeetingDelete.as_view(),
         name="vice_president_committee_meeting_delete"),
 
+    # Vice President Health and Safety URL Section
+    url(r'^vphs/$', views.vphs, name="vphs"),
+    url(r'^vphs/hs_event/add/$', views.health_and_saftey_event_add,
+        name="health_and_saftey_event_add"),
+    url(r'^vphs/hs_event/(?P<pk>\d+)/edit/$', views.HealthAndSafteyEdit.as_view(),
+        name="health_and_saftey_event_edit"),
+    url(r'^vphs/hs_event/(?P<pk>\d+)/delete/$', views.HealthAndSafteyDelete.as_view(),
+        name="health_and_saftey_event_delete"),
+
     url(r'^treasurer/', views.treasurer, name="treasurer"),
 
     # Secretary URL section
