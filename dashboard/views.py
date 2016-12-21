@@ -1915,6 +1915,7 @@ def supplies_finish(request):
 
 
 @verify_position(['Vice President', 'President'])
+@transaction.atomic
 def in_house(request):
     form = InHouseForm(request.POST or None)
 
@@ -1930,3 +1931,22 @@ def in_house(request):
 
     context = {'form': form}
     return render(request, 'in_house.html', context)
+
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def house_detail_toggle(request):
+    form = HouseDetailsSelectForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            brothers = Brother.objects.filter(brother_status='1')
+            brothers.update(does_house_details=False)
+            for c in ['does_details_part', 'doesnt_do_details_part']:
+                brothers = form.cleaned_data[c]
+                for b in brothers:
+                    b.does_house_details = True
+                    b.save()
+
+    context = {'form': form}
+    return render(request, 'house_detail_toggle.html', context)

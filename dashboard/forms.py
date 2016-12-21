@@ -212,3 +212,34 @@ class InHouseForm(forms.Form):
         label="",
         required=False,
     )
+
+
+class HouseDetailsSelectForm(forms.Form):
+    does_details = Brother.objects.filter(
+        brother_status='1', in_house=True, does_house_details=True,
+    ).order_by('user__last_name', 'user__first_name')
+    doesnt_do_details = Brother.objects.filter(
+        brother_status='1', in_house=True, does_house_details=False,
+    ).order_by('user__last_name', 'user__first_name')
+    not_in_house = Brother.objects.filter(
+        brother_status='1', in_house=False
+    ).order_by('user__last_name', 'user__first_name')
+
+    does_details_part = forms.ModelMultipleChoiceField(
+        queryset=does_details,
+        widget=forms.CheckboxSelectMultiple(attrs={"checked":"checked"}),
+        label="",
+        required=False,
+    )
+    doesnt_do_details_part = forms.ModelMultipleChoiceField(
+        queryset=doesnt_do_details,
+        widget=forms.CheckboxSelectMultiple,
+        label="",
+        required=False,
+    )
+    not_in_the_house = forms.ModelMultipleChoiceField(
+        queryset=not_in_house,
+        widget=forms.CheckboxSelectMultiple,
+        label="Not in the house. Selecting these won't do anything:",
+        required=False,
+    )

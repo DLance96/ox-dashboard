@@ -53,7 +53,7 @@ urlpatterns = [
         name="vice_president_committee_meeting_edit"),
     url(r'^vice-president/committee-meeting/(?P<pk>\d+)/delete/$', views.CommitteeMeetingDelete.as_view(),
         name="vice_president_committee_meeting_delete"),
-    url(r'^vice_president/in_house', views.in_house, name='in_house'),
+    url(r'^vice_president/in_house', views.in_house, name='vice_president_in_house'),
 
     # Vice President Health and Safety URL Section
     url(r'^vphs/$', views.vphs, name="vphs"),
@@ -154,4 +154,5 @@ urlpatterns = [
     url(r'^detail-manager/supplies-request/$', views.supplies_request, name='supplies_request'),
     url(r'^detail-manager/supplies-list/$', views.supplies_list, name='supplies_list'),
     url(r'^detail-manager/supplies-finish/$', views.supplies_finish, name='supplies_finish'),
+    url(r'^detail_manager/house-detail-toggle$', views.house_detail_toggle, name='house_detail_toggle'),
 ]
