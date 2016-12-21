@@ -53,6 +53,7 @@ urlpatterns = [
         name="vice_president_committee_meeting_edit"),
     url(r'^vice-president/committee-meeting/(?P<pk>\d+)/delete/$', views.CommitteeMeetingDelete.as_view(),
         name="vice_president_committee_meeting_delete"),
+    url(r'^vice_president/in_house', views.in_house, name='in_house'),
 
     # Vice President Health and Safety URL Section
     url(r'^vphs/$', views.vphs, name="vphs"),

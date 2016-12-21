@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import *
 from django.views.generic.edit import UpdateView, DeleteView
+from django.db import transaction
 
 from .utils import verify_position, get_semester, verify_brother,\
         get_season, get_year, forms_is_valid, get_season_from, ec, non_ec
@@ -1911,3 +1912,21 @@ def supplies_finish(request):
 
     context = {'form': form}
     return render(request, 'finish-supplies.html', context)
+
+
+@verify_position(['Vice President', 'President'])
+def in_house(request):
+    form = InHouseForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            brothers = Brother.objects.filter(brother_status='1')
+            brothers.update(in_house=False)
+            for c in ['in_house_part', 'not_in_house_part']:
+                brothers = form.cleaned_data[c]
+                for b in brothers:
+                    b.in_house = True
+                    b.save()
+
+    context = {'form': form}
+    return render(request, 'in_house.html', context)

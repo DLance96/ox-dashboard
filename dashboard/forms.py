@@ -9,13 +9,19 @@ class LoginForm(forms.Form):
 
 class BrotherForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
-    password2 = forms.CharField(widget=forms.PasswordInput, label="Retype Password")
+    password2 = forms.CharField(
+        widget=forms.PasswordInput, label="Retype Password"
+    )
 
     class Meta:
         model = Brother
-        fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
-                  'case_ID', 'major', 'minor', 'birthday', 'hometown', 't_shirt_size', 'phone_number', 'room_number',
-                  'address', 'emergency_contact', 'emergency_contact_phone_number']
+        fields = [
+            'first_name', 'last_name', 'roster_number', 'semester_joined',
+            'school_status', 'brother_status', 'case_ID', 'major', 'minor',
+            'birthday', 'hometown', 't_shirt_size', 'phone_number',
+            'room_number', 'address', 'emergency_contact',
+            'emergency_contact_phone_number',
+        ]
 
 
 class PositionForm(forms.ModelForm):
@@ -39,8 +45,10 @@ class ExcuseResponseForm(forms.ModelForm):
 class PotentialNewMemberForm(forms.ModelForm):
     class Meta:
         model = PotentialNewMember
-        fields = ['first_name', 'last_name', 'case_ID', 'phone_number', 'primary_contact', 'secondary_contact',
-                  'tertiary_contact']
+        fields = [
+            'first_name', 'last_name', 'case_ID', 'phone_number',
+            'primary_contact', 'secondary_contact', 'tertiary_contact',
+        ]
 
 
 class StudyTableEventForm(forms.ModelForm):
@@ -64,7 +72,10 @@ class HealthAndSafetyEventForm(forms.ModelForm):
 class ChapterEventForm(forms.ModelForm):
     class Meta:
         model = ChapterEvent
-        fields = ['name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes', 'notes']
+        fields = [
+            'name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes',
+            'notes',
+        ]
 
 
 class RecruitmentEventForm(forms.ModelForm):
@@ -152,14 +163,24 @@ class CommitteeForm(forms.Form):
         ('3', 'Unassigned')
     }
 
-    standing_committee = forms.ChoiceField(label="", choices=STANDING_COMMITTEE_CHOICES)
-    operational_committee = forms.ChoiceField(label="", choices=OPERATIONAL_COMMITTEE_CHOICES)
+    standing_committee = forms.ChoiceField(
+        label="", choices=STANDING_COMMITTEE_CHOICES
+    )
+    operational_committee = forms.ChoiceField(
+        label="", choices=OPERATIONAL_COMMITTEE_CHOICES
+    )
 
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-    new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-    retype_new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    old_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+    new_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+    retype_new_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
 
 
 class SuppliesFinishForm(forms.Form):
@@ -168,4 +189,26 @@ class SuppliesFinishForm(forms.Form):
     choices = forms.ModelMultipleChoiceField(
         queryset=supplies,
         widget=forms.CheckboxSelectMultiple,
+    )
+
+
+class InHouseForm(forms.Form):
+    in_house = Brother.objects.filter(
+        brother_status='1', in_house=True
+    ).order_by('user__last_name', 'user__first_name')
+    not_in_house = Brother.objects.filter(
+        brother_status='1', in_house=False
+    ).order_by('user__last_name', 'user__first_name')
+
+    in_house_part = forms.ModelMultipleChoiceField(
+        queryset=in_house,
+        widget=forms.CheckboxSelectMultiple(attrs={"checked":"checked"}),
+        label="",
+        required=False,
+    )
+    not_in_house_part = forms.ModelMultipleChoiceField(
+        queryset=not_in_house,
+        widget=forms.CheckboxSelectMultiple,
+        label="",
+        required=False,
     )
