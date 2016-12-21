@@ -140,8 +140,8 @@ class Brother(models.Model):
 
     # Detail Manager Chair Information
     # TODO: determine if there are any detail manager models
-    house_detail_buyout = models.BooleanField(default=False)
-    kitchen_detail_buyout = models.BooleanField(default=False)
+    does_house_details = models.BooleanField(default=False)
+    does_kitchen_details = models.BooleanField(default=False)
     in_house = models.BooleanField(default=True)
 
     def __str__(self):
