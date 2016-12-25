@@ -243,3 +243,30 @@ class HouseDetailsSelectForm(forms.Form):
         label="Not in the house. Selecting these won't do anything:",
         required=False,
     )
+
+
+class CreateDetailGroups(forms.Form):
+    size = forms.IntegerField(min_value=1)
+
+
+class SelectDetailGroups(forms.Form):
+    def __init__(self, *args, **kwargs):
+        semester = kwargs.pop('semester')
+        super(SelectDetailGroups, self).__init__(*args, **kwargs)
+
+        brothers = Brother.objects.filter(does_house_details=True)
+        groups = DetailGroup.objects.filter(semester=semester)
+
+        for i, g in enumerate(groups):
+            self.fields['group_%s' % i] = forms.ModelMultipleChoiceField(
+                brothers
+            )
+            self.fields['group_id_%s' % i] = forms.CharField(
+                initial=g.pk, widget=forms.HiddenInput(),
+            )
+
+    def extract_groups(self):
+        for name, value in self.cleaned_data.items():
+            if name.startswith('group_id_'):
+                num = int(name.replace('group_id_', ''))
+                yield (value, self.cleaned_data['group_%s' % num])

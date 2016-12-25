@@ -354,6 +354,9 @@ class DetailGroup(models.Model):
     brothers = models.ManyToManyField(Brother)
     semester = models.ForeignKey(Semester)
 
+    def __str__(self):
+        return "Detail group " + str(self.pk) + ": " + str(self.semester)
+
 
 class Detail(models.Model):
     short_description = models.CharField(max_length=64)

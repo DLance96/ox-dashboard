@@ -1950,3 +1950,42 @@ def house_detail_toggle(request):
 
     context = {'form': form}
     return render(request, 'house_detail_toggle.html', context)
+
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def create_groups(request):
+    form = CreateDetailGroups(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            semester = get_semester()
+            num_brothers = len(Brother.objects.filter(does_house_details=True))
+            num_groups = int(num_brothers / form.cleaned_data['size'])
+
+            for i in range(num_groups):
+                g = DetailGroup(semester=semester)
+                g.save()
+
+            return HttpResponseRedirect(reverse('dashboard:select_groups'))
+
+    context = {'form': form}
+    return render(request, 'create_groups.html', context)
+
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def select_groups(request):
+    form = SelectDetailGroups(request.POST or None, semester=get_semester())
+
+    if request.method == 'POST':
+        if form.is_valid():
+            for gid, brothers in form.extract_groups():
+                group = DetailGroup.objects.get(pk=int(gid))
+                group.brothers = brothers
+                group.save()
+                print group
+
+    context = {'form': form}
+    return render(request, 'select_groups.html', context)
+
