@@ -202,7 +202,7 @@ class InHouseForm(forms.Form):
 
     in_house_part = forms.ModelMultipleChoiceField(
         queryset=in_house,
-        widget=forms.CheckboxSelectMultiple(attrs={"checked":"checked"}),
+        widget=forms.CheckboxSelectMultiple(attrs={"checked": "checked"}),
         label="",
         required=False,
     )
@@ -227,7 +227,7 @@ class HouseDetailsSelectForm(forms.Form):
 
     does_details_part = forms.ModelMultipleChoiceField(
         queryset=does_details,
-        widget=forms.CheckboxSelectMultiple(attrs={"checked":"checked"}),
+        widget=forms.CheckboxSelectMultiple(attrs={"checked": "checked"}),
         label="",
         required=False,
     )

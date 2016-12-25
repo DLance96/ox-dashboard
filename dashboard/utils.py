@@ -7,8 +7,11 @@ from django.core.handlers.wsgi import WSGIRequest
 from .models import *
 
 # EC Positions
-ec = ['President', 'Vice President', 'Vice President of Health and Safety', 'Secretary', 'Treasurer', 'Marshal',
-      'Recruitment Chair', 'Scholarship Chair']
+ec = [
+    'President', 'Vice President', 'Vice President of Health and Safety',
+    'Secretary', 'Treasurer', 'Marshal', 'Recruitment Chair',
+    'Scholarship Chair',
+]
 # Positions not on EC that have importance on the dashboard
 non_ec = ['Service Chair', 'Philanthropy Chair', 'Detail Manager']
 
@@ -92,9 +95,11 @@ def verify_position(positions):
                     uid = request.user.brother.id
                     # TODO: allow multiple brothers to hold a position
                     if (
-                        pos == 'ec' and \
+                        pos == 'ec' and
                         Position.objects.filter(brother__id=uid)[0].ec
-                    ) or Position.objects.filter(title=pos)[0].brother.id == uid:
+                    ) or Position.objects.filter(
+                        title=pos
+                    )[0].brother.id == uid:
                         return f(*args, **kwargs)
                 except AttributeError:
                     return error(request)
@@ -108,9 +113,11 @@ def verify_position(positions):
 def verify_detail_manager(user):
     """ Verify user has Detail Manager permissions """
     user_id = user.brother.id
-    if Position.objects.filter(brother__id=user_id)[0].ec or \
-        Position.objects.filter(title='Detail Manager')[0].brother.id == user_id or \
-            debug:
+    if Position.objects.filter(
+        brother__id=user_id
+    )[0].ec or Position.objects.filter(
+        title='Detail Manager'
+    )[0].brother.id == user_id or debug:
         return True
     else:
         return False

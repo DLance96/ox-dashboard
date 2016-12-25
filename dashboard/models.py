@@ -267,11 +267,15 @@ class ChapterEvent(Event):
 
 
 class PhilanthropyEvent(Event):
-    rsvp_brothers = models.ManyToManyField(Brother, blank=True, related_name="rsvp_philanthropy")
+    rsvp_brothers = models.ManyToManyField(
+        Brother, blank=True, related_name="rsvp_philanthropy"
+    )
 
 
 class ServiceEvent(Event):
-    rsvp_brothers = models.ManyToManyField(Brother, blank=True, related_name="rsvp_service")
+    rsvp_brothers = models.ManyToManyField(
+        Brother, blank=True, related_name="rsvp_service"
+    )
 
 
 class RecruitmentEvent(Event):
@@ -337,7 +341,6 @@ class Excuse(models.Model):
             + " " + self.brother.last_name + " - " + self.event.name
 
 
-
 class Supplies(models.Model):
     what = models.CharField(max_length=256)
     done = models.BooleanField(default=False)
@@ -376,4 +379,3 @@ class SundayDetail(Detail):
 class SundayGroupDetail(models.Model):
     group = models.ForeignKey(DetailGroup)
     details = models.ManyToManyField(SundayDetail)
-
