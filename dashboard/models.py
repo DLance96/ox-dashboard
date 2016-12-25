@@ -345,3 +345,35 @@ class Supplies(models.Model):
 
     def __str__(self):
         return self.what.encode('utf8')
+
+
+class DetailGroup(models.Model):
+    brothers = models.ManyToManyField(Brother)
+    semester = models.ForeignKey(Semester)
+
+
+class Detail(models.Model):
+    short_description = models.CharField(max_length=64)
+    long_description = models.TextField(null=False)
+    done = models.BooleanField(default=False)
+    due_date = models.DateField(null=False)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.short_description.encode('utf8')
+
+
+class ThursdayDetail(Detail):
+    brother = models.ForeignKey(Brother, null=False)
+
+
+class SundayDetail(Detail):
+    pass
+
+
+class SundayGroupDetail(models.Model):
+    group = models.ForeignKey(DetailGroup)
+    details = models.ManyToManyField(SundayDetail)
+
