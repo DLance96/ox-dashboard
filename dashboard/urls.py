@@ -157,4 +157,5 @@ urlpatterns = [
     url(r'^detail_manager/house-detail-toggle$', views.house_detail_toggle, name='house_detail_toggle'),
     url(r'^detail-manager/create-groups$', views.create_groups, name='create_groups'),
     url(r'^detail-manager/select-groups$', views.select_groups, name='select_groups'),
+    url(r'^detail-manager/delete-groups$', views.delete_groups, name='delete_groups'),
 ]

@@ -246,7 +246,27 @@ class HouseDetailsSelectForm(forms.Form):
 
 
 class CreateDetailGroups(forms.Form):
+    semesters = Semester.objects.all()
     size = forms.IntegerField(min_value=1)
+    semester = forms.ModelChoiceField(semesters)
+
+
+class SelectSemester(forms.Form):
+    semesters = Semester.objects.all().order_by('-year', '-season')
+    semester = forms.ModelChoiceField(semesters)
+
+
+class DeleteDetailGroup(forms.Form):
+    def __init__(self, *args, **kwargs):
+        semester = kwargs.pop('semester')
+        super(DeleteDetailGroup, self).__init__(*args, **kwargs)
+
+        groups = DetailGroup.objects.filter(semester=semester)
+        self.fields['groups'] = forms.ModelMultipleChoiceField(
+            queryset=groups,
+            widget=forms.CheckboxSelectMultiple,
+            required=False,
+        )
 
 
 class SelectDetailGroups(forms.Form):
@@ -254,7 +274,9 @@ class SelectDetailGroups(forms.Form):
         semester = kwargs.pop('semester')
         super(SelectDetailGroups, self).__init__(*args, **kwargs)
 
-        brothers = Brother.objects.filter(does_house_details=True)
+        brothers = Brother.objects.filter(does_house_details=True).order_by(
+            'user__last_name', 'user__first_name'
+        )
         groups = DetailGroup.objects.filter(semester=semester)
 
         for i, g in enumerate(groups):

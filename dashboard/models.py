@@ -355,7 +355,9 @@ class DetailGroup(models.Model):
     semester = models.ForeignKey(Semester)
 
     def __str__(self):
-        return "Detail group " + str(self.pk) + ": " + str(self.semester)
+        return str(self.semester) + ": " + ", ".join(
+            [str(b) for b in self.brothers.all()]
+        )
 
 
 class Detail(models.Model):

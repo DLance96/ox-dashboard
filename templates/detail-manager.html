@@ -6,6 +6,9 @@
            aria-expanded="false">Detail Manager<span class="caret"></span></a>
         <ul class="dropdown-menu">
             <li><a href={% url 'dashboard:house_detail_toggle' %}>Select who does house details</a></li>
+            <li><a href={% url 'dashboard:create_groups' %}>Create detail groups</a></li>
+            <li><a href={% url 'dashboard:select_groups' %}>Select detail groups</a></li>
+            <li><a href={% url 'dashboard:delete_groups' %}>Delete detail groups</a></li>
         </ul>
     </li>
 {% endblock %}

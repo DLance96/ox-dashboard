@@ -1959,12 +1959,11 @@ def create_groups(request):
 
     if request.method == 'POST':
         if form.is_valid():
-            semester = get_semester()
             num_brothers = len(Brother.objects.filter(does_house_details=True))
             num_groups = int(num_brothers / form.cleaned_data['size'])
 
             for i in range(num_groups):
-                g = DetailGroup(semester=semester)
+                g = DetailGroup(semester=form.cleaned_data['semester'])
                 g.save()
 
             return HttpResponseRedirect(reverse('dashboard:select_groups'))
@@ -1989,3 +1988,22 @@ def select_groups(request):
     context = {'form': form}
     return render(request, 'select_groups.html', context)
 
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def delete_groups(request):
+    semester_form = SelectSemester(request.GET or None)
+    if semester_form.is_valid():
+        semester = semester_form.cleaned_data['semester']
+    else:
+        semester = get_semester()
+    form = DeleteDetailGroup(request.POST or None, semester=semester)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            for g in form.cleaned_data['groups']:
+                g.delete()
+
+    context = {'form': form, 'semester_form': semester_form}
+
+    return render(request, 'delete_groups.html', context)
