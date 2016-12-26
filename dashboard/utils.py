@@ -77,7 +77,7 @@ def forms_is_valid(form_list):
 def do_verify(pos, user):
     if pos == 'ec' and Position.objects.get(brothers__user=user).ec:
         return True
-    brothers = Position.objects.filter(title=pos)
+    brothers = Position.objects.get(title=pos).brothers.all()
     if user.brother in brothers:
         return True
     return False
@@ -104,7 +104,11 @@ def verify_position(positions):
                     # TODO: allow multiple brothers to hold a position
                     if do_verify(pos, request.user):
                         return f(*args, **kwargs)
-                except AttributeError:
+                except AttributeError as e:
+                    print(
+                        'Warning: error when verifying position. Denying. '
+                        'Error: %s' % e
+                    )
                     return error(request)
 
             return error(request)
