@@ -2007,3 +2007,7 @@ def delete_groups(request):
     context = {'form': form, 'semester_form': semester_form}
 
     return render(request, 'delete_groups.html', context)
+
+
+def finish_thursday_detail(request):
+    pass

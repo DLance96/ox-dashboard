@@ -104,7 +104,6 @@ def verify_position(positions):
 
             for pos in positions:
                 try:
-                    # TODO: allow multiple brothers to hold a position
                     if do_verify(pos, request.user):
                         return f(*args, **kwargs)
                 except AttributeError as e:
@@ -123,3 +122,32 @@ def verify_position(positions):
 def verify_brother(brother, user):
     """ Verify user is the same as brother """
     return user.brother.id == brother.id
+
+
+#def build_thursday_detail_email(brother, detail_name, tasks, due, done_link):
+def build_thursday_detail_email(thursday_detail):
+    brother = thursday_detail.brother
+    detail_name = thursday_detail.short_description
+    tasks = thursday_detail.long_description
+    due = thursday_detail.due_date
+    done_link = reverse(
+        'finish_thursday_detail', kwargs={'detail_id': thursday_detail.pk}
+    )
+    det_managers = Position.objects.get(title="Detail Manager").brothers.all()
+
+    ret = "Dear %s, \n\n\n" % brother.first_name
+
+    ret += "Your detail is:\n\n"
+    ret += "%s\n----------\n" % detail_name
+    ret += "%s\n----------\n\n\n" % tasks
+
+    ret += "It is due on %s.\n" % str(due)
+    ret += "Please complete it by the required time on that day and mark " + \
+        "it done by midnight.\n\n"
+    ret += "Go to this link to mark it done: %s\n\n\n" % done_link
+
+    ret += "Best\n--\n%s" % ", ".join([b.first_name for b in det_managers])
+
+    subject = "[DETAILS] %s - %s" % (str(due), detail_name)
+
+    return (subject, ret)

@@ -158,4 +158,7 @@ urlpatterns = [
     url(r'^detail-manager/create-groups$', views.create_groups, name='create_groups'),
     url(r'^detail-manager/select-groups$', views.select_groups, name='select_groups'),
     url(r'^detail-manager/delete-groups$', views.delete_groups, name='delete_groups'),
+
+    url(r'details/thursday/finish/(?P<detail_id>[0-9]+)/$', views.finish_thursday_detail,
+        name='finish_thursday_detail'),
 ]
