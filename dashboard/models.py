@@ -382,7 +382,7 @@ class ThursdayDetail(Detail):
 
 
 class SundayDetail(Detail):
-    pass
+    finished_by = models.ForeignKey(Brother, null=True)
 
 
 class SundayGroupDetail(models.Model):
