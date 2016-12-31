@@ -1,4 +1,5 @@
 import csv
+import random
 
 from django.contrib import messages, auth
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -8,9 +9,11 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import *
 from django.views.generic.edit import UpdateView, DeleteView
 from django.db import transaction
+from django.conf import settings
 
 from .utils import verify_position, get_semester, verify_brother,\
-        get_season, get_year, forms_is_valid, get_season_from, ec, non_ec
+        get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
+        build_thursday_detail_email
 from datetime import datetime
 from .forms import *
 
@@ -2009,5 +2012,61 @@ def delete_groups(request):
     return render(request, 'delete_groups.html', context)
 
 
-def finish_thursday_detail(request):
-    pass
+@verify_position(['Detail Manager'])
+def post_thursday(request):
+    date_form = SelectDate(request.POST or None)
+
+    if request.method == 'POST':
+        if date_form.is_valid():
+            brothers = Brother.objects.filter(does_house_details=True)
+            details = settings.THURSDAY_DETAILS
+
+            bros = [b for b in brothers]
+            brothers = bros
+            random.shuffle(details)
+            random.shuffle(brothers)
+
+            matching = zip(brothers, details)
+            assigned = []
+            emails = []
+
+            for (b, d) in matching:
+                detail = ThursdayDetail(
+                    short_description=d['name'],
+                    long_description="\n".join(d['tasks']),
+                    due_date=date_form.cleaned_data['due_date'], brother=b,
+                )
+                detail.save()
+                assigned.append(detail)
+                emails.append(
+                    build_thursday_detail_email(
+                        detail, request.scheme + "://" + request.get_host()
+                    )
+                )
+
+            for (subject, email) in emails:
+                # TODO: Send email
+                print(subject)
+                print(email)
+
+    context = {'form': date_form}
+    return render(request, 'post_thursday_details.html', context)
+
+
+def finish_thursday_detail(request, detail_id):
+    detail = ThursdayDetail.objects.get(pk=detail_id)
+    if not verify_brother(detail.brother, request.user):
+        if request.user.brother not in Position.objects.get(
+            title='Detail Manager'
+        ).brothers.all():
+            messages.error(request, "That's not your detail!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+
+    if request.method == 'POST' and not detail.done:
+        detail.done = True
+        detail.finished_time = datetime.datetime.now()
+        detail.save()
+
+    context = {'detail': detail}
+
+    return render(request, 'finish_thursday_detail.html', context)

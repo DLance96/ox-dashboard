@@ -292,3 +292,7 @@ class SelectDetailGroups(forms.Form):
             if name.startswith('group_id_'):
                 num = int(name.replace('group_id_', ''))
                 yield (value, self.cleaned_data['group_%s' % num])
+
+
+class SelectDate(forms.Form):
+    due_date = forms.DateField()

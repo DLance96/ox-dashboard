@@ -363,16 +363,22 @@ class Detail(models.Model):
     long_description = models.TextField(null=False)
     done = models.BooleanField(default=False)
     due_date = models.DateField(null=False)
+    finished_time = models.DateTimeField(null=True)
 
     class Meta:
         abstract = True
 
     def __str__(self):
-        return self.short_description.encode('utf8')
+        return self.short_description.encode('utf8') + ", due " +\
+            str(self.due_date)
 
 
 class ThursdayDetail(Detail):
     brother = models.ForeignKey(Brother, null=False)
+
+    def __str__(self):
+        return str(self.brother) + ": " +\
+            super(ThursdayDetail, self).__str__()
 
 
 class SundayDetail(Detail):
@@ -382,3 +388,8 @@ class SundayDetail(Detail):
 class SundayGroupDetail(models.Model):
     group = models.ForeignKey(DetailGroup)
     details = models.ManyToManyField(SundayDetail)
+
+    def __str__(self):
+        return str(self.group) + "; " + ", ".join(
+            [str(d.short_description) for d in self.details.all()]
+        ) + "; due " + str(self.details.all()[0].due_date)

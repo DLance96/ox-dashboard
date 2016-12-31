@@ -124,14 +124,13 @@ def verify_brother(brother, user):
     return user.brother.id == brother.id
 
 
-#def build_thursday_detail_email(brother, detail_name, tasks, due, done_link):
-def build_thursday_detail_email(thursday_detail):
+def build_thursday_detail_email(thursday_detail, host):
     brother = thursday_detail.brother
     detail_name = thursday_detail.short_description
     tasks = thursday_detail.long_description
     due = thursday_detail.due_date
-    done_link = reverse(
-        'finish_thursday_detail', kwargs={'detail_id': thursday_detail.pk}
+    done_link = host + reverse(
+        'dashboard:finish_thursday', args=[thursday_detail.pk]
     )
     det_managers = Position.objects.get(title="Detail Manager").brothers.all()
 
