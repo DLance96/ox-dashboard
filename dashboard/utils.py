@@ -125,6 +125,7 @@ def verify_brother(brother, user):
 
 
 def build_thursday_detail_email(thursday_detail, host):
+    """Builds an email (w/ subject) for a Thursday detail"""
     brother = thursday_detail.brother
     detail_name = thursday_detail.short_description
     tasks = thursday_detail.long_description

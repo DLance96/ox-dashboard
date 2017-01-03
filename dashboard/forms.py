@@ -193,6 +193,7 @@ class SuppliesFinishForm(forms.Form):
 
 
 class InHouseForm(forms.Form):
+    """Selects brothers living in house"""
     in_house = Brother.objects.filter(
         brother_status='1', in_house=True
     ).order_by('user__last_name', 'user__first_name')
@@ -215,6 +216,7 @@ class InHouseForm(forms.Form):
 
 
 class HouseDetailsSelectForm(forms.Form):
+    """Select who does house details"""
     does_details = Brother.objects.filter(
         brother_status='1', in_house=True, does_house_details=True,
     ).order_by('user__last_name', 'user__first_name')
@@ -246,17 +248,20 @@ class HouseDetailsSelectForm(forms.Form):
 
 
 class CreateDetailGroups(forms.Form):
+    """Create detail groups for this semester"""
     semesters = Semester.objects.all()
     size = forms.IntegerField(min_value=1)
     semester = forms.ModelChoiceField(semesters)
 
 
 class SelectSemester(forms.Form):
+    """Select a semester"""
     semesters = Semester.objects.all().order_by('-year', '-season')
     semester = forms.ModelChoiceField(semesters)
 
 
 class DeleteDetailGroup(forms.Form):
+    """Allows selecting detail groups for a semester for deletion"""
     def __init__(self, *args, **kwargs):
         semester = kwargs.pop('semester')
         super(DeleteDetailGroup, self).__init__(*args, **kwargs)
@@ -270,6 +275,8 @@ class DeleteDetailGroup(forms.Form):
 
 
 class SelectDetailGroups(forms.Form):
+    """Select the brothers in a detail group. Dynamically creates form based
+    on how many groups there are this semester"""
     def __init__(self, *args, **kwargs):
         semester = kwargs.pop('semester')
         super(SelectDetailGroups, self).__init__(*args, **kwargs)
@@ -288,6 +295,7 @@ class SelectDetailGroups(forms.Form):
             )
 
     def extract_groups(self):
+        """Generator for getting the groups"""
         for name, value in self.cleaned_data.items():
             if name.startswith('group_id_'):
                 num = int(name.replace('group_id_', ''))
@@ -295,4 +303,5 @@ class SelectDetailGroups(forms.Form):
 
 
 class SelectDate(forms.Form):
+    """Select a date"""
     due_date = forms.DateField()

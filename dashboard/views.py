@@ -1920,6 +1920,7 @@ def supplies_finish(request):
 @verify_position(['Vice President', 'President'])
 @transaction.atomic
 def in_house(request):
+    """Allows the VP to select who's living in the house"""
     form = InHouseForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1939,6 +1940,7 @@ def in_house(request):
 @verify_position(['Detail Manager'])
 @transaction.atomic
 def house_detail_toggle(request):
+    """Selects who does house details"""
     form = HouseDetailsSelectForm(request.POST or None)
 
     if request.method == 'POST':
@@ -1958,6 +1960,8 @@ def house_detail_toggle(request):
 @verify_position(['Detail Manager'])
 @transaction.atomic
 def create_groups(request):
+    """Create detail groups for a specific semester. Decides how many to create
+    based on the group size and brothers living in the house"""
     form = CreateDetailGroups(request.POST or None)
 
     if request.method == 'POST':
@@ -1978,6 +1982,7 @@ def create_groups(request):
 @verify_position(['Detail Manager'])
 @transaction.atomic
 def select_groups(request):
+    """Select brothers in detail groups (for this semester)"""
     form = SelectDetailGroups(request.POST or None, semester=get_semester())
 
     if request.method == 'POST':
@@ -1995,6 +2000,7 @@ def select_groups(request):
 @verify_position(['Detail Manager'])
 @transaction.atomic
 def delete_groups(request):
+    """Delete detail groups.  Can select a semester to delete form"""
     semester_form = SelectSemester(request.GET or None)
     if semester_form.is_valid():
         semester = semester_form.cleaned_data['semester']
@@ -2014,6 +2020,7 @@ def delete_groups(request):
 
 @verify_position(['Detail Manager'])
 def post_thursday(request):
+    """Post Thursday Details, due on the date from the form"""
     date_form = SelectDate(request.POST or None)
 
     if request.method == 'POST':
@@ -2054,6 +2061,8 @@ def post_thursday(request):
 
 
 def finish_thursday_detail(request, detail_id):
+    """Marks a Thursday Detail as done, by either its owner or the detail
+    manager"""
     detail = ThursdayDetail.objects.get(pk=detail_id)
     if not verify_brother(detail.brother, request.user):
         if request.user.brother not in Position.objects.get(
