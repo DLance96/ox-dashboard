@@ -353,6 +353,9 @@ class DetailGroup(models.Model):
     brothers = models.ManyToManyField(Brother)
     semester = models.ForeignKey(Semester)
 
+    def size(self):
+        return len(self.brothers.all())
+
     def __str__(self):
         return str(self.semester) + ": " + ", ".join(
             [str(b) for b in self.brothers.all()]
@@ -367,12 +370,14 @@ class Detail(models.Model):
     due_date = models.DateField(null=False)
     finished_time = models.DateTimeField(null=True)
 
+    def full_text(self):
+        text = "%s\n----------\n" % self.short_description
+        text += "%s\n----------\n" % self.long_description
+        text += "Due: %s\n\n" % str(self.due_date)
+        return text
+
     class Meta:
         abstract = True
-
-    def __str__(self):
-        return self.short_description.encode('utf8') + ", due " +\
-            str(self.due_date)
 
 
 class ThursdayDetail(Detail):
@@ -388,13 +393,11 @@ class SundayDetail(Detail):
     """A single Sunday detail.  Keeps track of who marks it done"""
     finished_by = models.ForeignKey(Brother, null=True)
 
+    def __str__(self):
+        return self.short_description.encode('utf8')
+
 
 class SundayGroupDetail(models.Model):
     """A group detail.  Contains a group and a number of SundayDetails"""
     group = models.ForeignKey(DetailGroup)
     details = models.ManyToManyField(SundayDetail)
-
-    def __str__(self):
-        return str(self.group) + "; " + ", ".join(
-            [str(d.short_description) for d in self.details.all()]
-        ) + "; due " + str(self.details.all()[0].due_date)

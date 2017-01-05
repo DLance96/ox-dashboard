@@ -13,7 +13,7 @@ from django.conf import settings
 
 from .utils import verify_position, get_semester, verify_brother,\
         get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
-        build_thursday_detail_email
+        build_thursday_detail_email, build_sunday_detail_email
 from datetime import datetime
 from .forms import *
 
@@ -2019,6 +2019,7 @@ def delete_groups(request):
 
 
 @verify_position(['Detail Manager'])
+@transaction.atomic
 def post_thursday(request):
     """Post Thursday Details, due on the date from the form"""
     date_form = SelectDate(request.POST or None)
@@ -2051,8 +2052,8 @@ def post_thursday(request):
                     )
                 )
 
-            for (subject, email) in emails:
-                # TODO: Send email
+            for (subject, email, to) in emails:
+                print(to)
                 print(subject)
                 print(email)
 
@@ -2079,3 +2080,82 @@ def finish_thursday_detail(request, detail_id):
     context = {'detail': detail}
 
     return render(request, 'finish_thursday_detail.html', context)
+
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def post_sunday(request):
+    """Post Sunday Details, due on the date from the form"""
+    date_form = SelectDate(request.POST or None)
+
+    if request.method == 'POST':
+        if date_form.is_valid():
+            groups = DetailGroup.objects.filter(semester=get_semester())
+            details = settings.SUNDAY_DETAILS
+
+            g = [e for e in groups]
+            groups = g
+            random.shuffle(groups)
+            random.shuffle(details)
+
+            emails = []
+
+            for group in groups:
+                group_detail = SundayGroupDetail(group=group)
+                group_detail.save()
+                for _ in range(group.size()):
+                    if len(details) <= 0:
+                        break
+                    d = details.pop()
+                    det = SundayDetail(
+                        short_description=d['name'],
+                        long_description="\n".join(d['tasks']),
+                        due_date=date_form.cleaned_data['due_date']
+                    )
+                    det.save()
+                    group_detail.details.add(det)
+                group_detail.save()
+                emails.append(
+                    build_sunday_detail_email(
+                        group_detail,
+                        request.scheme + "://" + request.get_host()
+                    )
+                )
+                if len(details) <= 0:
+                    break
+
+            for (subject, email, to) in emails:
+                print(to)
+                print(subject)
+                print(email)
+
+    context = {'form': date_form}
+    return render(request, 'post_sunday_details.html', context)
+
+
+def finish_sunday_detail(request, detail_id):
+    groupdetail = SundayGroupDetail.objects.get(pk=detail_id)
+    if request.user.brother not in groupdetail.group.brothers.all():
+        if request.user.brother not in Position.objects.get(
+            title='Detail Manager'
+        ).brothers.all():
+            messages.error(request, "That's not your detail!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+
+    form = FinishSundayDetail(request.POST or None, groupdetail=groupdetail)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            detail = form.cleaned_data['detail']
+            detail.done = True
+            detail.finished_time = datetime.datetime.now()
+            detail.finished_by = request.user.brother
+            detail.save()
+
+    context = {
+        'groupdetail': groupdetail,
+        'details': groupdetail.details.all(),
+        'form': form,
+    }
+
+    return render(request, 'finish_sunday_detail.html', context)

@@ -126,28 +126,56 @@ def verify_brother(brother, user):
 
 def build_thursday_detail_email(thursday_detail, host):
     """Builds an email (w/ subject) for a Thursday detail"""
-    brother = thursday_detail.brother
-    detail_name = thursday_detail.short_description
-    tasks = thursday_detail.long_description
-    due = thursday_detail.due_date
     done_link = host + reverse(
         'dashboard:finish_thursday', args=[thursday_detail.pk]
     )
     det_managers = Position.objects.get(title="Detail Manager").brothers.all()
+    to = [thursday_detail.brother.user.email]
 
-    ret = "Dear %s, \n\n\n" % brother.first_name
+    email = "Dear %s, \n\n\n" % thursday_detail.brother.first_name
 
-    ret += "Your detail is:\n\n"
-    ret += "%s\n----------\n" % detail_name
-    ret += "%s\n----------\n\n\n" % tasks
+    email += "Your detail is:\n\n"
+    email += thursday_detail.full_text()
 
-    ret += "It is due on %s.\n" % str(due)
-    ret += "Please complete it by the required time on that day and mark " + \
-        "it done by midnight.\n\n"
-    ret += "Go to this link to mark it done: %s\n\n\n" % done_link
+    email += "\n"
+    email += "Please complete it by the required time on the due date and " + \
+        "mark it done by midnight.\n\n"
+    email += "Go to this link to mark it done: %s\n\n\n" % done_link
 
-    ret += "Best\n--\n%s" % ", ".join([b.first_name for b in det_managers])
+    email += "Best\n--\n%s" % ", ".join([b.first_name for b in det_managers])
 
-    subject = "[DETAILS] %s - %s" % (str(due), detail_name)
+    subject = "[DETAILS] %s - %s" % (
+        thursday_detail.due_date, thursday_detail.short_description
+    )
 
-    return (subject, ret)
+    return (subject, email, to)
+
+
+def build_sunday_detail_email(sunday_group_detail, host):
+    brothers = sunday_group_detail.group.brothers.all()
+    details = sunday_group_detail.details.all()
+    due = details[0].due_date
+    det_managers = Position.objects.get(title="Detail Manager").brothers.all()
+    done_link = host + reverse(
+        'dashboard:finish_sunday', args=[sunday_group_detail.pk]
+    )
+    to = [b.user.email for b in sunday_group_detail.group.brothers.all()]
+
+    email = "Dear %s, \n\n\n" % ", ".join(
+        [b.first_name for b in brothers.all()]
+    )
+
+    email += "Your Sunday details are:\n\n"
+    for det in details:
+        email += det.full_text()
+        email += "\n"
+
+    email += "Please complete them before the required time on the due " + \
+        "date and make the ones you do as done by midnight.\n\n"
+    email += "Go to this link to mark them done: %s\n\n\n" % done_link
+
+    email += "Best\n--\n%s" % ", ".join([b.first_name for b in det_managers])
+
+    subject = "[DETAILS] Sunday details for %s" % due
+
+    return (subject, email, to)

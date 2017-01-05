@@ -305,3 +305,15 @@ class SelectDetailGroups(forms.Form):
 class SelectDate(forms.Form):
     """Select a date"""
     due_date = forms.DateField()
+
+
+class FinishSundayDetail(forms.Form):
+    def __init__(self, *args, **kwargs):
+        groupdetail = kwargs.pop('groupdetail')
+        super(FinishSundayDetail, self).__init__(*args, **kwargs)
+
+        self.fields['detail'] = forms.ModelChoiceField(
+            queryset=groupdetail.details,
+            widget=forms.RadioSelect,
+            empty_label=None,
+        )

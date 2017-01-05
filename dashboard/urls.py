@@ -162,4 +162,8 @@ urlpatterns = [
     url(r'^details/thursday/finish/(?P<detail_id>\d+)/$', views.finish_thursday_detail,
         name='finish_thursday'),
     url(r'details/thursday/post$', views.post_thursday, name='post_thursday_details'),
+
+    url(r'^details/sunday/finish/(?P<detail_id>\d+)/$', views.finish_sunday_detail,
+        name='finish_sunday'),
+    url(r'details/sunday/post$', views.post_sunday, name='post_sunday_details'),
 ]
