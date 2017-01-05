@@ -2156,6 +2156,10 @@ def finish_sunday_detail(request, detail_id):
         'groupdetail': groupdetail,
         'details': groupdetail.details.all(),
         'form': form,
+        'who': ", ".join(
+            [str(b) for b in groupdetail.group.brothers.all()]
+        ),
+        'due': groupdetail.details.all()[0].due_date,
     }
 
     return render(request, 'finish_sunday_detail.html', context)

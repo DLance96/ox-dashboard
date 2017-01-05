@@ -6,6 +6,7 @@
 {% block content %}
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
+        <h3>Sunday details for {{ due }} for {{ who }}.</h3>
     </div>
     {% for detail in details %}
     <div class="panel panel-default">
@@ -38,7 +39,7 @@
                 {% csrf_token %}
                 <ul id='id_detail'>
                 {% for detail in details %}
-                <li><label><input name='detail' type='radio' value='{{ detail.pk }}' {% if detail.done %}disabled{% endif %}/> {{ detail.short_description }}</label> {% if detail.done %}Already done by {{ detail.finished_by }}{% endif %}</li>
+                <li><label><input name='detail' type='radio' value='{{ detail.pk }}' {% if detail.done %}disabled{% endif %}/> {{ detail.short_description }}</label> {% if detail.done %}Finished by {{ detail.finished_by }} at {{ detail.finished_time }}{% endif %}</li>
                 {% endfor %}
                 </ul>
                 <input type="submit" value="Finish this detail" />
