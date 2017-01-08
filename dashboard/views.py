@@ -1,4 +1,5 @@
 import csv
+import random
 
 from django.contrib import messages, auth
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -7,9 +8,13 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import *
 from django.views.generic.edit import UpdateView, DeleteView
+from django.db import transaction
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 from .utils import verify_position, get_semester, verify_brother,\
-        get_season, get_year, forms_is_valid, get_season_from, ec, non_ec
+        get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
+        build_thursday_detail_email, build_sunday_detail_email
 from datetime import datetime
 from .forms import *
 
@@ -1911,3 +1916,298 @@ def supplies_finish(request):
 
     context = {'form': form}
     return render(request, 'finish-supplies.html', context)
+
+
+@verify_position(['Vice President', 'President'])
+@transaction.atomic
+def in_house(request):
+    """Allows the VP to select who's living in the house"""
+    form = InHouseForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            brothers = Brother.objects.filter(brother_status='1')
+            brothers.update(in_house=False)
+            for c in ['in_house_part', 'not_in_house_part']:
+                brothers = form.cleaned_data[c]
+                for b in brothers:
+                    b.in_house = True
+                    b.save()
+
+    context = {'form': form}
+    return render(request, 'in_house.html', context)
+
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def house_detail_toggle(request):
+    """Selects who does house details"""
+    form = HouseDetailsSelectForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            brothers = Brother.objects.filter(brother_status='1')
+            brothers.update(does_house_details=False)
+            for c in ['does_details_part', 'doesnt_do_details_part']:
+                brothers = form.cleaned_data[c]
+                for b in brothers:
+                    b.does_house_details = True
+                    b.save()
+
+    context = {'form': form}
+    return render(request, 'house_detail_toggle.html', context)
+
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def create_groups(request):
+    """Create detail groups for a specific semester. Decides how many to create
+    based on the group size and brothers living in the house"""
+    form = CreateDetailGroups(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            num_brothers = len(Brother.objects.filter(does_house_details=True))
+            num_groups = int(num_brothers / form.cleaned_data['size'])
+
+            for i in range(num_groups):
+                g = DetailGroup(semester=form.cleaned_data['semester'])
+                g.save()
+
+            return HttpResponseRedirect(reverse('dashboard:select_groups'))
+
+    context = {'form': form}
+    return render(request, 'create_groups.html', context)
+
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def select_groups(request):
+    """Select brothers in detail groups (for this semester)"""
+    form = SelectDetailGroups(request.POST or None, semester=get_semester())
+
+    if request.method == 'POST':
+        if form.is_valid():
+            for gid, brothers in form.extract_groups():
+                group = DetailGroup.objects.get(pk=int(gid))
+                group.brothers = brothers
+                group.save()
+                print group
+
+    context = {'form': form}
+    return render(request, 'select_groups.html', context)
+
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def delete_groups(request):
+    """Delete detail groups.  Can select a semester to delete form"""
+    semester_form = SelectSemester(request.GET or None)
+    if semester_form.is_valid():
+        semester = semester_form.cleaned_data['semester']
+    else:
+        semester = get_semester()
+    form = DeleteDetailGroup(request.POST or None, semester=semester)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            for g in form.cleaned_data['groups']:
+                g.delete()
+
+    context = {'form': form, 'semester_form': semester_form}
+
+    return render(request, 'delete_groups.html', context)
+
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def post_thursday(request):
+    """Post Thursday Details, due on the date from the form"""
+    date_form = SelectDate(request.POST or None)
+
+    if request.method == 'POST':
+        if date_form.is_valid():
+            brothers = Brother.objects.filter(does_house_details=True)
+            details = settings.THURSDAY_DETAILS
+
+            bros = [b for b in brothers]
+            brothers = bros
+            random.shuffle(details)
+            random.shuffle(brothers)
+
+            matching = zip(brothers, details)
+            assigned = []
+            emails = []
+
+            for (b, d) in matching:
+                detail = ThursdayDetail(
+                    short_description=d['name'],
+                    long_description="\n".join(d['tasks']),
+                    due_date=date_form.cleaned_data['due_date'], brother=b,
+                )
+                detail.save()
+                assigned.append(detail)
+                emails.append(
+                    build_thursday_detail_email(
+                        detail, request.scheme + "://" + request.get_host()
+                    )
+                )
+
+            for (subject, email, to) in emails:
+                print(to)
+                print(subject)
+                print(email)
+
+    context = {'form': date_form}
+    return render(request, 'post_thursday_details.html', context)
+
+
+def finish_thursday_detail(request, detail_id):
+    """Marks a Thursday Detail as done, by either its owner or the detail
+    manager"""
+    detail = ThursdayDetail.objects.get(pk=detail_id)
+    if not verify_brother(detail.brother, request.user):
+        if request.user.brother not in Position.objects.get(
+            title='Detail Manager'
+        ).brothers.all():
+            messages.error(request, "That's not your detail!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+
+    if request.method == 'POST' and not detail.done:
+        detail.done = True
+        detail.finished_time = datetime.datetime.now()
+        detail.save()
+
+    context = {'detail': detail}
+
+    return render(request, 'finish_thursday_detail.html', context)
+
+
+@verify_position(['Detail Manager'])
+@transaction.atomic
+def post_sunday(request):
+    """Post Sunday Details, due on the date from the form"""
+    date_form = SelectDate(request.POST or None)
+
+    if request.method == 'POST':
+        if date_form.is_valid():
+            groups = DetailGroup.objects.filter(semester=get_semester())
+            details = settings.SUNDAY_DETAILS
+
+            g = [e for e in groups]
+            groups = g
+            random.shuffle(groups)
+            random.shuffle(details)
+
+            emails = []
+
+            for group in groups:
+                if len(details) <= 0:
+                    break
+                group_detail = SundayGroupDetail(
+                    group=group, due_date=date_form.cleaned_data['due_date']
+                )
+                group_detail.save()
+                for _ in range(group.size()):
+                    if len(details) <= 0:
+                        break
+                    d = details.pop()
+                    det = SundayDetail(
+                        short_description=d['name'],
+                        long_description="\n".join(d['tasks']),
+                        due_date=date_form.cleaned_data['due_date']
+                    )
+                    det.save()
+                    group_detail.details.add(det)
+                group_detail.save()
+                emails.append(
+                    build_sunday_detail_email(
+                        group_detail,
+                        request.scheme + "://" + request.get_host()
+                    )
+                )
+
+            for (subject, email, to) in emails:
+                print(to)
+                print(subject)
+                print(email)
+
+    context = {'form': date_form}
+    return render(request, 'post_sunday_details.html', context)
+
+
+def finish_sunday_detail(request, detail_id):
+    groupdetail = SundayGroupDetail.objects.get(pk=detail_id)
+    if request.user.brother not in groupdetail.group.brothers.all():
+        if request.user.brother not in Position.objects.get(
+            title='Detail Manager'
+        ).brothers.all():
+            messages.error(request, "That's not your detail!")
+            return HttpResponseRedirect(reverse('dashboard:home'))
+
+    form = FinishSundayDetail(request.POST or None, groupdetail=groupdetail)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            detail = form.cleaned_data['detail']
+            detail.done = True
+            detail.finished_time = datetime.datetime.now()
+            detail.finished_by = request.user.brother
+            detail.save()
+
+    context = {
+        'groupdetail': groupdetail,
+        'details': groupdetail.details.all(),
+        'form': form,
+        'who': ", ".join(
+            [str(b) for b in groupdetail.group.brothers.all()]
+        ),
+        'due': groupdetail.details.all()[0].due_date,
+    }
+
+    return render(request, 'finish_sunday_detail.html', context)
+
+
+@login_required
+def current_details(request):
+    brother = request.user.brother
+    if not brother.does_house_details:
+        context = {
+            'does_house_details': False,
+            'who': str(brother),
+        }
+        return render(request, 'list_details.html', context)
+    detailgroup = DetailGroup.objects.get(
+        semester=get_semester(), brothers=brother
+    )
+
+    last_sunday = SundayGroupDetail.objects.filter(
+        group=detailgroup
+    ).order_by('-due_date').first()
+    last_sunday_link = reverse(
+        'dashboard:finish_sunday', args=[last_sunday.pk]
+    )
+    sunday_text = "\n\n\n".join(
+        [d.full_text() for d in last_sunday.details.all()]
+    )
+
+    last_thursday = ThursdayDetail.objects.filter(
+        brother=brother
+    ).order_by('-due_date').first()
+    last_thursday_link = reverse(
+        'dashboard:finish_thursday', args=[last_thursday.pk]
+    )
+    thursday_text = last_thursday.full_text()
+
+    context = {
+        'last_sunday': last_sunday,
+        'last_thursday': last_thursday,
+        'last_sunday_link': last_sunday_link,
+        'last_thursday_link': last_thursday_link,
+        'sunday_text': sunday_text,
+        'thursday_text': thursday_text,
+        'who': str(brother),
+        'does_house_details': True,
+    }
+
+    return render(request, 'list_details.html', context)

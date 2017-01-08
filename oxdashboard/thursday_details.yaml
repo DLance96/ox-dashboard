@@ -1,0 +1,203 @@
+---
+- name: Library and Opium Den
+  required: True
+  tasks:
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Put Billiard Balls and Cues Away (Collect Chalk and Place on Cue Holder)
+    - ____Straighten Left-Out Books and Awards, and Donated Items
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Burned-out Light bulbs
+    - ____Return Furniture to Original Position
+    - ____Sweep Floors (Including Underneath Pool Table)
+- name: Dining Room & Family Room Floors
+  required: True
+  tasks:
+    - ____Sweep Floors (Dining Room, Family Room)
+- name: 2nd Floor Bathroom
+  required: True
+  tasks:
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Toilet Paper (2 Out, 4 in Closet)
+    - ____Replace Burned-Out Light bulbs
+    - ____Refill Soap (Seriously.)
+    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Sweep Floor (Including Around Radiator and Behind Door)
+    - ____Check that the paper towel dispenser works and notify the house manager if it does not
+- name: Foyer and Front Hallway
+  required: True
+  tasks:
+    - ____Take All Misc. Items to Their Proper Homes
+    - ____Replace Other Burned-Out Lightbulbs
+    - ____Sweep Floors, Including Front Hallway
+    - ____Straighten Furniture
+- name: Basement Bathroom
+  required: True
+  tasks:
+    - ____Straighten Cleaning Material
+    - ____Replace Toilet paper (Two Extra)
+    - ____Replace Light Bulb if Burned out
+    - ____Sweep Floor in bathroom and in area at the base of the stairs between the laundry room and hallway.
+- name: 1st Floor Mop Closet and Hallways
+  required: True
+  tasks:
+    - ____General Straightening
+    - ____Rinse Out Mop Bucket (take outside and use the hose if necessary)
+    - ____Replace Dead Light bulbs
+    - ____Hang Up Brooms, Mops, Dustpans, etc.
+    - ____Re-Stock Cleaning Supplies (if necessary)
+    - ____Sweep Bathroom Hallway
+    - ____Replace Burned-out Light bulbs
+- name: 1st Floor Bathroom (Left)
+  required: True
+  tasks:
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Toilet Paper (2 Out, 4 in Closet)
+    - ____Replace Burned-Out Light bulbs (Check Hall Too)
+    - ____Refill Soap (Seriously)
+    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Sweep Floors (Including Hall Connecting Bathrooms)
+    - ____Check that the paper towel dispenser works and notify the house manager if it does not
+- name: 1st Floor Bathroom (R) and Bathroom Hallway
+  required: True
+  tasks:
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Toilet Paper in TP dispenser
+    - ____Replace Burned-Out Lightbulbs
+    - ____Refill Soap (Seriously)
+    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Sweep Floor (Including Around Radiator and Behind Door)
+    - ____Check that the paper towel dispenser works and notify the house manager if it does not
+- name: Alumni Room
+  required: True
+  tasks:
+    - ____Take Dirty Dishes to the Kitchen Sink
+    - ____Find Remotes, Replace Dead Batteries
+    - ____Organize Game Systems and Controllers (DDR pads included)
+    - ____Return Games and DVDs to Their Cases on the Shelf
+    - ____Remove all Trash
+    - ____Replace Burned-out Light bulbs
+    - ____Return Furniture to Normal Placement
+- name: The Kitchen Again
+  required: True
+  tasks:
+    - ____Straighten Up the House Fridges (Clean Out Nearly Empty Pans, Make Sure Bottom of House Fridge is Clean)
+    - ____Throw Away Old Food
+    - ____Ensure Areas beneath Sink and Garbage Cans are Clean
+    - ____Clean and Organize Shelf beneath Dishes
+- name: 3rd Floor Bathroom
+  required: True
+  tasks:
+    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Toilet Paper (2 Out, 4 in Closet)
+    - ____Replace Dead Light bulbs   [Not needed]
+    - ____Refill Soap (Seriously)
+    - ____Sweep Floor (Including Around Radiator and Behind Door)
+    - ____Check that the paper towel dispenser works and notify the house manager if it does not
+- name: Back Stairwell
+  required: True
+  tasks:
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Burned-Out Light bulbs
+    - ____Sweep Stairs (3rd Floor Down to Basement)
+- name: War Room
+  required: True
+  tasks:
+    - ____Take Dirty Dishes to the Kitchen Sink
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Straighten up books.
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Dead Light bulbs
+- name: Rec Area, Study Room, and Bsmnt Hall
+  required: True
+  tasks:
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Clean off the table and wipe it down with pledge
+    - ____Return Markers and Erasers to Chalk-Ledges
+    - ____Erase whiteboard if contents are unneeded and clean with rubbing alcohol if necessary.
+    - ____Replace Burnt-Out Light bulbs
+    - ____Sweep Rec Area and Main Basement Hall Floor
+    - ____Straighten Rec Area
+- name: Front Stairway and Airlock
+  required: True
+  tasks:
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Straighten Shoes, Coats, and Hangers in Airlock
+    - ____Sweep Airlock
+- name: 3rd Floor Hall and Sink Closet
+  required: True
+  tasks:
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Burned-Out Light bulbs
+    - ____Straighten Composites
+    - ____Sweep Sink Closet Floor
+- name: 2nd Floor Hall and Mop Closet
+  required: True
+  tasks:
+    - ____Pick Up All Trash
+    - ____Empty Hall Trashcan (Take to Dumpster) and Recycling
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Burned-Out Light bulbs
+    - ____Straighten Composites
+    - ____Straighten Mop Closet, Clean Mop Closet
+- name: Dining Room & Family Room
+  required: True
+  tasks:
+    - ____Take Dirty Dishes to the Kitchen Sink
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Clean ALL Tables Thoroughly (Especially Dining Room)
+    - ____Empty Dead Bugs from Bulb Covers (if visible black mass and get a ladder if needed)
+    - ____Replace Burned-Out Light bulbs
+    - ____Return Furniture to Normal Position
+    - ____Straighten Room
+- name: Misc. Stairs
+  required: True
+  tasks:
+    - ____Barn Stairs (Between 206 and 308)
+    - ____Check for Dead Light bulbs; Note Below if Needed
+    - ____Sweep Stairs
+    - ____Other (Outside 101 and Kitchen, Base of Back Stairs)
+    - ____Replace Burnt-Out Light Bulbs
+    - ____Sweep Floor
+- name: Laundry Room
+  required: True
+  tasks:
+    - ____Straighten Workbenches, Return Tools to House Manager Closet
+    - ____Remove All Trash (Take Bags to Dumpster if Needed)
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Get a White or Clear Garbage Bag
+    - ____Clean Out Dryer Lint Trays
+    - ____Replace Burned-Out Incandescent Light bulbs
+    - ____Sweep Floors
+- name: Front and Back Porches
+  required: True
+  tasks:
+    - ____Pick Up and Return Things That Belong Inside
+    - ____Remove All Trash (Straight to Dumpster)
+    - ____Replace Dead Light bulbs (Seriously, get a ladder if you need it.)
+    - ____Sweep Back Porch Thoroughly
+    - ____Organize Recycling Bags on Back Porch; Straighten Up
+    - ____Move Furniture, Sweep Front Porch Thoroughly
+- name: 2nd Floor Hall and Mop Closet
+  required: True
+  tasks:
+    - ____Pick Up All Trash
+    - ____Empty Hall Trashcan (Take to Dumpster) and Recycling
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Burned-Out Light bulbs
+    - ____Straighten Composites
+    - ____Straighten Mop Closet, Clean Mop Closet
+- name: Microwave and toaster oven
+  required: True
+  tasks:
+    - ____Wipe down the outside of the microwave and toaster oven
+    - ____Wipe down the inside of the microwave and toaster oven
+    - ____Clean microwave plate (with soap and water)
+    - ____Clean toaster oven rack and drip plates (with soap and water)
+- name: Vacuum the Alumni room and study room
+  required: True
+  tasks:
+    - ____Vacuum the Alumni room and study room

@@ -1,0 +1,320 @@
+---
+- name: 1st Floor Bathroom (R) and Bathroom Hallway
+  required: True
+  tasks:
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Toilet Paper (2 Out, 4 in Closet)
+    - ____Replace Burned-Out Lightbulbs
+    - ____Refill Soap (Seriously)
+    - ____Scrub Sink (Scrubbing Bubbles)
+    - ____Scrub Toilet Bowl (Toilet Cleaner) and Rim 
+    - ____Scrub Shower Doors (Inside and Out)
+    - ____Scrub Shower Walls and Floor
+    - ____Scrub Shower Faucet Handle and Drain Cover
+    - ____Clean Mirror (Glass Cleaner)
+    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Sweep Floor (Including Around Radiator and Behind Door)
+    - ____Mop Floor (Including Around Radiator and Behind Door)
+- name: 1st Floor Bathroom (Left)
+  required: True
+  tasks:
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Toilet Paper (2 Out, 4 in Closet)
+    - ____Replace Burned-Out Light bulbs (Check Hall Too)
+    - ____Refill Soap (Seriously)
+    - ____Scrub Sink (Scrubbing Bubbles)
+    - ____Scrub Toilet Bowl (Toilet Cleaner) and Rim
+    - ____Clean Mirror (Glass Cleaner)
+    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Sweep Floors (Including Hall Connecting Bathrooms)
+    - ____Mop Floors (Including Hall Connecting Bathrooms)
+- name: Foyer and Front Hallway
+  required: True
+  tasks:
+    - ____Take All Misc. Items to Their Proper Homes
+    - ____Replace Lightbulbs in Chandelier (if three or more are burned out)
+    - ____Replace Other Burned-Out Lightbulbs
+    - ____Wipe Down Windowsills
+    - ____Wipe Down Glass Surfaces (glass cleaner)
+    - ____Sweep Floors, Including Front Hallway
+    - ____Vacuum Rugs
+    - ____Mop Floor, Including Front Hallway USE ONLY MURPHY'S OIL SOAP. DO NOT USE PINESOL.
+    - ____Straighten Furniture
+- name: Front Stairway and Airlock
+  required: True
+  tasks:
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Straighten Shoes, Coats, and Hangers in Airlock
+    - ____Wipe Down Banister w/ Pledge
+    - ____Wipe Down Door to Upper Levels (Front and Back)
+    - ____Vacuum Stairs
+    - ____Sweep Airlock
+- name: Windows
+  required: False
+  tasks:
+    - ____Clean all the windows in the Library (Inside and Out)
+    - ____Clean all the windows in the Opium Den (Inside and Out… this includes the glass doors)
+    - ____Clean all the windows in the Airlock and Front Door (Inside and Out)
+    - ____Clean all the windows in the Main Staircase (The ones just up the main stairs).  (Inside and Out)
+- name: Vacuum, Towels, and Bathmats
+  required: False
+  tasks:
+    - ____Find the Vacuum Cleaner, Empty the Canister if necessary
+    - ____Remove the Filter Carefully (Below the Bag)
+    - ____Check Hose and Connections For Blocked Flow
+    - ____Inspect the Brush, Clean It Out
+    - ____Inspect and Test Overall Vac Operation
+    - ____Report to the House Manager (Hacker) If There Are Problems
+    - ____Get mop heads and wash them with the towels. (DO THIS FIRST!!!!!) (In the mop closet and closet on 2nd floor)
+    - ____Collect All Dishtowels, Hand Towels, and Rags (Kitchen, Laundry Room and Bathrooms)
+    - ____Collect Bathmats from 1st, 2nd, and 3rd Floor Bathrooms
+    - ____Wash All of the Above Cloth Items
+    - ____REPLACE All of the Above Cloth Items
+- name: 3rd Floor Bathroom
+  required: True
+  tasks:
+    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Toilet Paper (2 Out, 4 in Closet)
+    - ____Replace Dead Light bulbs
+    - ____Refill Soap (Seriously)
+    - ____Scrub Sink (Scrubbing Bubbles)
+    - ____Scrub Toilet Bowl (Toilet Cleaner) and Rim
+    - ____Scrub Urinal (Toilet Cleaner)
+    - ____Scrub Shower Doors and Floor
+    - ____Scrub Shower Walls
+    - ____Scrub Shower Faucet Handle and Drain Cover
+    - ____Clean Mirror (Glass Cleaner)
+    - ____Sweep Floor (Including Around Radiator and Behind Door)
+    - ____Mop Floor (Including Around Radiator and Behind Door)
+- name: 3rd Floor Hall and Sink Closet
+  required: False
+  tasks:
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Burned-Out Light bulbs
+    - ____Dust Composites Carefully
+    - ____Straighten Composites
+    - ____Clean Sink and Mirror in Closet
+    - ____Sweep Sink Closet Floor
+    - ____Vacuum Hallway Thoroughly
+    - ____Vacuum Hall Edges with Vacuum Hose
+- name: Back Stairwell
+  required: True
+  tasks:
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Burned-Out Light bulbs
+    - ____Wipe Down Windowsills
+    - ____Wipe Down Windows
+    - ____Wipe Down Banisters With Pledge
+    - ____Sweep Stairs (3rd Floor Down to Basement)
+    - ____Mop Stairs (3rd Floor Down to Basement)
+- name: The Stove
+  required: False
+  tasks:
+    - ____Wipe Down Stovetop
+    - ____Open Remove Stovetops and Grease traps
+    - ____Clean Grease traps
+    - ____Wipe Down Inside of Stove (That includes grating).
+    - ____Replace Stovetops and Grease traps
+    - ____Clean Floor Around and Under Stove
+    - ____Make Sure the Pilot Lights Are Still On
+- name: 2nd Floor Bathroom
+  required: True
+  tasks:
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Toilet Paper (2 Out, 4 in Closet)
+    - ____Replace Burned-Out Light bulbs
+    - ____Refill Soap (Seriously.)
+    - ____Scrub Sink (Scrubbing Bubbles)
+    - ____Scrub Toilet Bowl (Toilet Cleaner) and Rim
+    - ____Scrub Shower Doors (Inside and Out)
+    - ____Scrub Shower Walls and Floor
+    - ____Scrub Shower Faucet Handle and Drain Cover
+    - ____Wipe Down Bathroom Walls, Remove Spider webs & Dust
+    - ____Clean Mirror (Glass Cleaner)
+    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Sweep Floor (Including Around Radiator and Behind Door)
+    - ____Mop Floor (Including Around Radiator and Behind Door)
+- name: 2nd Floor Hall and Mop Closet
+  required: True
+  tasks:
+    - ____Pick Up All Trash
+    - ____Empty Hall Trashcan (Take to Dumpster) and Recycling
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Burned-Out Light bulbs
+    - ____Dust Composites Carefully
+    - ____Straighten Composites
+    - ____Straighten Mop Closet, Clean Mop Closet
+    - ____Vacuum Hallway Thoroughly
+    - ____Vacuum Hall Edges with Vacuum Hose
+- name: Library and Opium Den
+  required: True
+  tasks:
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Put Billiard Balls and Cues Away (Collect Chalk and Place on Cue Holder)
+    - ____Brush Table
+    - ____Straighten Left-Out Books and Awards, and Donated Items
+    - ____Wipe Down Cue Holder and Shelves w/ Pledge
+    - ____Wipe Down Wood Parts of Pool Table w/ Pledge
+    - ____Wipe Down Foosball Table
+    - ____Wipe Off Tables and Windowsills w/ Pledge
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Replace Burned-out Light bulbs
+    - ____Empty Dead Bugs from Bulb Covers (if visible black mass)
+    - ____Return Furniture to Original Position
+    - ____Clean Opium Den Windows (Inside Only, Use Glass Cleaner)
+    - ____Sweep Floors (Including Underneath Pool Table)
+    - ____Mop Floors (Including underneath Pool Table) USE ONLY MURPHY'S OIL SOAP. DO NOT USE PINESOL.
+- name: Alumni Room
+  required: True
+  tasks:
+    - ____Take Dirty Dishes to the Kitchen Sink
+    - ____Find Remotes, Replace Dead Batteries
+    - ____Organize Game Systems and Controllers (DDR pads included)
+    - ____Return Games and DVDs to Their Cases on the Shelf
+    - ____Remove all Trash
+    - ____Wipe Down Television Stand w/ Pledge
+    - ____Wipe Down Bar w/ Pledge
+    - ____Wipe Down Windows
+    - ____Wipe Down Windowsills
+    - ____Replace Burned-out Light bulbs
+    - ____Vacuum Carpets
+    - ____Return Furniture to Normal Placement
+- name: Rec Area, Old Study Room, and Bsmnt Hall
+  required: True
+  tasks:
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Wipe Down Table in Old Study Room with Pledge
+    - ____Dust Bookshelves
+    - ____Vacuum Study Room Floor
+    - ____Return Markers and Erasers to Chalk-Ledges
+    - ____Erase whiteboard if contents are unneeded and clean with rubbing alcohol if necessary.
+    - ____Replace Burnt-Out Light bulbs
+    - ____Sweep Rec Area and Main Basement Hall Floor
+    - ____Mop Rec Area Floor and Main Hall
+    - ____Straighten Rec Area
+- name: War Room
+  required: False
+  tasks:
+    - ____Take Dirty Dishes to the Kitchen Sink
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Straighten up books.
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Clean Table Surfaces Well
+    - ____Wipe Down Windowsill and Shelves
+    - ____Replace Dead Light bulbs
+    - ____Vacuum the Room (Move Chairs and Vac Under Tables)
+    - ____Vacuum Room Edges with the Hose
+    - ____Wipe down whiteboard and clean with rubbing alcohol if necessary
+- name: Laundry Room
+  required: True
+  tasks:
+    - ____Straighten Workbenches, Return Tools to House Manager Closet
+    - ____Remove All Trash (Take Bags to Dumpster if Needed)
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Get a White or Clear Garbage Bag
+    - ____Check Marker board for People Doing Laundry Tonight; Don’t Touch Their Stuff
+    - ____Collect Unidentified Clothes, Random Socks, etc.
+    - ____Clearly Label Bag “Abandoned Laundry”, and Set Somewhere Visible.
+    - ____Clean Out Dryer Lint Trays
+    - ____Wipe Down Washers and Dryers
+    - ____Wipe Down Workbenches
+    - ____Wipe Down Windows (Remove Cobwebs, etc.)
+    - ____Wipe Down Candy Machine
+    - ____Replace Burned-Out Incandescent Light bulbs
+    - ____Sweep Floors
+- name: Front and Back Porches
+  required: False
+  tasks:
+    - ____Pick Up and Return Things That Belong Inside
+    - ____Remove All Trash (Straight to Dumpster)
+    - ____Empty Trashcan on Front Porch (Straight to Dumpster)
+    - ____Remove Everything from Back Porch
+    - ____Replace Dead Light bulbs (Seriously, get a ladder if you need it.)
+    - ____Sweep Back Porch Thoroughly
+    - ____Organize Recycling Bags on Back Porch; Straighten Up
+    - ____Wipe Down Front Porch Tables with Soap & Water
+    - ____Wipe Down Non-Cloth Chairs with Soap & Water
+    - ____Move Furniture, Sweep Front Porch Thoroughly
+    - ____Sweep Front Steps and Ramp
+    - ____Straighten Furniture
+    - ____De-ice Steps with Salt
+- name: Basement Bathroom
+  required: True
+  tasks:
+    - ____Scrub Sink
+    - ____Scrub Toilet Basin
+    - ____Scrub Toilet Bowl
+    - ____Clean Mirror  (Unless no mirror)
+    - ____Straighten Cleaning Material
+    - ____Replace Toilet paper (Two Extra)
+    - ____Replace Light Bulb if Burned out
+    - ____Sweep Floor in bathroom and in area at the base of the stairs between the laundry room and hallway.
+    - ____Mop Floor in bathroom and in area at the base of the stairs between the laundry room and hallway.
+- name: 1st Floor Mop Closet and Hallways
+  required: True
+  tasks:
+    - ____General Straightening
+    - ____Rinse Out Mop Bucket (take outside and use the hose if necessary)
+    - ____Exchange Mop Head (if necessary)
+    - ____Replace Dead Light bulbs 
+    - ____Hang Up Brooms, Mops, Dustpans, etc.
+    - ____Re-Stock Cleaning Supplies (if necessary)
+    - ____Check the House Manager Cabinet to see if anything is running low and mark in comments.
+    - ____Clean Floor and Walls
+    - ____Sweep Bathroom Hallway
+    - ____Mop Bathroom Hallway USE ONLY MURPHY'S OIL SOAP. DO NOT USE PINESOL.
+    - ____Wipe Down House Manager Cabinet w/ Pledge (if necessary)
+    - ____Wipe Down Doors and All Woodwork (not banister) w/ Pledge (if necessary)
+    - ____Replace Burned-out Light bulbs
+    - ____Collect Dish Towels and Replace them (check baskets downstairs) Don’t wash—that’s someone else’s job
+- name: Dining Room and Family Room Floors
+  required: True
+  tasks:
+    - ____Vacuum Carpet and Couches
+    - ____Sweep Floors (Dining Room, Family Room)
+    - ____Mop Floors (Dining Room, Family Room) USE ONLY MURPHY'S OIL SOAP. DO NOT USE PINESOL.
+- name: Dining Room and Family Room
+  required: True
+  tasks:
+    - ____Take Dirty Dishes to the Kitchen Sink
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Return Misc. Items to Their Proper Homes
+    - ____Clean ALL Tables Thoroughly (Especially Dining Room)
+    - ____Wipe Down Piano & Bench w/ Pledge
+    - ____Wipe Down Mantles and Awards
+    - ____Wipe Down Shelves and Windowsills
+    - ____Empty Dead Bugs from Bulb Covers (if visible black mass and get a ladder if needed)
+    - ____Replace Burned-Out Light bulbs
+    - ____Flip Couch Cushions
+    - ____Return Furniture to Normal Position
+    - ____Straighten Room
+- name: Misc. Stairs
+  required: False
+  tasks:
+    - ____A. Barn Stairs (Between 206 and 308)
+    - ____Dust Thoroughly Around Posters and Paddles
+    - ____Wipe Down Awards
+    - ____Check for Dead Light bulbs; Note Below if Needed
+    - ____Wipe Down the Walls and Woodwork
+    - ____Sweep Stairs
+    - ____Mop Stairs
+    - ____B. Other (Outside 101 and Kitchen, Base of Back Stairs)
+    - ____Replace Burnt-Out Light Bulbs
+    - ____Wipe Down Woodwork with Pledge
+    - ____Sweep Floor
+    - ____Mop Floor
+- name: The Kitchen Again
+  required: False
+  tasks:
+    - ____Straighten Up the House Fridges (Clean Out Nearly Empty Pans, Make Sure Bottom of House Fridge is Clean)
+    - ____Throw Away Old Food
+    - ____Straighten up Counters under Plates
+    - ____Clean and Organize Cooking Appliances (Blenders, Mixers, Etc)
+    - ____Wipe down Fridges
+    - ____Wipe Down Sink and Sides of Block
+    - ____Empty Grease Can
+    - ____Ensure Areas beneath Sink and Garbage Cans are Clean
+    - ____Clean and Organize Shelf beneath Dishes

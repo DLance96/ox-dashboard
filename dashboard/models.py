@@ -140,8 +140,8 @@ class Brother(models.Model):
 
     # Detail Manager Chair Information
     # TODO: determine if there are any detail manager models
-    house_detail_buyout = models.BooleanField(default=False)
-    kitchen_detail_buyout = models.BooleanField(default=False)
+    does_house_details = models.BooleanField(default=False)
+    does_kitchen_details = models.BooleanField(default=False)
     in_house = models.BooleanField(default=True)
 
     def __str__(self):
@@ -265,11 +265,15 @@ class ChapterEvent(Event):
 
 
 class PhilanthropyEvent(Event):
-    rsvp_brothers = models.ManyToManyField(Brother, blank=True, related_name="rsvp_philanthropy")
+    rsvp_brothers = models.ManyToManyField(
+        Brother, blank=True, related_name="rsvp_philanthropy"
+    )
 
 
 class ServiceEvent(Event):
-    rsvp_brothers = models.ManyToManyField(Brother, blank=True, related_name="rsvp_service")
+    rsvp_brothers = models.ManyToManyField(
+        Brother, blank=True, related_name="rsvp_service"
+    )
 
 
 class RecruitmentEvent(Event):
@@ -335,7 +339,6 @@ class Excuse(models.Model):
             + " " + self.brother.last_name + " - " + self.event.name
 
 
-
 class Supplies(models.Model):
     what = models.CharField(max_length=256)
     done = models.BooleanField(default=False)
@@ -343,3 +346,59 @@ class Supplies(models.Model):
 
     def __str__(self):
         return self.what.encode('utf8')
+
+
+class DetailGroup(models.Model):
+    """A detail group. Contains brothers and a semester"""
+    brothers = models.ManyToManyField(Brother)
+    semester = models.ForeignKey(Semester)
+
+    def size(self):
+        return len(self.brothers.all())
+
+    def __str__(self):
+        return str(self.semester) + ": " + ", ".join(
+            [str(b) for b in self.brothers.all()]
+        )
+
+
+class Detail(models.Model):
+    """Abstract class for details"""
+    short_description = models.CharField(max_length=64)
+    long_description = models.TextField(null=False)
+    done = models.BooleanField(default=False)
+    due_date = models.DateField(null=False)
+    finished_time = models.DateTimeField(null=True)
+
+    def full_text(self):
+        text = "%s\n----------\n" % self.short_description
+        text += "%s\n----------\n" % self.long_description
+        text += "Due: %s\n\n" % str(self.due_date)
+        return text
+
+    class Meta:
+        abstract = True
+
+
+class ThursdayDetail(Detail):
+    """A thursday detail.  Adds the brother who it's assigned to"""
+    brother = models.ForeignKey(Brother, null=False)
+
+    def __str__(self):
+        return str(self.brother) + ": " +\
+            super(ThursdayDetail, self).__str__()
+
+
+class SundayDetail(Detail):
+    """A single Sunday detail.  Keeps track of who marks it done"""
+    finished_by = models.ForeignKey(Brother, null=True)
+
+    def __str__(self):
+        return self.short_description.encode('utf8')
+
+
+class SundayGroupDetail(models.Model):
+    """A group detail.  Contains a group and a number of SundayDetails"""
+    group = models.ForeignKey(DetailGroup)
+    details = models.ManyToManyField(SundayDetail)
+    due_date = models.DateField()

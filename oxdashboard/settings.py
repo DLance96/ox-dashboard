@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import yaml
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -110,7 +111,7 @@ else:
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
@@ -127,7 +128,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static-root')
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
-    #'/var/www/static/',
 )
 
 # EMAIL
@@ -162,3 +162,12 @@ LOGGING = {
         },
     },
 }
+
+THURSDAY_DETAILS = []
+SUNDAY_DETAILS = []
+
+with open(os.path.join(BASE_DIR, 'oxdashboard/sunday_details.yaml')) as f:
+    SUNDAY_DETAILS = yaml.load(f)
+
+with open(os.path.join(BASE_DIR, 'oxdashboard/thursday_details.yaml')) as f:
+    THURSDAY_DETAILS = yaml.load(f)

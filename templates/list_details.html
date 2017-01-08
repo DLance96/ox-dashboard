@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h3>Most recent details for {{ who }}</h3>
+    </div>
+    {% if does_house_details %}
+    <div class="panel panel-default">
+        <div class="panel-heading">Most recent Sunday Detail, due {{ last_sunday.due_date }}</div>
+        <div class="panel-body">
+            {{ sunday_text|linebreaksbr }}<br /><br />
+            Finish it <a href='{{ last_sunday_link }}'>here</a>.
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Most recent Thursday Detail, due {{ last_thursday.due_date }}</div>
+        <div class="panel-body">
+            {{ thursday_text|linebreaksbr }}<br /><br />
+            Finish it <a href='{{ last_thursday_link }}'>here</a>.
+        </div>
+    </div>
+    {% else %}
+    <div class="panel panel-default">
+        <div class="panel-heading">It seems you don't do house details this semester!</div>
+        <div class="panel-body">
+            Go, like, have fun or something.
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

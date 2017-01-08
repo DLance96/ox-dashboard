@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ detail.brother }}: {{ detail.short_description }}, Due: {{ detail.due_date }}</div>
+        <div class="panel-body">
+            {{ detail.long_description|linebreaksbr }}
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Mark this detail as finished</div>
+        {% if message %}
+            <div class="alert">
+                {{ message }}
+            </div>
+        {% endif %}
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <div class="panel-body">
+            By marking this detail as finished, you are certifying that you finished it to the best of your abilities before the due date, and notified the detail manager or house manager via email of any problems that arose.  
+            <br />
+            Lying here may constitute Conduct Unbecoming of a Brother.
+            <br />
+            If you submit this accidentally, just let the detail manager know as soon as possible.
+            <br /><br />
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Finish the detail" {% if detail.done %}disabled{% endif %} />
+                {% if detail.done %}This detail is done!{% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
