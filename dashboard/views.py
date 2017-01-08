@@ -11,6 +11,7 @@ from django.views.generic.edit import UpdateView, DeleteView
 from django.db import transaction
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 
 from .utils import verify_position, get_semester, verify_brother,\
         get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
@@ -1992,7 +1993,6 @@ def select_groups(request):
                 group = DetailGroup.objects.get(pk=int(gid))
                 group.brothers = brothers
                 group.save()
-                print group
 
     context = {'form': form}
     return render(request, 'select_groups.html', context)
@@ -2053,10 +2053,11 @@ def post_thursday(request):
                     )
                 )
 
-            for (subject, email, to) in emails:
-                print(to)
-                print(subject)
-                print(email)
+            det_manager_email = Position.objects.filter(
+                title='Detail Manager'
+            ).brothers.all().user.email
+            for (subject, message, to) in emails:
+                send_mail(subject, message, det_manager_email, to)
 
     context = {'form': date_form}
     return render(request, 'post_thursday_details.html', context)
@@ -2127,10 +2128,11 @@ def post_sunday(request):
                     )
                 )
 
-            for (subject, email, to) in emails:
-                print(to)
-                print(subject)
-                print(email)
+            det_manager_email = Position.objects.filter(
+                title='Detail Manager'
+            ).brothers.all().user.email
+            for (subject, message, to) in emails:
+                send_mail(subject, message, det_manager_email, to)
 
     context = {'form': date_form}
     return render(request, 'post_sunday_details.html', context)
