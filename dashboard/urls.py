@@ -159,6 +159,7 @@ urlpatterns = [
     url(r'^detail-manager/select-groups$', views.select_groups, name='select_groups'),
     url(r'^detail-manager/delete-groups$', views.delete_groups, name='delete_groups'),
 
+    url(r'^details/$', views.current_details, name='list_details'),
     url(r'^details/thursday/finish/(?P<detail_id>\d+)/$', views.finish_thursday_detail,
         name='finish_thursday'),
     url(r'details/thursday/post$', views.post_thursday, name='post_thursday_details'),

@@ -10,6 +10,7 @@ from django.views.generic import *
 from django.views.generic.edit import UpdateView, DeleteView
 from django.db import transaction
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 from .utils import verify_position, get_semester, verify_brother,\
         get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
@@ -2101,7 +2102,11 @@ def post_sunday(request):
             emails = []
 
             for group in groups:
-                group_detail = SundayGroupDetail(group=group)
+                if len(details) <= 0:
+                    break
+                group_detail = SundayGroupDetail(
+                    group=group, due_date=date_form.cleaned_data['due_date']
+                )
                 group_detail.save()
                 for _ in range(group.size()):
                     if len(details) <= 0:
@@ -2121,8 +2126,6 @@ def post_sunday(request):
                         request.scheme + "://" + request.get_host()
                     )
                 )
-                if len(details) <= 0:
-                    break
 
             for (subject, email, to) in emails:
                 print(to)
@@ -2163,3 +2166,48 @@ def finish_sunday_detail(request, detail_id):
     }
 
     return render(request, 'finish_sunday_detail.html', context)
+
+
+@login_required
+def current_details(request):
+    brother = request.user.brother
+    if not brother.does_house_details:
+        context = {
+            'does_house_details': False,
+            'who': str(brother),
+        }
+        return render(request, 'list_details.html', context)
+    detailgroup = DetailGroup.objects.get(
+        semester=get_semester(), brothers=brother
+    )
+
+    last_sunday = SundayGroupDetail.objects.filter(
+        group=detailgroup
+    ).order_by('-due_date').first()
+    last_sunday_link = reverse(
+        'dashboard:finish_sunday', args=[last_sunday.pk]
+    )
+    sunday_text = "\n\n\n".join(
+        [d.full_text() for d in last_sunday.details.all()]
+    )
+
+    last_thursday = ThursdayDetail.objects.filter(
+        brother=brother
+    ).order_by('-due_date').first()
+    last_thursday_link = reverse(
+        'dashboard:finish_thursday', args=[last_thursday.pk]
+    )
+    thursday_text = last_thursday.full_text()
+
+    context = {
+        'last_sunday': last_sunday,
+        'last_thursday': last_thursday,
+        'last_sunday_link': last_sunday_link,
+        'last_thursday_link': last_thursday_link,
+        'sunday_text': sunday_text,
+        'thursday_text': thursday_text,
+        'who': str(brother),
+        'does_house_details': True,
+    }
+
+    return render(request, 'list_details.html', context)

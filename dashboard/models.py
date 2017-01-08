@@ -401,3 +401,4 @@ class SundayGroupDetail(models.Model):
     """A group detail.  Contains a group and a number of SundayDetails"""
     group = models.ForeignKey(DetailGroup)
     details = models.ManyToManyField(SundayDetail)
+    due_date = models.DateField()
