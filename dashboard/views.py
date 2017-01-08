@@ -2053,9 +2053,9 @@ def post_thursday(request):
                     )
                 )
 
-            det_manager_email = Position.objects.filter(
+            det_manager_email = Position.objects.get(
                 title='Detail Manager'
-            ).brothers.all().user.email
+            ).brothers.first().user.email
             for (subject, message, to) in emails:
                 send_mail(subject, message, det_manager_email, to)
 
@@ -2128,9 +2128,9 @@ def post_sunday(request):
                     )
                 )
 
-            det_manager_email = Position.objects.filter(
+            det_manager_email = Position.objects.get(
                 title='Detail Manager'
-            ).brothers.all().user.email
+            ).brothers.first().user.email
             for (subject, message, to) in emails:
                 send_mail(subject, message, det_manager_email, to)
 
