@@ -74,10 +74,22 @@ def forms_is_valid(form_list):
     return True
 
 
+def do_verify(pos, user):
+    if pos == 'ec' and Position.objects.get(brothers__user=user).ec:
+        return True
+    brothers = Position.objects.get(title=pos).brothers.all()
+    if user.brother in brothers:
+        return True
+    return False
+
+
 def verify_position(positions):
     def verify_decorator(f):
         def error(request):
-            messages.error(request, "%s access denied" % positions)
+            e = "Access denied. Only %s may access this page" % ", ".join(
+                positions
+            )
+            messages.error(request, e)
             return HttpResponseRedirect(reverse('dashboard:home'))
 
         def wrapper(*args, **kwargs):
@@ -89,31 +101,20 @@ def verify_position(positions):
 
             for pos in positions:
                 try:
-                    uid = request.user.brother.id
                     # TODO: allow multiple brothers to hold a position
-                    if (
-                        pos == 'ec' and \
-                        Position.objects.filter(brother__id=uid)[0].ec
-                    ) or Position.objects.filter(title=pos)[0].brother.id == uid:
+                    if do_verify(pos, request.user):
                         return f(*args, **kwargs)
-                except AttributeError:
+                except AttributeError as e:
+                    print(
+                        'Warning: error when verifying position. Denying. '
+                        'Error: %s' % e
+                    )
                     return error(request)
 
             return error(request)
 
         return wrapper
     return verify_decorator
-
-
-def verify_detail_manager(user):
-    """ Verify user has Detail Manager permissions """
-    user_id = user.brother.id
-    if Position.objects.filter(brother__id=user_id)[0].ec or \
-        Position.objects.filter(title='Detail Manager')[0].brother.id == user_id or \
-            debug:
-        return True
-    else:
-        return False
 
 
 def verify_brother(brother, user):

@@ -21,7 +21,7 @@ class BrotherForm(forms.ModelForm):
 class PositionForm(forms.ModelForm):
     class Meta:
         model = Position
-        fields = ['title', 'brother']
+        fields = ['title', 'brothers']
 
 
 class ExcuseForm(forms.ModelForm):

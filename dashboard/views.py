@@ -531,13 +531,13 @@ class ServiceSubmissionEdit(UpdateView):
     fields = ['name', 'date', 'description', 'hours', 'status']
 
 
-@verify_position(['President'])
+@verify_position(['President', 'Adviser'])
 def president(request):
     """ Renders the President page and all relevant information """
     return render(request, 'president.html', {})
 
 
-@verify_position(['Vice President', 'President'])
+@verify_position(['Vice President', 'President', 'Adviser'])
 def vice_president(request):
     """ Renders the Vice President page and all relevant information, primarily committee related """
     committee_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester())\
@@ -550,7 +550,7 @@ def vice_president(request):
     return render(request, 'vice-president.html', context)
 
 
-@verify_position(['Vice President', 'President'])
+@verify_position(['Vice President', 'President', 'Adviser'])
 def vice_president_committee_assignments(request):
     """Renders Committee assignment update page for the Vice President"""
     form_list = []
@@ -580,7 +580,7 @@ def vice_president_committee_assignments(request):
     return render(request, 'committee-assignment.html', context)
 
 
-@verify_position(['Vice President', 'President'])
+@verify_position(['Vice President', 'President', 'Adviser'])
 def vice_president_committee_meeting_add(request):
     """ Renders the committee meeting add page """
     form = CommitteeMeetingForm(request.POST or None)
@@ -609,7 +609,7 @@ def vice_president_committee_meeting_add(request):
 
 
 class CommitteeMeetingDelete(DeleteView):
-    @verify_position(['Vice President', 'President'])
+    @verify_position(['Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(CommitteeMeetingDelete, self).get(request, *args, **kwargs)
 
@@ -619,7 +619,7 @@ class CommitteeMeetingDelete(DeleteView):
 
 
 class CommitteeMeetingEdit(UpdateView):
-    @verify_position(['Vice President', 'President'])
+    @verify_position(['Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(CommitteeMeetingEdit, self).get(request, *args, **kwargs)
 
@@ -628,7 +628,7 @@ class CommitteeMeetingEdit(UpdateView):
     fields = ['date', 'start_time', 'semester', 'committee', 'minutes']
 
 
-@verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+@verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
 def vphs(request):
     """ Renders the VPHS and the events they can create """
     events = HealthAndSafteyEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
@@ -639,7 +639,7 @@ def vphs(request):
     return render(request, 'vphs.html', context)
 
 
-@verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+@verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
 def health_and_saftey_event_add(request):
     """ Renders the VPHS adding an event """
     form = HealthAndSafetyEventForm(request.POST or None)
@@ -673,7 +673,7 @@ def health_and_saftey_event_add(request):
 
 
 class HealthAndSafteyEdit(UpdateView):
-    @verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+    @verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
     def get(self, request, *args, **kwargs):
         return super(HealthAndSafteyEdit, self).get(request, *args, **kwargs)
 
@@ -683,7 +683,7 @@ class HealthAndSafteyEdit(UpdateView):
 
 
 class HealthAndSafteyDelete(DeleteView):
-    @verify_position(['President', 'Vice President', 'Vice President of Health and Safety'])
+    @verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
     def get(self, request, *args, **kwargs):
         return super(HealthAndSafteyDelete, self).get(request, *args, **kwargs)
 
@@ -730,13 +730,13 @@ def health_and_saftey_event(request, event_id):
     return render(request, "hs-event.html", context)
 
 
-@verify_position(['Treasurer', 'President'])
+@verify_position(['Treasurer', 'President', 'Adviser'])
 def treasurer(request):
     """ Renders all the transactional information on the site for the treasurer """
     return render(request, 'treasurer.html', {})
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary(request):
     """ Renders the secretary page giving access to excuses and ChapterEvents """
     excuses = Excuse.objects.filter(event__semester=get_semester(), status='0').order_by("event__date")
@@ -749,7 +749,7 @@ def secretary(request):
     return render(request, 'secretary.html', context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_attendance(request):
     """ Renders the secretary view for chapter attendance """
     brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')
@@ -780,7 +780,7 @@ def secretary_attendance(request):
     return render(request, 'chapter-event-attendance.html', context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_event(request, event_id):
     """ Renders the attendance sheet for any event """
     event = ChapterEvent.objects.get(pk=event_id)
@@ -818,7 +818,7 @@ def secretary_event(request, event_id):
     return render(request, "chapter-event.html", context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_excuse(request, excuse_id):
     """ Renders Excuse response form """
     excuse = get_object_or_404(Excuse, pk=excuse_id)
@@ -857,7 +857,7 @@ def secretary_excuse(request, excuse_id):
     return render(request, "excuse.html", context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_all_excuses(request):
     """ Renders Excuse """
     excuses = Excuse.objects.order_by('brother__last_name','event__date')
@@ -868,7 +868,7 @@ def secretary_all_excuses(request):
     return render(request, 'secretary_excuses.html', context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_event_view(request, event_id):
     """ Renders the Secretary way of viewing old events """
     event = ChapterEvent.objects.get(pk=event_id)
@@ -882,7 +882,7 @@ def secretary_event_view(request, event_id):
     return render(request, "chapter-event.html", context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_brother_list(request):
     """ Renders the Secretary way of viewing brothers """
     brothers = Brother.objects.exclude(brother_status='2')
@@ -893,7 +893,7 @@ def secretary_brother_list(request):
     return render(request, "brother-list.html", context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_brother_view(request, brother_id):
     """ Renders the Secretary way of viewing a brother """
     brother = Brother.objects.get(pk=brother_id)
@@ -903,7 +903,7 @@ def secretary_brother_view(request, brother_id):
     return render(request, "brother-view.html", context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_brother_add(request):
     """ Renders the Secretary way of viewing a brother """
     form = BrotherForm(request.POST or None)
@@ -938,7 +938,7 @@ def secretary_brother_add(request):
 
 
 class SecretaryBrotherEdit(UpdateView):
-    @verify_position(['Secretary', 'Vice President', 'President'])
+    @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(SecretaryBrotherEdit, self).get(request, *args, **kwargs)
 
@@ -951,7 +951,7 @@ class SecretaryBrotherEdit(UpdateView):
 
 
 class SecretaryBrotherDelete(DeleteView):
-    @verify_position(['Secretary', 'Vice President', 'President'])
+    @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(SecretaryBrotherDelete, self).get(request, *args, **kwargs)
 
@@ -960,7 +960,7 @@ class SecretaryBrotherDelete(DeleteView):
     success_url = reverse_lazy('dashboard:secretary')
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_event_add(request):
     """ Renders the Secretary way of adding ChapterEvents """
     form = ChapterEventForm(request.POST or None)
@@ -995,7 +995,7 @@ def secretary_event_add(request):
 
 
 class ChapterEventEdit(UpdateView):
-    @verify_position(['Secretary', 'Vice President', 'President'])
+    @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(ChapterEventEdit, self).get(request, *args, **kwargs)
 
@@ -1005,7 +1005,7 @@ class ChapterEventEdit(UpdateView):
 
 
 class ChapterEventDelete(DeleteView):
-    @verify_position(['Secretary', 'Vice President', 'President'])
+    @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(ChapterEventDelete, self).get(request, *args, **kwargs)
 
@@ -1014,7 +1014,7 @@ class ChapterEventDelete(DeleteView):
     success_url = reverse_lazy('dashboard:secretary')
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_all_events(request):
     """ Renders a secretary view with all the ChapterEvent models ordered by date grouped by semester """
     events_by_semester = []
@@ -1033,7 +1033,7 @@ def secretary_all_events(request):
     return render(request, "chapter-event-all.html", context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_positions(request):
     """ Renders all of the positions currently in the chapter """
     # Checking to make sure all of the EC and dashboard required positions are setup
@@ -1056,7 +1056,7 @@ def secretary_positions(request):
     return render(request, "positions.html", context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_position_add(request):
     """ Renders the Secretary way of viewing a brother """
     form = PositionForm(request.POST or None)
@@ -1074,7 +1074,7 @@ def secretary_position_add(request):
 
 
 class PositionEdit(UpdateView):
-    @verify_position(['Secretary', 'Vice President', 'President'])
+    @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(PositionEdit, self).get(request, *args, **kwargs)
 
@@ -1084,7 +1084,7 @@ class PositionEdit(UpdateView):
 
 
 class PositionDelete(DeleteView):
-    @verify_position(['Secretary', 'Vice President', 'President'])
+    @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(PositionDelete, self).get(request, *args, **kwargs)
 
@@ -1093,7 +1093,7 @@ class PositionDelete(DeleteView):
     success_url = reverse_lazy('dashboard:secretary_positions')
 
 
-@verify_position(['Marshal', 'Vice President', 'President'])
+@verify_position(['Marshal', 'Vice President', 'President', 'Adviser'])
 def marshal(request):
     """ Renders the marshal page listing all the candidates and relevant information to them """
     candidates = Brother.objects.filter(brother_status='0').order_by("last_name")
@@ -1127,7 +1127,7 @@ def marshal(request):
     return render(request, 'marshal.html', context)
 
 
-@verify_position(['Marshal', 'Vice President', 'President'])
+@verify_position(['Marshal', 'Vice President', 'President', 'Adviser'])
 def marshal_candidate(request, brother_id):
     """ Renders the marshal page to view candidate info """
     brother = Brother.objects.get(pk=brother_id)
@@ -1137,7 +1137,7 @@ def marshal_candidate(request, brother_id):
     return render(request, "brother-view.html", context)
 
 
-@verify_position(['Marshal', 'Vice President', 'President'])
+@verify_position(['Marshal', 'Vice President', 'President', 'Adviser'])
 def marshal_candidate_add(request):
     """ Renders the Marshal way of viewing a candidate """
     form = BrotherForm(request.POST or None)
@@ -1172,7 +1172,7 @@ def marshal_candidate_add(request):
 
 
 class CandidateEdit(UpdateView):
-    @verify_position(['Marshal', 'Vice President', 'President'])
+    @verify_position(['Marshal', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(CandidateEdit, self).get(request, *args, **kwargs)
 
@@ -1188,7 +1188,7 @@ class CandidateEdit(UpdateView):
 
 
 class CandidateDelete(DeleteView):
-    @verify_position(['Marshal', 'Vice President', 'President'])
+    @verify_position(['Marshal', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(CandidateDelete, self).get(request, *args, **kwargs)
 
@@ -1197,7 +1197,7 @@ class CandidateDelete(DeleteView):
     success_url = reverse_lazy('dashboard:marshal')
 
 
-@verify_position(['Scholarship Chair', 'President'])
+@verify_position(['Scholarship Chair', 'President', 'Adviser'])
 def scholarship_c(request):
     """ Renders the Scholarship page listing all brother gpas and study table attendance """
     events = StudyTableEvent.objects.filter(semester=get_semester()).order_by("date")
@@ -1223,7 +1223,7 @@ def scholarship_c(request):
     return render(request, "scholarship-chair.html", context)
 
 
-@verify_position(['Scholarship Chair', 'President'])
+@verify_position(['Scholarship Chair', 'President', 'Adviser'])
 def study_table_event(request, event_id):
     """ Renders the scholarship chair way of view StudyTables """
     event = StudyTableEvent.objects.get(pk=event_id)
@@ -1262,7 +1262,7 @@ def study_table_event(request, event_id):
     return render(request, "studytable-event.html", context)
 
 
-@verify_position(['Scholarship Chair', 'President'])
+@verify_position(['Scholarship Chair', 'President', 'Adviser'])
 def scholarship_c_event_add(request):
     """ Renders the scholarship chair way of adding StudyTableEvents """
     form = StudyTableEventForm(request.POST or None)
@@ -1297,7 +1297,7 @@ def scholarship_c_event_add(request):
 
 
 class StudyEventDelete(DeleteView):
-    @verify_position(['Scholarship Chair', 'President'])
+    @verify_position(['Scholarship Chair', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(StudyEventDelete, self).get(request, *args, **kwargs)
 
@@ -1307,7 +1307,7 @@ class StudyEventDelete(DeleteView):
 
 
 class StudyEventEdit(UpdateView):
-    @verify_position(['Scholarship Chair', 'President'])
+    @verify_position(['Scholarship Chair', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(StudyEventEdit, self).get(request, *args, **kwargs)
 
@@ -1316,7 +1316,7 @@ class StudyEventEdit(UpdateView):
     fields = ['date', 'start_time', 'end_time', 'notes']
 
 
-@verify_position(['Scholarship Chair', 'President'])
+@verify_position(['Scholarship Chair', 'President', 'Adviser'])
 def scholarship_c_plan(request, plan_id):
     """Renders Scholarship Plan page for the Scholarship Chair"""
     plan = ScholarshipReport.objects.get(pk=plan_id)
@@ -1338,7 +1338,7 @@ def scholarship_c_plan(request, plan_id):
     return render(request, 'scholarship-report.html', context)
 
 
-@verify_position(['Scholarship Chair', 'President'])
+@verify_position(['Scholarship Chair', 'President', 'Adviser'])
 def scholarship_c_gpa(request):
     """Renders Scholarship Gpa update page for the Scholarship Chair"""
     plans = ScholarshipReport.objects.filter(semester=get_semester()).order_by("brother__last_name")
@@ -1369,7 +1369,7 @@ def scholarship_c_gpa(request):
 
 
 class ScholarshipReportEdit(UpdateView):
-    @verify_position(['Scholarship Chair', 'President'])
+    @verify_position(['Scholarship Chair', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(ScholarshipReportEdit, self).get(request, *args, **kwargs)
 
@@ -1378,7 +1378,7 @@ class ScholarshipReportEdit(UpdateView):
     fields = ['cumulative_gpa', 'past_semester_gpa', 'scholarship_plan', 'active']
 
 
-@verify_position(['Recruitment Chair', 'Vice President', 'President'])
+@verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def recruitment_c(request):
     """ Renders Scholarship chair page with events for the current and following semester """
     current_season = get_season()
@@ -1417,7 +1417,7 @@ def all_pnm_csv(request):
     return response
 
 
-@verify_position(['Recruitment Chair', 'Vice President', 'President'])
+@verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def recruitment_c_rush_attendance(request):
     """ Renders Scholarship chair page with rush attendance """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
@@ -1441,7 +1441,7 @@ def recruitment_c_rush_attendance(request):
     return render(request, 'rush_attendance.html', context)
 
 
-@verify_position(['Recruitment Chair', 'Vice President', 'President'])
+@verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def recruitment_c_pnm(request, pnm_id):
     """ Renders PNM view for recruitment chair """
     pnm = PotentialNewMember.objects.get(pk=pnm_id)
@@ -1460,7 +1460,7 @@ def recruitment_c_pnm(request, pnm_id):
     return render(request, 'potential-new-member.html', context)
 
 
-@verify_position(['Recruitment Chair', 'Vice President', 'President'])
+@verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def recruitment_c_pnm_add(request):
     """ Renders the recruitment chair way of adding PNMs """
     form = PotentialNewMemberForm(request.POST or None)
@@ -1478,7 +1478,7 @@ def recruitment_c_pnm_add(request):
 
 
 class PnmDelete(DeleteView):
-    @verify_position(['Recruitment Chair', 'Vice President', 'President'])
+    @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(PnmDelete, self).get(request, *args, **kwargs)
 
@@ -1488,7 +1488,7 @@ class PnmDelete(DeleteView):
 
 
 class PnmEdit(UpdateView):
-    @verify_position(['Recruitment Chair', 'Vice President', 'President'])
+    @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(PnmEdit, self).get(request, *args, **kwargs)
 
@@ -1498,7 +1498,7 @@ class PnmEdit(UpdateView):
               'tertiary_contact', 'notes']
 
 
-@verify_position(['Recruitment Chair', 'Vice President', 'President'])
+@verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def recruitment_c_event(request, event_id):
     """ Renders the recruitment chair way of view RecruitmentEvents """
     event = RecruitmentEvent.objects.get(pk=event_id)
@@ -1557,7 +1557,7 @@ def recruitment_c_event(request, event_id):
     return render(request, "recruitment-event.html", context)
 
 
-@verify_position(['Recruitment Chair', 'Vice President', 'President'])
+@verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def recruitment_c_event_add(request):
     """ Renders the recruitment chair way of adding RecruitmentEvents """
     form = RecruitmentEventForm(request.POST or None)
@@ -1592,7 +1592,7 @@ def recruitment_c_event_add(request):
 
 
 class RecruitmentEventDelete(DeleteView):
-    @verify_position(['Recruitment Chair', 'Vice President', 'President'])
+    @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(RecruitmentEventDelete, self).get(request, *args, **kwargs)
 
@@ -1602,7 +1602,7 @@ class RecruitmentEventDelete(DeleteView):
 
 
 class RecruitmentEventEdit(UpdateView):
-    @verify_position(['Recruitment Chair', 'Vice President', 'President'])
+    @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(RecruitmentEventEdit, self).get(request, *args, **kwargs)
 
