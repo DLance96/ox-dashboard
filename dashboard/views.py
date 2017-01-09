@@ -2179,37 +2179,53 @@ def current_details(request):
             'who': str(brother),
         }
         return render(request, 'list_details.html', context)
-    detailgroup = DetailGroup.objects.get(
-        semester=get_semester(), brothers=brother
-    )
+
+    context = {}
 
     last_sunday = SundayGroupDetail.objects.filter(
-        group=detailgroup
+        group__brothers=brother, group__semester=get_semester()
     ).order_by('-due_date').first()
-    last_sunday_link = reverse(
-        'dashboard:finish_sunday', args=[last_sunday.pk]
-    )
-    sunday_text = "\n\n\n".join(
-        [d.full_text() for d in last_sunday.details.all()]
-    )
+    if last_sunday:
+        context['last_sunday'] = last_sunday
+        context['last_sunday_link'] = last_sunday.finish_link()
+        context['sunday_text'] = "\n\n\n".join(
+            [d.full_text() for d in last_sunday.details.all()]
+        )
 
     last_thursday = ThursdayDetail.objects.filter(
         brother=brother
     ).order_by('-due_date').first()
-    last_thursday_link = reverse(
-        'dashboard:finish_thursday', args=[last_thursday.pk]
-    )
-    thursday_text = last_thursday.full_text()
+    context['last_thursday'] = last_thursday
+    context['last_thursday_link'] = last_thursday.finish_link()
+    context['thursday_text'] = last_thursday.full_text()
 
-    context = {
-        'last_sunday': last_sunday,
-        'last_thursday': last_thursday,
-        'last_sunday_link': last_sunday_link,
-        'last_thursday_link': last_thursday_link,
-        'sunday_text': sunday_text,
-        'thursday_text': thursday_text,
-        'who': str(brother),
-        'does_house_details': True,
-    }
+    context['who'] = str(brother)
+    context['does_house_details'] = True
 
     return render(request, 'list_details.html', context)
+
+
+@login_required
+def all_details(request):
+    brother = request.user.brother
+    if not brother.does_house_details:
+        context = {
+            'does_house_details': False,
+            'who': str(brother),
+        }
+        return render(request, 'list_details.html', context)
+
+    thursday_details = ThursdayDetail.objects.filter(brother=brother)
+
+    sunday_group_details = SundayGroupDetail.objects.filter(
+        group__brothers=brother, group__semester=get_semester()
+    )
+
+    context = {
+        'thursday_details': thursday_details,
+        'sunday_group_details': sunday_group_details,
+        'does_house_details': True,
+        'who': str(brother),
+    }
+
+    return render(request, 'all_details.html', context)
