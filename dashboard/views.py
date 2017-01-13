@@ -2063,6 +2063,7 @@ def post_thursday(request):
     return render(request, 'post_thursday_details.html', context)
 
 
+@login_required
 def finish_thursday_detail(request, detail_id):
     """Marks a Thursday Detail as done, by either its owner or the detail
     manager"""
@@ -2138,6 +2139,7 @@ def post_sunday(request):
     return render(request, 'post_sunday_details.html', context)
 
 
+@login_required
 def finish_sunday_detail(request, detail_id):
     groupdetail = SundayGroupDetail.objects.get(pk=detail_id)
     if request.user.brother not in groupdetail.group.brothers.all():
