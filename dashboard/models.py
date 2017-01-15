@@ -3,6 +3,7 @@ import django.utils.timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+from django.core.urlresolvers import reverse
 
 
 class Semester(models.Model):
@@ -379,13 +380,21 @@ class Detail(models.Model):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return self.short_description.encode('utf8')
+
 
 class ThursdayDetail(Detail):
     """A thursday detail.  Adds the brother who it's assigned to"""
     brother = models.ForeignKey(Brother, null=False)
 
+    def finish_link(self):
+        return reverse(
+            'dashboard:finish_thursday', args=[self.pk]
+        )
+
     def __str__(self):
-        return str(self.brother) + ": " +\
+        return str(self.due_date) + ": " +\
             super(ThursdayDetail, self).__str__()
 
 
@@ -393,12 +402,19 @@ class SundayDetail(Detail):
     """A single Sunday detail.  Keeps track of who marks it done"""
     finished_by = models.ForeignKey(Brother, null=True)
 
-    def __str__(self):
-        return self.short_description.encode('utf8')
-
 
 class SundayGroupDetail(models.Model):
     """A group detail.  Contains a group and a number of SundayDetails"""
     group = models.ForeignKey(DetailGroup)
     details = models.ManyToManyField(SundayDetail)
     due_date = models.DateField()
+
+    def finish_link(self):
+        return reverse(
+            'dashboard:finish_sunday', args=[self.pk]
+        )
+
+    def __str__(self):
+        return "%s: %s" % (
+            self.due_date, ", ".join([str(d) for d in self.details.all()])
+        )

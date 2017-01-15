@@ -10,23 +10,19 @@
     </div>
     {% if does_house_details %}
     <div class="panel panel-default">
-        {% if last_sunday %}
-        <div class="panel-heading">Most recent Sunday Detail, due {{ last_sunday.due_date }}</div>
+        <div class="panel-heading">Sunday Details</div>
         <div class="panel-body">
-            {{ sunday_text|linebreaksbr }}<br /><br />
-            Finish it <a href='{{ last_sunday_link }}'>here</a>.
+            {% for detail in sunday_group_details %}
+            <a href='{{ detail.finish_link }}'>{{ detail }}</a><br />
+            {% endfor %}
         </div>
-        {% else %}
-        <div class="panel-heading">You seem to not have a Sunday detail group!</div>
-        <div class="panel-body">
-        </div>
-        {% endif %}
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Most recent Thursday Detail, due {{ last_thursday.due_date }}</div>
+        <div class="panel-heading">Thursday Details</div>
         <div class="panel-body">
-            {{ thursday_text|linebreaksbr }}<br /><br />
-            Finish it <a href='{{ last_thursday_link }}'>here</a>.
+            {% for detail in thursday_details %}
+            <a href='{{ detail.finish_link }}'>{{ detail }}</a><br />
+            {% endfor %}
         </div>
     </div>
     {% else %}
