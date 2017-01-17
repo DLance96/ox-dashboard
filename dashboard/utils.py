@@ -174,7 +174,7 @@ def build_sunday_detail_email(sunday_group_detail, host):
         "date and make the ones you do as done by midnight.\n\n"
     email += "Go to this link to mark them done: %s\n\n\n" % done_link
 
-    email += \n--\n%s" % ", ".join([b.first_name for b in det_managers])
+    email += "L&R&Cleaning\n--\n%s" % ", ".join([b.first_name for b in det_managers])
 
     subject = "[DETAILS] Sunday details for %s" % due
 
