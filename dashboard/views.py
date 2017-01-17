@@ -2175,6 +2175,16 @@ def finish_sunday_detail(request, detail_id):
 @login_required
 def current_details(request):
     brother = request.user.brother
+    return current_details_helper(request, brother)
+
+
+@verify_position(['Detail Manager'])
+def current_details_brother(request, brother_id):
+    brother = Brother.objects.get(pk=brother_id)
+    return current_details_helper(request, brother)
+
+
+def current_details_helper(request, brother):
     if not brother.does_house_details:
         context = {
             'does_house_details': False,
@@ -2210,6 +2220,16 @@ def current_details(request):
 @login_required
 def all_details(request):
     brother = request.user.brother
+    return all_details_helper(request, brother)
+
+
+@verify_position(['Detail Manager'])
+def all_details_brother(request, brother_id):
+    brother = Brother.objects.get(pk=brother_id)
+    return all_details_helper(request, brother)
+
+
+def all_details_helper(request, brother):
     if not brother.does_house_details:
         context = {
             'does_house_details': False,
@@ -2231,3 +2251,14 @@ def all_details(request):
     }
 
     return render(request, 'all_details.html', context)
+
+
+@verify_position(['Detail Manager'])
+def all_users_details(request):
+    brothers = Brother.objects.filter(brother_status='1')
+    b = {e: (
+            reverse('dashboard:list_details_brother', args=[e.pk]),
+            reverse('dashboard:all_details_brother', args=[e.pk])
+    ) for e in brothers}
+    context = {'brothers': b}
+    return render(request, 'all_users_details.html', context)

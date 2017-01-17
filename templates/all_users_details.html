@@ -1,0 +1,18 @@
+{% extends "detail-manager-base.html" %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h3>Most recent details for Everyone</h3>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">All Brothers Details</div>
+        <div class="panel-body">
+            <table>
+            {% for brother, links in brothers.items %}
+            <tr><td> {{ brother }}&nbsp;&nbsp;&nbsp; </td><td> <a href='{{ links.0 }}'> Most recent&nbsp;&nbsp;&nbsp;</a> </td><td> <a href='{{ links.1 }}'>&nbsp;All </a></td></tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}
