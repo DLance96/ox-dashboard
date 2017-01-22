@@ -2,7 +2,7 @@
 - name: Library and Opium Den
   required: True
   tasks:
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Put Billiard Balls and Cues Away (Collect Chalk and Place on Cue Holder)
     - ____Straighten Left-Out Books and Awards, and Donated Items
     - ____Return Misc. Items to Their Proper Homes
@@ -20,7 +20,7 @@
     - ____Replace Toilet Paper (2 Out, 4 in Closet)
     - ____Replace Burned-Out Light bulbs
     - ____Refill Soap (Seriously.)
-    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Remove All Trash (Take Bag to the Dumpster if Needed and replace bag)
     - ____Sweep Floor (Including Around Radiator and Behind Door)
     - ____Check that the paper towel dispenser works and notify the house manager if it does not
 - name: Foyer and Front Hallway
@@ -54,7 +54,7 @@
     - ____Replace Toilet Paper (2 Out, 4 in Closet)
     - ____Replace Burned-Out Light bulbs (Check Hall Too)
     - ____Refill Soap (Seriously)
-    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Remove All Trash (Take Bag to the Dumpster if needed)
     - ____Sweep Floors (Including Hall Connecting Bathrooms)
     - ____Check that the paper towel dispenser works and notify the house manager if it does not
 - name: 1st Floor Bathroom (R) and Bathroom Hallway
@@ -64,7 +64,7 @@
     - ____Replace Toilet Paper in TP dispenser
     - ____Replace Burned-Out Lightbulbs
     - ____Refill Soap (Seriously)
-    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Remove All Trash (Take Bag to the Dumpster if needed)
     - ____Sweep Floor (Including Around Radiator and Behind Door)
     - ____Check that the paper towel dispenser works and notify the house manager if it does not
 - name: Alumni Room
@@ -87,7 +87,7 @@
 - name: 3rd Floor Bathroom
   required: True
   tasks:
-    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Remove All Trash (Take Bag to the Dumpster if needed)
     - ____Return Misc. Items to Their Proper Homes
     - ____Replace Toilet Paper (2 Out, 4 in Closet)
     - ____Replace Dead Light bulbs   [Not needed]
@@ -97,7 +97,7 @@
 - name: Back Stairwell
   required: True
   tasks:
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed if needed)
     - ____Return Misc. Items to Their Proper Homes
     - ____Replace Burned-Out Light bulbs
     - ____Sweep Stairs (3rd Floor Down to Basement)
@@ -105,14 +105,14 @@
   required: True
   tasks:
     - ____Take Dirty Dishes to the Kitchen Sink
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Straighten up books.
     - ____Return Misc. Items to Their Proper Homes
     - ____Replace Dead Light bulbs
 - name: Rec Area, Study Room, and Bsmnt Hall
   required: True
   tasks:
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Clean off the table and wipe it down with pledge
     - ____Return Markers and Erasers to Chalk-Ledges
     - ____Erase whiteboard if contents are unneeded and clean with rubbing alcohol if necessary.
@@ -122,13 +122,13 @@
 - name: Front Stairway and Airlock
   required: True
   tasks:
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Straighten Shoes, Coats, and Hangers in Airlock
     - ____Sweep Airlock
 - name: 3rd Floor Hall and Sink Closet
   required: True
   tasks:
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Return Misc. Items to Their Proper Homes
     - ____Replace Burned-Out Light bulbs
     - ____Straighten Composites
@@ -146,7 +146,7 @@
   required: True
   tasks:
     - ____Take Dirty Dishes to the Kitchen Sink
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Return Misc. Items to Their Proper Homes
     - ____Clean ALL Tables Thoroughly (Especially Dining Room)
     - ____Empty Dead Bugs from Bulb Covers (if visible black mass and get a ladder if needed)
@@ -166,7 +166,7 @@
   required: True
   tasks:
     - ____Straighten Workbenches, Return Tools to House Manager Closet
-    - ____Remove All Trash (Take Bags to Dumpster if Needed)
+    - ____Remove All Trash (Take Bags to Dumpster if Needed and replace bag)
     - ____Return Misc. Items to Their Proper Homes
     - ____Get a White or Clear Garbage Bag
     - ____Clean Out Dryer Lint Trays
@@ -176,7 +176,7 @@
   required: True
   tasks:
     - ____Pick Up and Return Things That Belong Inside
-    - ____Remove All Trash (Straight to Dumpster)
+    - ____Remove All Trash (Straight to Dumpster if needed)
     - ____Replace Dead Light bulbs (Seriously, get a ladder if you need it.)
     - ____Sweep Back Porch Thoroughly
     - ____Organize Recycling Bags on Back Porch; Straighten Up

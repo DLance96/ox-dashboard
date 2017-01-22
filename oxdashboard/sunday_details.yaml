@@ -1,5 +1,5 @@
 ---
-- name: 1st Floor Bathroom (R) and Bathroom Hallway
+- name: 1st Floor Bathroom (R)
   required: True
   tasks:
     - ____Return Misc. Items to Their Proper Homes
@@ -7,7 +7,7 @@
     - ____Replace Burned-Out Lightbulbs
     - ____Refill Soap (Seriously)
     - ____Scrub Sink (Scrubbing Bubbles)
-    - ____Scrub Toilet Bowl (Toilet Cleaner) and Rim 
+    - ____Scrub Toilet Bowl (Toilet Cleaner) and Rim
     - ____Scrub Shower Doors (Inside and Out)
     - ____Scrub Shower Walls and Floor
     - ____Scrub Shower Faucet Handle and Drain Cover
@@ -15,7 +15,7 @@
     - ____Remove All Trash (Take Bag to the Dumpster)
     - ____Sweep Floor (Including Around Radiator and Behind Door)
     - ____Mop Floor (Including Around Radiator and Behind Door)
-- name: 1st Floor Bathroom (Left)
+- name: 1st Floor Bathroom (Left) and Bathroom Hallway
   required: True
   tasks:
     - ____Return Misc. Items to Their Proper Homes
@@ -43,12 +43,13 @@
 - name: Front Stairway and Airlock
   required: True
   tasks:
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Straighten Shoes, Coats, and Hangers in Airlock
     - ____Wipe Down Banister w/ Pledge
     - ____Wipe Down Door to Upper Levels (Front and Back)
     - ____Vacuum Stairs
     - ____Sweep Airlock
+    - ____Vacuum airlock carpet
 - name: Windows
   required: False
   tasks:
@@ -59,13 +60,13 @@
 - name: Vacuum, Towels, and Bathmats
   required: False
   tasks:
+    - ____Get mop heads and wash them with the towels. (DO THIS FIRST!!!!!) (In the mop closet and closet on 2nd floor)
     - ____Find the Vacuum Cleaner, Empty the Canister if necessary
     - ____Remove the Filter Carefully (Below the Bag)
     - ____Check Hose and Connections For Blocked Flow
     - ____Inspect the Brush, Clean It Out
     - ____Inspect and Test Overall Vac Operation
-    - ____Report to the House Manager (Hacker) If There Are Problems
-    - ____Get mop heads and wash them with the towels. (DO THIS FIRST!!!!!) (In the mop closet and closet on 2nd floor)
+    - ____Report to the House Manager If There Are Problems
     - ____Collect All Dishtowels, Hand Towels, and Rags (Kitchen, Laundry Room and Bathrooms)
     - ____Collect Bathmats from 1st, 2nd, and 3rd Floor Bathrooms
     - ____Wash All of the Above Cloth Items
@@ -73,7 +74,7 @@
 - name: 3rd Floor Bathroom
   required: True
   tasks:
-    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Remove All Trash (Take Bag to the Dumpster if needed)
     - ____Return Misc. Items to Their Proper Homes
     - ____Replace Toilet Paper (2 Out, 4 in Closet)
     - ____Replace Dead Light bulbs
@@ -90,7 +91,7 @@
 - name: 3rd Floor Hall and Sink Closet
   required: False
   tasks:
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Return Misc. Items to Their Proper Homes
     - ____Replace Burned-Out Light bulbs
     - ____Dust Composites Carefully
@@ -102,7 +103,7 @@
 - name: Back Stairwell
   required: True
   tasks:
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Return Misc. Items to Their Proper Homes
     - ____Replace Burned-Out Light bulbs
     - ____Wipe Down Windowsills
@@ -134,7 +135,7 @@
     - ____Scrub Shower Faucet Handle and Drain Cover
     - ____Wipe Down Bathroom Walls, Remove Spider webs & Dust
     - ____Clean Mirror (Glass Cleaner)
-    - ____Remove All Trash (Take Bag to the Dumpster)
+    - ____Remove All Trash (Take Bag to the Dumpster if needed)
     - ____Sweep Floor (Including Around Radiator and Behind Door)
     - ____Mop Floor (Including Around Radiator and Behind Door)
 - name: 2nd Floor Hall and Mop Closet
@@ -152,7 +153,7 @@
 - name: Library and Opium Den
   required: True
   tasks:
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Put Billiard Balls and Cues Away (Collect Chalk and Place on Cue Holder)
     - ____Brush Table
     - ____Straighten Left-Out Books and Awards, and Donated Items
@@ -174,7 +175,7 @@
     - ____Find Remotes, Replace Dead Batteries
     - ____Organize Game Systems and Controllers (DDR pads included)
     - ____Return Games and DVDs to Their Cases on the Shelf
-    - ____Remove all Trash
+    - ____Remove all Trash (Take bag to trash if needed)
     - ____Wipe Down Television Stand w/ Pledge
     - ____Wipe Down Bar w/ Pledge
     - ____Wipe Down Windows
@@ -182,10 +183,10 @@
     - ____Replace Burned-out Light bulbs
     - ____Vacuum Carpets
     - ____Return Furniture to Normal Placement
-- name: Rec Area, Old Study Room, and Bsmnt Hall
+- name: Rec Area (outside alumni room), Study Room, and Bsmnt Hall
   required: True
   tasks:
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Wipe Down Table in Old Study Room with Pledge
     - ____Dust Bookshelves
     - ____Vacuum Study Room Floor
@@ -199,7 +200,7 @@
   required: False
   tasks:
     - ____Take Dirty Dishes to the Kitchen Sink
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Straighten up books.
     - ____Return Misc. Items to Their Proper Homes
     - ____Clean Table Surfaces Well
@@ -212,7 +213,7 @@
   required: True
   tasks:
     - ____Straighten Workbenches, Return Tools to House Manager Closet
-    - ____Remove All Trash (Take Bags to Dumpster if Needed)
+    - ____Remove All Trash (Take Bags to Dumpster if Needed and replace bag)
     - ____Return Misc. Items to Their Proper Homes
     - ____Get a White or Clear Garbage Bag
     - ____Check Marker board for People Doing Laundry Tonight; Don’t Touch Their Stuff
@@ -259,7 +260,7 @@
     - ____General Straightening
     - ____Rinse Out Mop Bucket (take outside and use the hose if necessary)
     - ____Exchange Mop Head (if necessary)
-    - ____Replace Dead Light bulbs 
+    - ____Replace Dead Light bulbs
     - ____Hang Up Brooms, Mops, Dustpans, etc.
     - ____Re-Stock Cleaning Supplies (if necessary)
     - ____Check the House Manager Cabinet to see if anything is running low and mark in comments.
@@ -280,7 +281,7 @@
   required: True
   tasks:
     - ____Take Dirty Dishes to the Kitchen Sink
-    - ____Remove All Trash (Take a Bag to the Dumpster if Needed)
+    - ____Remove All Trash (Take a Bag to the Dumpster if Needed and replace bag)
     - ____Return Misc. Items to Their Proper Homes
     - ____Clean ALL Tables Thoroughly (Especially Dining Room)
     - ____Wipe Down Piano & Bench w/ Pledge
