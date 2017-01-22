@@ -2287,7 +2287,7 @@ def detail_dates(request):
 
     context = {
         'semester_form': semester_form,
-        'thursday_detes': thursday_dates,
+        'thursday_dates': thursday_dates,
         'sunday_dates': sunday_dates,
     }
 
