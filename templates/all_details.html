@@ -13,7 +13,7 @@
         <div class="panel-heading">Sunday Details</div>
         <div class="panel-body">
             {% for detail in sunday_group_details %}
-            <a href='{{ detail.finish_link }}'>{{ detail }}</a><br />
+            <a href='{{ detail.finish_link }}'>{{ detail }}</a>{% if detail.done %} DONE{% endif %}<br />
             {% endfor %}
         </div>
     </div>
@@ -21,7 +21,7 @@
         <div class="panel-heading">Thursday Details</div>
         <div class="panel-body">
             {% for detail in thursday_details %}
-            <a href='{{ detail.finish_link }}'>{{ detail }}</a><br />
+            <a href='{{ detail.finish_link }}'>{{ detail }}</a>{% if detail.done %} DONE{% endif %}<br />
             {% endfor %}
         </div>
     </div>

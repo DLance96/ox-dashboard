@@ -2262,3 +2262,50 @@ def all_users_details(request):
     ) for e in brothers}
     context = {'brothers': b}
     return render(request, 'all_users_details.html', context)
+
+
+@verify_position(['Detail Manager'])
+def detail_dates(request):
+    semester_form = SelectSemester(request.GET or None)
+    if semester_form.is_valid():
+        semester = semester_form.cleaned_data['semester']
+    else:
+        semester = get_semester()
+
+    thursday_dates = set([e.due_date for e in ThursdayDetail.objects.all()])
+    thursday_dates = [
+        (
+            e, reverse('dashboard:details_on_date', args=[str(e)])
+        ) for e in thursday_dates
+    ]
+    sunday_dates = set([e.due_date for e in SundayDetail.objects.all()])
+    sunday_dates = [
+        (
+            e, reverse('dashboard:details_on_date', args=[str(e)])
+        ) for e in sunday_dates
+    ]
+
+    context = {
+        'semester_form': semester_form,
+        'thursday_detes': thursday_dates,
+        'sunday_dates': sunday_dates,
+    }
+
+    return render(request, 'details_by_date.html', context)
+
+
+@verify_position(['Detail Manager'])
+def details_on_date(request, date):
+    d_format = "%Y-%m-%d"
+    date = datetime.datetime.strptime(date, d_format).date()
+    thursday_details = ThursdayDetail.objects.filter(due_date=date)
+    sunday_group_details = SundayGroupDetail.objects.filter(due_date=date)
+
+    context = {
+        'date': date,
+        'thursday_details': thursday_details,
+        'sunday_group_details': sunday_group_details,
+    }
+
+    return render(request, 'details_on_date.html', context)
+    return HttpResponse(context.values())

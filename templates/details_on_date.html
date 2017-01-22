@@ -1,0 +1,28 @@
+{% extends "detail-manager-base.html" %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h3>Details on {{ date }}</h3>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Sunday Details</div>
+        <div class="panel-body">
+            <table>
+            {% for detail in sunday_group_details %}
+            <tr><td>{{ detail.group }}&nbsp;&nbsp;&nbsp;</td><td><a href='{{ detail.finish_link }}'>{{ detail }}</a>&nbsp;&nbsp;&nbsp;</td><td>{% if detail.done %} DONE{% endif %}</td></tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Thursday Details</div>
+        <div class="panel-body">
+            <table>
+            {% for detail in thursday_details %}
+            <tr><td>{{ detail.brother }}&nbsp;&nbsp;&nbsp;</td><td><a href='{{ detail.finish_link }}'>{{ detail }}</a>&nbsp;&nbsp;&nbsp;</td><td>{% if detail.done %} DONE{% endif %}</td></tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

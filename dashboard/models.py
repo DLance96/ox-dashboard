@@ -358,9 +358,7 @@ class DetailGroup(models.Model):
         return len(self.brothers.all())
 
     def __str__(self):
-        return str(self.semester) + ": " + ", ".join(
-            [str(b) for b in self.brothers.all()]
-        )
+        return ", ".join([str(b) for b in self.brothers.all()])
 
 
 class Detail(models.Model):
@@ -413,6 +411,12 @@ class SundayGroupDetail(models.Model):
         return reverse(
             'dashboard:finish_sunday', args=[self.pk]
         )
+
+    def done(self):
+        done = True
+        for detail in self.details.all():
+            done = done and detail.done
+        return done
 
     def __str__(self):
         return "%s: %s" % (

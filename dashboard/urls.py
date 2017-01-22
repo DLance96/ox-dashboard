@@ -158,7 +158,9 @@ urlpatterns = [
     url(r'^detail-manager/create-groups$', views.create_groups, name='create_groups'),
     url(r'^detail-manager/select-groups$', views.select_groups, name='select_groups'),
     url(r'^detail-manager/delete-groups$', views.delete_groups, name='delete_groups'),
-    url(r'^detail-manager/all-users-details', views.all_users_details, name='all_users_details'),
+    url(r'^detail-manager/all-users-details$', views.all_users_details, name='all_users_details'),
+    url(r'^detail-manager/details-by-date$', views.detail_dates, name='details_by_date'),
+    url(r'^detail-manager/details-on/(?P<date>.+)/$', views.details_on_date, name='details_on_date'),
 
     url(r'^details/$', views.current_details, name='list_details'),
     url(r'details/all/$', views.all_details, name='all_details'),
