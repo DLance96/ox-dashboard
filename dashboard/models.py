@@ -155,7 +155,7 @@ class Position(models.Model):
     brothers = models.ManyToManyField(Brother, related_name='brothers')
 
     def get_brothers(self):
-        return ", ".join(self.brothers)
+        return ", ".join(self.brothers.all())
 
     def __str__(self):
         return self.title.encode('utf8')
