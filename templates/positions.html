@@ -46,7 +46,7 @@
                 {% for position in positions %}
                     <tr>
                         <td>{{ position.title }}</td>
-                        <td>{{ position.get_brother }}</td>
+                        <td>{{ position.get_brothers }}</td>
                         <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_edit' position.id %}>X</a></td>
                         <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_delete' position.id %}>X</a></td>
                     </tr>
