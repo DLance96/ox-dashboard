@@ -13,7 +13,7 @@
                 <thead style="font-weight:bold;">
                 <tr>
                     <td>Position:</td>
-                    <td>Brother:</td>
+                    <td>Brother(s):</td>
                     <td>Edit?</td>
                 </tr>
                 </thead>
@@ -21,7 +21,7 @@
                 {% for position in ec_positions %}
                     <tr>
                         <td>{{ position.title }}</td>
-                        <td>{{ position.brother }}</td>
+                        <td>{{ position.brothers.all }}</td>
                         <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_edit' position.id %}>X</a></td>
                     </tr>
                 {% endfor %}
