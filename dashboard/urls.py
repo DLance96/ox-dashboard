@@ -163,6 +163,8 @@ urlpatterns = [
     url(r'^detail-manager/details-on/(?P<date>.+)/$', views.details_on_date, name='details_on_date'),
 
     url(r'^details/$', views.current_details, name='list_details'),
+    url(r'details/fine/$', views.detail_fines, name='detail_fine'),
+    url(r'details/fine/(?P<brother_id>\d+)/$', views.detail_fines_brother, name='detail_fine_brother'),
     url(r'details/all/$', views.all_details, name='all_details'),
     url(r'^details/(?P<brother_id>\d+)/$', views.current_details_brother, name='list_details_brother'),
     url(r'details/all/(?P<brother_id>\d+)/$', views.all_details_brother, name='all_details_brother'),

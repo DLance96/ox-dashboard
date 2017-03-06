@@ -317,3 +317,7 @@ class FinishSundayDetail(forms.Form):
             widget=forms.RadioSelect,
             empty_label=None,
         )
+
+
+class CalcFinesForm(forms.Form):
+    max_fine = forms.IntegerField()
