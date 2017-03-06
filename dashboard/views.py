@@ -15,7 +15,7 @@ from django.core.mail import send_mail
 
 from .utils import verify_position, get_semester, verify_brother,\
         get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
-        build_thursday_detail_email, build_sunday_detail_email
+        build_thursday_detail_email, build_sunday_detail_email, calc_fines
 from datetime import datetime
 from .forms import *
 
@@ -2258,7 +2258,9 @@ def all_users_details(request):
     brothers = Brother.objects.filter(brother_status='1')
     b = {e: (
             reverse('dashboard:list_details_brother', args=[e.pk]),
-            reverse('dashboard:all_details_brother', args=[e.pk])
+            reverse('dashboard:all_details_brother', args=[e.pk]),
+            reverse('dashboard:detail_fine_brother', args=[e.pk]),
+            calc_fines(e)
     ) for e in brothers}
     context = {'brothers': b}
     return render(request, 'all_users_details.html', context)
@@ -2309,3 +2311,30 @@ def details_on_date(request, date):
 
     return render(request, 'details_on_date.html', context)
     return HttpResponse(context.values())
+
+
+@login_required
+def detail_fines(request):
+    brother = request.user.brother
+    return detail_fine_helper(request, brother)
+
+
+@verify_position(['Detail Manager'])
+def detail_fines_brother(request, brother_id):
+    brother = Brother.objects.get(pk=brother_id)
+    return detail_fine_helper(request, brother)
+
+
+def detail_fine_helper(request, brother):
+    if not brother.does_house_details:
+        context = {
+            'does_house_details': False,
+            'who': str(brother),
+        }
+        return render(request, 'list_details.html', context)
+
+    fine = calc_fines(brother)
+
+    context = {'fine': fine, 'brother': brother}
+
+    return render(request, 'detail_fines.html', context)

@@ -179,3 +179,41 @@ def build_sunday_detail_email(sunday_group_detail, host):
     subject = "[DETAILS] Sunday details for %s" % due
 
     return (subject, email, to)
+
+
+def fine_generator():
+    x = 5
+    while x < 25:
+        yield x
+        x += 5
+    while True:
+        yield x
+
+
+def calc_fines_helper(num_missed):
+    gen = fine_generator()
+    f = 0
+    for _ in range(num_missed):
+        f += gen.next()
+
+    return f
+
+
+def calc_fines(brother):
+    missed_thursday_num = len(ThursdayDetail.objects.filter(
+        brother=brother, done=False, due_date__lt=datetime.datetime.now()
+    ))
+
+    sunday_group = DetailGroup.objects.filter(
+        brothers=brother, semester=get_semester()
+    )
+
+    sunday_details = SundayGroupDetail.objects.filter(
+        group=sunday_group, due_date__lt=datetime.datetime.now()
+    )
+
+    missed_sunday_num = len([e for e in sunday_details if not e.done()])
+
+    fine = calc_fines_helper(missed_thursday_num + missed_sunday_num)
+
+    return fine

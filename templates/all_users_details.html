@@ -10,7 +10,12 @@
         <div class="panel-body">
             <table>
             {% for brother, links in brothers.items %}
-            <tr><td> {{ brother }}&nbsp;&nbsp;&nbsp; </td><td> <a href='{{ links.0 }}'> Most recent&nbsp;&nbsp;&nbsp;</a> </td><td> <a href='{{ links.1 }}'>&nbsp;All </a></td></tr>
+            <tr>
+                <td> {{ brother }}&nbsp;&nbsp;&nbsp; </td>
+                <td> <a href='{{ links.0 }}'> Most recent&nbsp;&nbsp;&nbsp;</a> </td>
+                <td> <a href='{{ links.1 }}'>&nbsp;All&nbsp;&nbsp;&nbsp;</a></td>
+                <td> <a href='{{ links.2 }}'>&nbsp;Fine</a>: ${{ links.3 }}</td>
+            </tr>
             {% endfor %}
             </table>
         </div>

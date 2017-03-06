@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ brother }}'s current fine</div>
+        {% if message %}
+            <div class="alert">
+                {{ message }}
+            </div>
+        {% endif %}
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <div class="panel-body">
+            <p> Current fine: ${{ fine }} </p>
+        </div>
+    </div>
+{% endblock %}
