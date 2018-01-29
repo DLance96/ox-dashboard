@@ -103,6 +103,7 @@ def brother_info_list(request):
     return render(request, 'brother-info-list.html', context)
 
 
+@login_required
 def contact_list(request):
     """ Renders contact info page """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
@@ -113,6 +114,7 @@ def contact_list(request):
     return render(request, 'contact-list.html', context)
 
 
+@login_required
 def emergency_contact_list(request):
     """ Renders emergency contact info page """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
