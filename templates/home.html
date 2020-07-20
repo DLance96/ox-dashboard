@@ -16,10 +16,90 @@
         {% endif %}
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Some article stuff</div>
-        <div class="panel-body">
+        <!-- This is copy pasted from w3 schools -->
+        <style>
+            /* Style the tab */
+            .tab {
+                overflow: hidden;
+                border: 1px solid #ccc;
+                background-color: #f1f1f1;
+            }
 
+            /* Style the buttons that are used to open the tab content */
+            .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+            }
+
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+            }
+
+            /* Create an active/current tablink class */
+            .tab button.active {
+                background-color: #ccc;
+            }
+
+            /* Style the tab content */
+            .tabcontent {
+                display: none;
+                padding: 6px 12px;
+                border: 1px solid #ccc;
+                border-top: none;
+            }
+        </style>
+
+        <div class="tab">
+            <button class="tablinks" onclick="openView(event, 'Slideshow')" id="defaultOpen">Slideshow</button>
+            <button class="tablinks" onclick="openView(event, 'House Tour')">Virtual House Tour</button>
         </div>
+
+        <div id="Slideshow" class="tabcontent">
+            <script src="https://cdn.jsdelivr.net/npm/publicalbum@latest/embed-ui.min.js" async></script>
+            <div class="pa-carousel-widget" style="width:100%; height:480px; display:none;"
+                data-link="https://photos.app.goo.gl/FpFgTFaz61ME3qU38"
+                data-title="Theta Chi Photos"
+                data-description="Theta Chi Photos album">
+                <object data="https://lh3.googleusercontent.com/qhoD9MO9mVpqTelcXMIkxWeWjHu2t0XXRB4Wf91YvgY7ebck4tkrWmliy79upaBpXw8V38gl4AmK5Gaew03M4GQDcTQqLtRoyZNlIxXwEQr5L850Ns7OdZpJcgWtkz7YdiqS9GL-nQ=w1920-h1080"></object>
+                <object data="https://lh3.googleusercontent.com/XLH8S0zRIDCg8dGlDJyr2a8Bhg214VZQz1xQM22Cm0TgMXv5v-ZrRyGInjXLsxD0Qb0jjxdB2NOhhyO4QI2gXKSQtLtJWJboq5RhUGlnxcwFnK19gXJsVW4GXzF6cdutAkR4JcxGDQ=w1920-h1080"></object>
+            </div>
+        </div>
+
+        <div id="House Tour" class="tabcontent">
+            <iframe width="100%" height="480px" src="https://www.youtube.com/embed/QMW4AqbuSGg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <!-- This is copy pasted from w3 schools -->
+        <script>
+            function openView(evt, cityName) {
+                // Declare all variables
+                var i, tabcontent, tablinks;
+
+                // Get all elements with class="tabcontent" and hide them
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+
+                // Get all elements with class="tablinks" and remove the class "active"
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+
+                // Show the current tab, and add an "active" class to the button that opened the tab
+                document.getElementById(cityName).style.display = "block";
+                evt.currentTarget.className += " active";
+            }
+
+            document.getElementById("defaultOpen").click();
+        </script>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">God Calendar</div>
