@@ -58,6 +58,7 @@
         <div class="tab">
             <button class="tablinks" onclick="openView(event, 'Slideshow')" id="defaultOpen">Slideshow</button>
             <button class="tablinks" onclick="openView(event, 'House Tour')">Virtual House Tour</button>
+            <button>Update</button>
         </div>
 
         <div id="Slideshow" class="tabcontent">
@@ -66,8 +67,9 @@
                 data-link="https://photos.app.goo.gl/FpFgTFaz61ME3qU38"
                 data-title="Theta Chi Photos"
                 data-description="Theta Chi Photos album">
-                <object data="https://lh3.googleusercontent.com/qhoD9MO9mVpqTelcXMIkxWeWjHu2t0XXRB4Wf91YvgY7ebck4tkrWmliy79upaBpXw8V38gl4AmK5Gaew03M4GQDcTQqLtRoyZNlIxXwEQr5L850Ns7OdZpJcgWtkz7YdiqS9GL-nQ=w1920-h1080"></object>
-                <object data="https://lh3.googleusercontent.com/XLH8S0zRIDCg8dGlDJyr2a8Bhg214VZQz1xQM22Cm0TgMXv5v-ZrRyGInjXLsxD0Qb0jjxdB2NOhhyO4QI2gXKSQtLtJWJboq5RhUGlnxcwFnK19gXJsVW4GXzF6cdutAkR4JcxGDQ=w1920-h1080"></object>
+                {% for photo in photo_urls %}
+                    <object data={{ photo }}></object>
+                {% endfor %}
             </div>
         </div>
 

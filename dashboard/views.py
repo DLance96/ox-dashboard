@@ -88,8 +88,11 @@ def change_password(request):
 
 def home(request):
     """ Renders home page """
-    context = {
-    }
+    with open("photo_urls.txt", "r") as url_file:
+        context = {
+            'photo_urls': url_file.readlines()
+        }
+
     return render(request, 'home.html', context)
 
 
