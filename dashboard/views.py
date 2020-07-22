@@ -88,10 +88,13 @@ def change_password(request):
 
 def home(request):
     """ Renders home page """
-    with open("photo_urls.txt", "r") as url_file:
-        context = {
-            'photo_urls': url_file.readlines()
-        }
+    photo_urls = []
+    for photo in Photo.objects.all():
+        photo_urls.append(photo.photo.url)
+
+    context = {
+        'photo_urls': photo_urls
+    }
 
     return render(request, 'home.html', context)
 
@@ -545,7 +548,21 @@ class ServiceSubmissionEdit(UpdateView):
 @verify_position(['President', 'Adviser'])
 def president(request):
     """ Renders the President page and all relevant information """
-    return render(request, 'president.html', {})
+
+    form = PhotoForm(request.POST or None)
+
+    if request.method == 'POST':
+        form = PhotoForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            instance = form.save()
+            return HttpResponseRedirect(reverse('dashboard:home'))
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'president.html', context)
 
 
 @verify_position(['Vice President', 'President', 'Adviser'])

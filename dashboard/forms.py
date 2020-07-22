@@ -147,6 +147,12 @@ class GPAForm(forms.Form):
     past_GPA = forms.DecimalField(label="", max_digits=5, decimal_places=2)
 
 
+class PhotoForm(forms.ModelForm):
+    class Meta:
+        model = Photo
+        fields = ['name', 'photo']
+
+
 class CommitteeForm(forms.Form):
     STANDING_COMMITTEE_CHOICES = {
         ('0', 'Recruitment'),

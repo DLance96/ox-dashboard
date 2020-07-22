@@ -166,6 +166,9 @@ LOGGING = {
 THURSDAY_DETAILS = []
 SUNDAY_DETAILS = []
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = 'http://127.0.0.1:8000/'
+
 with open(os.path.join(BASE_DIR, 'oxdashboard/sunday_details.yaml')) as f:
     SUNDAY_DETAILS = yaml.load(f)
 

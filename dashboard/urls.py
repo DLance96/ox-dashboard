@@ -1,4 +1,7 @@
 from django.conf.urls import url
+from django.views.static import serve
+from django.conf import settings
+
 
 from . import views
 
@@ -176,3 +179,10 @@ urlpatterns = [
         name='finish_sunday'),
     url(r'details/sunday/post$', views.post_sunday, name='post_sunday_details'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        url(r'^(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ]

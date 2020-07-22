@@ -16,6 +16,7 @@ jinja2-time==0.2.0
 MarkupSafe==1.0
 oauth2client==4.1.2
 oauthlib==2.0.6
+Pillow==6.2.2
 poyo==0.4.1
 pyasn1==0.4.2
 pyasn1-modules==0.2.1
