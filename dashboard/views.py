@@ -554,6 +554,10 @@ def president(request):
     if request.method == 'POST':
         form = PhotoForm(request.POST, request.FILES)
 
+        # NOTE: If we move to a CDN instead of storing files with the server,
+        # we can probably use this form, but not save the value (set form.save()
+        # to form.save(commit=False)) and instead get the url or path from the returned
+        # instance and then upload that file to the CDN
         if form.is_valid():
             instance = form.save()
             return HttpResponseRedirect(reverse('dashboard:home'))
