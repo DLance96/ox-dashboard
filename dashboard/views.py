@@ -559,6 +559,7 @@ def president(request):
         # to form.save(commit=False)) and instead get the url or path from the returned
         # instance and then upload that file to the CDN
         if form.is_valid():
+            # TODO: add error handling to stop user from uploading too many photos
             instance = form.save()
             return HttpResponseRedirect(reverse('dashboard:home'))
 
