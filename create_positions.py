@@ -27,6 +27,7 @@ NON_EC_POSITIONS = [
     "Service Chair",
     "Philanthropy Chair",
     "Detail Manager",
+    "Public Relations Chair"
 ]
 
 ALL_POSITIONS = EC_POSITIONS + NON_EC_POSITIONS
