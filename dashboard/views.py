@@ -868,7 +868,7 @@ def secretary_excuse(request, excuse_id):
 @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_all_excuses(request):
     """ Renders Excuse """
-    excuses = Excuse.objects.order_by('brother__last_name','event__date')
+    excuses = Excuse.objects.order_by('brother__last_name', 'event__date')
 
     context = {
         'excuses': excuses
