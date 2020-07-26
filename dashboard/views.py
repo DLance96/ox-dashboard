@@ -2340,3 +2340,7 @@ def detail_fine_helper(request, brother):
     context = {'fine': fine, 'brother': brother}
 
     return render(request, 'detail_fines.html', context)
+
+@verify_position(['Public Relations Chair', 'Recruitment Chair', 'Vice President', 'President', 'Adviser'])
+def public_relations_c(request):
+    return render(request, 'public-relations-chair.html', {})
