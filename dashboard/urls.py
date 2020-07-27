@@ -1,4 +1,7 @@
 from django.conf.urls import url
+from django.views.static import serve
+from django.conf import settings
+
 
 from . import views
 
@@ -177,4 +180,15 @@ urlpatterns = [
     url(r'details/sunday/post$', views.post_sunday, name='post_sunday_details'),
 
     url(r'^prchair/', views.public_relations_c, name="public_relations_c"),
+
+    # Connect with Us URL section
+    url(r'^minecraft/', views.minecraft, name ='minecraft'),
+
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        url(r'^(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ]

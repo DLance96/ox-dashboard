@@ -425,3 +425,7 @@ class SundayGroupDetail(models.Model):
         return "%s: %s" % (
             self.due_date, ", ".join([str(d) for d in self.details.all()])
         )
+
+class Photo(models.Model):
+    name = models.CharField(max_length=255)
+    photo = models.ImageField(upload_to='photos')
