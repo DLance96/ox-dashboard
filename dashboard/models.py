@@ -429,3 +429,7 @@ class SundayGroupDetail(models.Model):
 class Photo(models.Model):
     name = models.CharField(max_length=255)
     photo = models.ImageField(upload_to='photos')
+
+class MinecraftPhoto(models.Model):
+    name = models.CharField(max_length=255)
+    photo = models.ImageField(upload_to='minecraft')

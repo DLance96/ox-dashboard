@@ -2366,9 +2366,29 @@ def detail_fine_helper(request, brother):
 
     return render(request, 'detail_fines.html', context)
 
+def photo_form_context(form_class):
+    form = form_class(request.POST or None)
+
+    if request.method == 'POST':
+        form = PhotoForm(request.POST, request.FILES)
+
+        # NOTE: If we move to a CDN instead of storing files with the server,
+        # we can probably use this form, but not save the value (set form.save()
+        # to form.save(commit=False)) and instead get the url or path from the returned
+        # instance and then upload that file to the CDN
+        if form.is_valid():
+            # TODO: add error handling to stop user from uploading too many photos
+            instance = form.save()
+            return HttpResponseRedirect(reverse('dashboard:home'))
+
+    context = {
+        'form': form
+    }
+    return context
+
 @verify_position(['Public Relations Chair', 'Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def public_relations_c(request):
     return render(request, 'public-relations-chair.html', {})
 
 def minecraft(request):
-    return render(request, 'minecraft.html', {})
+    return render(request, 'minecraft.html', photo_form_context(MinecraftPhotoForm))
