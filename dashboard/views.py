@@ -2366,7 +2366,7 @@ def detail_fine_helper(request, brother):
 
     return render(request, 'detail_fines.html', context)
 
-def photo_form_context(form_class):
+def photo_form_context(form_class, request):
     form = form_class(request.POST or None)
 
     if request.method == 'POST':
@@ -2391,4 +2391,4 @@ def public_relations_c(request):
     return render(request, 'public-relations-chair.html', {})
 
 def minecraft(request):
-    return render(request, 'minecraft.html', photo_form_context(MinecraftPhotoForm))
+    return render(request, 'minecraft.html', photo_form_context(MinecraftPhotoForm, request))
