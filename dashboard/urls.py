@@ -180,6 +180,10 @@ urlpatterns = [
     url(r'details/sunday/post$', views.post_sunday, name='post_sunday_details'),
 
     url(r'^prchair/', views.public_relations_c, name="public_relations_c"),
+
+    # Connect with Us URL section
+    url(r'^minecraft/', views.minecraft, name ='minecraft'),
+
 ]
 
 if settings.DEBUG:
