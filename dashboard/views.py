@@ -15,7 +15,8 @@ from django.core.mail import send_mail
 
 from .utils import verify_position, get_semester, verify_brother,\
         get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
-        build_thursday_detail_email, build_sunday_detail_email, calc_fines
+        build_thursday_detail_email, build_sunday_detail_email, calc_fines,\
+        photo_context
 from datetime import datetime
 from .forms import *
 
@@ -88,15 +89,7 @@ def change_password(request):
 
 def home(request):
     """ Renders home page """
-    photo_urls = []
-    for photo in Photo.objects.all():
-        photo_urls.append(photo.photo.url)
-
-    context = {
-        'photo_urls': photo_urls
-    }
-
-    return render(request, 'home.html', context)
+    return render(request, 'home.html', photo_context(Photo))
 
 
 def brother_info_list(request):
@@ -2391,4 +2384,4 @@ def public_relations_c(request):
     return render(request, 'public-relations-chair.html', {})
 
 def minecraft(request):
-    return render(request, 'minecraft.html', photo_form_context(MinecraftPhotoForm, request))
+    return render(request, 'minecraft.html', photo_context(MinecraftPhoto))

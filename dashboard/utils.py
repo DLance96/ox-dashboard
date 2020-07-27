@@ -217,3 +217,14 @@ def calc_fines(brother):
     fine = calc_fines_helper(missed_thursday_num + missed_sunday_num)
 
     return fine
+
+def photo_context(photo_class):
+    photo_urls = []
+    for photo in photo_class.objects.all():
+        photo_urls.append(photo.photo.url)
+
+    context = {
+        'photo_urls': photo_urls
+    }
+
+    return context

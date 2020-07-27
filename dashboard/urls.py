@@ -182,7 +182,7 @@ urlpatterns = [
     url(r'^prchair/', views.public_relations_c, name="public_relations_c"),
 
     # Connect with Us URL section
-    url(r'^minecraft/', views.minecraft, name ='minecraft'),
+    url(r'^minecraft/$', views.minecraft, name ='minecraft'),
 
 ]
 
