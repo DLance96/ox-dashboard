@@ -89,7 +89,9 @@ def change_password(request):
 
 def home(request):
     """ Renders home page """
-    return render(request, 'home.html', photo_context(Photo))
+    context = photo_context(Photo)
+    context['instagram'] = 'B9NPFYxnF8f'
+    return render(request, 'home.html', context)
 
 
 def brother_info_list(request):
