@@ -16,7 +16,7 @@ from django.core.mail import send_mail
 from .utils import verify_position, get_semester, verify_brother,\
         get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
         build_thursday_detail_email, build_sunday_detail_email, calc_fines,\
-        photo_context
+        photo_context, photo_form, get_latest_post_code
 from datetime import datetime
 from .forms import *
 
@@ -90,7 +90,7 @@ def change_password(request):
 def home(request):
     """ Renders home page """
     context = photo_context(Photo)
-    context['instagram'] = 'B9NPFYxnF8f'
+    context['instagram'] = InstagramLatest.objects.all()[0].latest_shortcode
     return render(request, 'home.html', context)
 
 
@@ -544,22 +544,8 @@ class ServiceSubmissionEdit(UpdateView):
 def president(request):
     """ Renders the President page and all relevant information """
 
-    form = PhotoForm(request.POST or None)
-
-    if request.method == 'POST':
-        form = PhotoForm(request.POST, request.FILES)
-
-        # NOTE: If we move to a CDN instead of storing files with the server,
-        # we can probably use this form, but not save the value (set form.save()
-        # to form.save(commit=False)) and instead get the url or path from the returned
-        # instance and then upload that file to the CDN
-        if form.is_valid():
-            # TODO: add error handling to stop user from uploading too many photos
-            instance = form.save()
-            return HttpResponseRedirect(reverse('dashboard:home'))
-
     context = {
-        'form': form
+        'form': photo_form(PhotoForm, request)
     }
 
     return render(request, 'president.html', context)
@@ -2361,29 +2347,21 @@ def detail_fine_helper(request, brother):
 
     return render(request, 'detail_fines.html', context)
 
-def photo_form_context(form_class, request):
-    form = form_class(request.POST or None)
-
-    if request.method == 'POST':
-        form = PhotoForm(request.POST, request.FILES)
-
-        # NOTE: If we move to a CDN instead of storing files with the server,
-        # we can probably use this form, but not save the value (set form.save()
-        # to form.save(commit=False)) and instead get the url or path from the returned
-        # instance and then upload that file to the CDN
-        if form.is_valid():
-            # TODO: add error handling to stop user from uploading too many photos
-            instance = form.save()
-            return HttpResponseRedirect(reverse('dashboard:home'))
-
-    context = {
-        'form': form
-    }
-    return context
-
 @verify_position(['Public Relations Chair', 'Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def public_relations_c(request):
     return render(request, 'public-relations-chair.html', {})
 
 def minecraft(request):
     return render(request, 'minecraft.html', photo_context(MinecraftPhoto))
+
+def update_instagram(request):
+
+    code = get_latest_post_code()
+
+    latest = InstagramLatest.objects.all()[0]
+
+    latest.latest_shortcode = code
+
+    latest.save()
+
+    return home(request)

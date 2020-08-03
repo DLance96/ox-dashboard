@@ -6,6 +6,9 @@ from django.core.handlers.wsgi import WSGIRequest
 
 from .models import *
 
+import requests
+import re
+
 # EC Positions
 ec = [
     'President', 'Vice President', 'Vice President of Health and Safety',
@@ -228,3 +231,30 @@ def photo_context(photo_class):
     }
 
     return context
+
+def photo_form(form_class, request):
+    form = form_class(request.POST or None)
+
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES)
+
+        # NOTE: If we move to a CDN instead of storing files with the server,
+        # we can probably use this form, but not save the value (set form.save()
+        # to form.save(commit=False)) and instead get the url or path from the returned
+        # instance and then upload that file to the CDN
+        if form.is_valid():
+            # TODO: add error handling to stop user from uploading too many photos
+            instance = form.save()
+            return HttpResponseRedirect(reverse('dashboard:home'))
+
+    return form
+
+def get_latest_post_code():
+    resp = requests.get("https://www.instagram.com/thetachicwru/")
+
+    with open("index.html", "r") as inp:
+        content = inp.read()
+
+    matches = re.findall("\"shortcode\":\"([^\"]+)\"", resp.content)
+
+    return matches[0]

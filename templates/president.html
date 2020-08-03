@@ -21,6 +21,17 @@
                 {{ form.as_p }}
                 <input type="submit" value="Add Photo"/>
             </form>
+
+        </div>
+
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel=body">
+            <div class="panel-heading">Update the Instagram Widget</div>
+            <form action={% url 'dashboard:update_instagram' %}>
+                <input type="submit" value="Update"></input>
+            </form>
         </div>
     </div>
 {% endblock %}

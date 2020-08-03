@@ -44,7 +44,8 @@ urlpatterns = [
         name="brother_service_submission_add"),
     url(r'^brother/pnm/(?P<pnm_id>[0-9]+)/$', views.brother_pnm, name="brother_pnm"),
 
-    url(r'^president/', views.president, name="president"),
+    url(r'^president/$', views.president, name="president"),
+    url(r'^president/update_instagram', views.update_instagram, name="update_instagram"),
 
     # Vice President URL Section
     url(r'^vice-president/$', views.vice_president, name="vice_president"),
