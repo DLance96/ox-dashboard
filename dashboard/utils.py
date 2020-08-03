@@ -6,6 +6,9 @@ from django.core.handlers.wsgi import WSGIRequest
 
 from .models import *
 
+import requests
+import re
+
 # EC Positions
 ec = [
     'President', 'Vice President', 'Vice President of Health and Safety',
@@ -217,3 +220,56 @@ def calc_fines(brother):
     fine = calc_fines_helper(missed_thursday_num + missed_sunday_num)
 
     return fine
+
+def photo_context(photo_class):
+    photo_urls = []
+    for photo in photo_class.objects.all():
+        photo_urls.append(photo.photo.url)
+
+    context = {
+        'photo_urls': photo_urls
+    }
+
+    return context
+
+def photo_form(form_class, request):
+    form = form_class(request.POST or None)
+
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES)
+
+        # NOTE: If we move to a CDN instead of storing files with the server,
+        # we can probably use this form, but not save the value (set form.save()
+        # to form.save(commit=False)) and instead get the url or path from the returned
+        # instance and then upload that file to the CDN
+        if form.is_valid():
+            # TODO: add error handling to stop user from uploading too many photos
+            instance = form.save()
+            return HttpResponseRedirect(reverse('dashboard:home'))
+
+    return form
+
+def get_latest_post_code():
+    resp = requests.get("https://www.instagram.com/thetachicwru/")
+
+    matches = re.findall("\"shortcode\":\"([^\"]+)\"", resp.content)
+
+    return matches[0]
+
+def update_instagram_object():
+    code = get_latest_post_code()
+
+    latest = InstagramLatest.objects.all()[0]
+
+    latest.latest_shortcode = code
+
+    latest.save()
+
+def create_instagram_object():
+    code = get_latest_post_code()
+
+    latest = InstagramLatest()
+
+    latest.latest_shortcode = code
+
+    latest.save()

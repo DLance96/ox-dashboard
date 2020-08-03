@@ -152,6 +152,11 @@ class PhotoForm(forms.ModelForm):
         model = Photo
         fields = ['name', 'photo']
 
+class MinecraftPhotoForm(forms.ModelForm):
+    class Meta:
+        model = MinecraftPhoto
+        fields = ['name', 'photo']
+
 
 class CommitteeForm(forms.Form):
     STANDING_COMMITTEE_CHOICES = {

@@ -44,7 +44,7 @@ urlpatterns = [
         name="brother_service_submission_add"),
     url(r'^brother/pnm/(?P<pnm_id>[0-9]+)/$', views.brother_pnm, name="brother_pnm"),
 
-    url(r'^president/', views.president, name="president"),
+    url(r'^president/$', views.president, name="president"),
 
     # Vice President URL Section
     url(r'^vice-president/$', views.vice_president, name="vice_president"),
@@ -179,7 +179,12 @@ urlpatterns = [
         name='finish_sunday'),
     url(r'details/sunday/post$', views.post_sunday, name='post_sunday_details'),
 
-    url(r'^prchair/', views.public_relations_c, name="public_relations_c"),
+    url(r'^prchair/$', views.public_relations_c, name="public_relations_c"),
+    url(r'^prchair/update_instagram/', views.update_instagram, name="update_instagram"),
+
+    # Connect with Us URL section
+    url(r'^minecraft/$', views.minecraft, name ='minecraft'),
+
 ]
 
 if settings.DEBUG:

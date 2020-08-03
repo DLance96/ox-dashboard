@@ -22,7 +22,7 @@
                     <tr>
                         <td>{{ position.title }}</td>
                         <td>{{ position.get_brothers }}</td>
-                        <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_edit' position.id %}>X</a></td>
+                        <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_edit' position.id %}>+</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -47,7 +47,7 @@
                     <tr>
                         <td>{{ position.title }}</td>
                         <td>{{ position.get_brothers }}</td>
-                        <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_edit' position.id %}>X</a></td>
+                        <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_edit' position.id %}>+</a></td>
                         <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_delete' position.id %}>X</a></td>
                     </tr>
                 {% endfor %}
