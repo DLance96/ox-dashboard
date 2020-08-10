@@ -2355,6 +2355,7 @@ def minecraft(request):
     return render(request, 'minecraft.html', photo_context(MinecraftPhoto))
 
 def update_instagram(request):
+    
 
     code = get_latest_post_code()
 
