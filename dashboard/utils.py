@@ -252,9 +252,24 @@ def photo_form(form_class, request):
 def get_latest_post_code():
     resp = requests.get("https://www.instagram.com/thetachicwru/")
 
-    with open("index.html", "r") as inp:
-        content = inp.read()
-
     matches = re.findall("\"shortcode\":\"([^\"]+)\"", resp.content)
 
     return matches[0]
+
+def update_instagram_object():
+    code = get_latest_post_code()
+
+    latest = InstagramLatest.objects.all()[0]
+
+    latest.latest_shortcode = code
+
+    latest.save()
+
+def create_instagram_object():
+    code = get_latest_post_code()
+
+    latest = InstagramLatest()
+
+    latest.latest_shortcode = code
+
+    latest.save()

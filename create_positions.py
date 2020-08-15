@@ -10,6 +10,7 @@ then in that shell import this file and run build_superuser(<your case ID>)
 
 from django.contrib.auth.models import User
 from dashboard.views import Position, Brother
+from dashboard.utils import create_instagram_object
 import datetime
 
 EC_POSITIONS = [
@@ -72,6 +73,9 @@ def build_superuser(username):
     create_positions()
 
     add_user_to_all_positions(user)
+
+    create_instagram_object()
+
 
 def make_user_super(username):
     user = User.objects.get(username=username)

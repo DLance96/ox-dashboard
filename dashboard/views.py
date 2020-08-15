@@ -16,7 +16,7 @@ from django.core.mail import send_mail
 from .utils import verify_position, get_semester, verify_brother,\
         get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
         build_thursday_detail_email, build_sunday_detail_email, calc_fines,\
-        photo_context, photo_form, get_latest_post_code
+        photo_context, photo_form, get_latest_post_code, update_instagram_object
 from datetime import datetime
 from .forms import *
 
@@ -550,12 +550,7 @@ class ServiceSubmissionEdit(UpdateView):
 @verify_position(['President', 'Adviser'])
 def president(request):
     """ Renders the President page and all relevant information """
-
-    context = {
-        'form': photo_form(PhotoForm, request)
-    }
-
-    return render(request, 'president.html', context)
+    return render(request, 'president.html', {})
 
 
 @verify_position(['Vice President', 'President', 'Adviser'])
@@ -2356,7 +2351,12 @@ def detail_fine_helper(request, brother):
 
 @verify_position(['Public Relations Chair', 'Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def public_relations_c(request):
-    return render(request, 'public-relations-chair.html', {})
+
+    context = {
+        'form': photo_form(PhotoForm, request)
+    }
+
+    return render(request, 'public-relations-chair.html', context)
 
 def minecraft(request):
     return render(request, 'minecraft.html', photo_context(MinecraftPhoto))
@@ -2364,12 +2364,6 @@ def minecraft(request):
 def update_instagram(request):
     
 
-    code = get_latest_post_code()
-
-    latest = InstagramLatest.objects.all()[0]
-
-    latest.latest_shortcode = code
-
-    latest.save()
+    update_instagram_object()
 
     return home(request)
