@@ -134,6 +134,12 @@
             <iframe width="100%" height="480px" src="https://www.youtube.com/embed/QMW4AqbuSGg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
 
+        <div id="Recruitment Events">
+            {% for event  in recruitment_events %}
+                {{ event }} - {{ event.date }}<br>
+            {% endfor %}
+        </div>
+
         <!-- This is copy pasted from w3 schools -->
         <script>
             function openView(evt, cityName) {
