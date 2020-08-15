@@ -89,8 +89,15 @@ def change_password(request):
 
 def home(request):
     """ Renders home page """
+
     context = photo_context(Photo)
-    context['instagram'] = InstagramLatest.objects.all()[0].latest_shortcode
+    recruitment_events = RecruitmentEvent.objects.filter(semester=get_semester()).order_by("date")
+    context = {
+        'recruitment_events': recruitment_events,
+        'instagram' : InstagramLatest.objects.all()[0].latest_shortcode
+    }
+
+
     return render(request, 'home.html', context)
 
 
