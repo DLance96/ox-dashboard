@@ -81,7 +81,7 @@ class ChapterEventForm(forms.ModelForm):
 class RecruitmentEventForm(forms.ModelForm):
     class Meta:
         model = RecruitmentEvent
-        fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'notes']
+        fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'picture', 'location', 'notes']
 
 
 class PhilanthropyEventForm(forms.ModelForm):

@@ -94,9 +94,8 @@ def home(request):
     recruitment_events = RecruitmentEvent.objects.filter(semester=get_semester()).order_by("date")
     context = {
         'recruitment_events': recruitment_events,
-        'instagram' : InstagramLatest.objects.all()[0].latest_shortcode
+        'instagram': InstagramLatest.objects.all()[0].latest_shortcode
     }
-
 
     return render(request, 'home.html', context)
 
@@ -1569,6 +1568,8 @@ def recruitment_c_event(request, event_id):
         'pnm_form_list': pnm_form_list,
         'brother_form_list': brother_form_list,
         'event': event,
+        'media_root': settings.MEDIA_ROOT,
+        'media_url': settings.MEDIA_URL,
     }
     return render(request, "recruitment-event.html", context)
 
@@ -1577,8 +1578,8 @@ def recruitment_c_event(request, event_id):
 def recruitment_c_event_add(request):
     """ Renders the recruitment chair way of adding RecruitmentEvents """
     form = RecruitmentEventForm(request.POST or None)
-
     if request.method == 'POST':
+        form = RecruitmentEventForm(request.POST, request.FILES or None)
         if form.is_valid():
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
@@ -1595,7 +1596,7 @@ def recruitment_c_event_add(request):
                     'form': form,
                     'error_message': "Start time after end time!",
                 }
-                return render(request, "event-add.html", context)
+                return render(request, "recruitment-event-add.html", context)
             instance.semester = semester
             instance.save()
             return HttpResponseRedirect(reverse('dashboard:recruitment_c'))
@@ -1604,7 +1605,7 @@ def recruitment_c_event_add(request):
         'position': 'Recruitment Chair',
         'form': form,
     }
-    return render(request, "event-add.html", context)
+    return render(request, "recruitment-event-add.html", context)
 
 
 class RecruitmentEventDelete(DeleteView):
@@ -1624,7 +1625,7 @@ class RecruitmentEventEdit(UpdateView):
 
     model = RecruitmentEvent
     success_url = reverse_lazy('dashboard:recruitment_c')
-    fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'notes']
+    fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'picture', 'location', 'notes']
 
 
 @verify_position(['Service Chair', 'ec'])

@@ -12,10 +12,13 @@
         <div class="panel-heading">Event</div>
         <div class="panel-body">
             <div class="row">
+
                 <div class=" col-lg-2 "></div>
                 <div class=" col-lg-8 ">
+
                     <table class="table table-event-information">
                         <tbody>
+                        <tr><img src="/media/{{ event.picture }}" alt="" style="display: block; max-width: 90%; height: 500px; margin-left: auto; margin-right: auto;"><br></tr>
                         <tr>
                             <td>Name:</td>
                             <td>{{ event.name }}</td>
@@ -46,6 +49,10 @@
                                 <td>{{ event.Notes }}</td>
                             </tr>
                         {% endif %}
+                        <tr>
+                            <td>Location</td>
+                            <td>{{ event.location }}</td>
+                        </tr>
                         </tbody>
                     </table>
                     {% if type == 'attendance' or type == 'ec-view' %}
