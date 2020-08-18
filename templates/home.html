@@ -8,7 +8,7 @@
     <div class="jumbotron">
         <h1>Theta Chi Dashboard</h1>
         <div class="btn-group" style="width:100%">
-          <a href=https://discord.com/invite/NEvw7Vd>
+          <a href=https://discord.gg/3u6Us2D>
                     <img src="https://cdn.iconscout.com/icon/free/png-256/discord-3-569463.png" alt=" " width="15" height="15"> Discord
             </a>
           <a href=https://www.instagram.com/thetachicwru/>
@@ -73,11 +73,57 @@
                 </div>
             </div>
         </div>
-
         <div id="Recruitment Events" class="eventtabcontent">
             {% for event in recruitment_events %}
-                {{ event }} - {{ event.date }}<br>
-            {% endfor %}
+            <div class="row">
+                <div class=" col-lg-1 "></div>
+                <div class=" col-lg-10 ">
+                    <table class="table">
+                        <tr>
+                            <td width="50%">
+                                <table class="table table-event-information">
+                                    <tbody>
+                                    <tr>
+                                        <td>Name:</td>
+                                        <td>{{ event.name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date:</td>
+                                        <td>{{ event.date }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time Start:
+                                            {% if event.end_time %}
+                                                <br>End:
+                                            {% endif %}</td>
+                                        </td>
+                                        <td>{{ event.start_time }}
+                                            {% if event.end_time %}
+                                                <br>{{ event.end_time }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Location</td>
+                                        <td>{{ event.location }}</td>
+                                    </tr>
+                                    {% if event.notes %}
+                                        <tr>
+                                            <td>Notes</td>
+                                            <td>{{ event.notes }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td width="50%">
+                                <img src="/media/{{ event.picture }}" alt="" style="display: block; max-width: 90%; height: 400px; margin-left: auto; margin-right: auto;">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
         </div>
 
         <script>
