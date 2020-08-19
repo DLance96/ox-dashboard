@@ -26,7 +26,6 @@ textarea {
 /*Used to display event information*/
 .table-event-information {
     table-layout:fixed;
-    width:100%;
 }
 
 .table-event-information > tbody > tr {
@@ -41,8 +40,36 @@ textarea {
     border-top: 0;
     word-wrap: break-word;
 }
-.toppad
-{margin-top:20px;
+
+.toppad {
+    margin-top:20px;
+}
+
+.container1 {
+    display: grid;
+    grid-template-columns:1fr 10fr 12fr 1fr;
+    gap: 40px 40px;
+    align-items: center;
+}
+
+.container2 {
+    display: grid;
+    grid-template-columns: 1fr minmax(10px, 300px);
+    grid-auto-columns: minmax(auto, 380px);
+    gap: 10px 20px;
+    word-wrap: break-word;
+}
+
+.grayline {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: rgb(221,221,221);
+}
+
+.blackline {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: black;
 }
 
 
