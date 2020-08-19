@@ -32,16 +32,16 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        {% if event.notes %}
+                        {% if event.description %}
                             <tr>
-                                <td>Notes</td>
-                                <td>{{ event.notes }}</td>
+                                <td>Description</td>
+                                <td>{{ event.description }}</td>
                             </tr>
                         {% endif %}
                         </tbody>
                     </table>
                     {% if type == 'attendance' or type == 'ec-view' %}
-                        <a class="btn btn-default" href={% url 'dashboard:health_and_saftey_event_edit' event.id %} role="button">Edit event</a>
+                        <a class="btn btn-default" href={% url 'dashboard:health_and_safety_event_edit' event.id %} role="button">Edit event</a>
                     {% endif %}
                 </div>
                 <div class=" col-lg-2 "></div>

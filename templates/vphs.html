@@ -32,14 +32,14 @@
                             <td></td>
                         {% endif %}
                         <td><a class="btn btn-default"
-                               href={% url 'dashboard:health_and_saftey_event_edit' event.id %}>X</a></td>
+                               href={% url 'dashboard:health_and_safety_event_edit' event.id %}>X</a></td>
                         <td><a class="btn btn-default"
-                               href={% url 'dashboard:health_and_saftey_event_delete' event.id %}>X</a></td>
+                               href={% url 'dashboard:health_and_safety_event_delete' event.id %}>X</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <a class="btn btn-default" href={% url 'dashboard:health_and_saftey_event_add' %}
+            <a class="btn btn-default" href={% url 'dashboard:health_and_safety_event_add' %}
                     role="button">Add Event</a>
         </div>
     </div>

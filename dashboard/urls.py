@@ -61,13 +61,13 @@ urlpatterns = [
 
     # Vice President Health and Safety URL Section
     url(r'^vphs/$', views.vphs, name="vphs"),
-    url(r'^vphs/hs_event/add/$', views.health_and_saftey_event_add,
-        name="health_and_saftey_event_add"),
-    url(r'^vphs/hs_event/(?P<pk>\d+)/edit/$', views.HealthAndSafteyEdit.as_view(),
-        name="health_and_saftey_event_edit"),
-    url(r'^vphs/hs_event/(?P<pk>\d+)/delete/$', views.HealthAndSafteyDelete.as_view(),
-        name="health_and_saftey_event_delete"),
-    url(r'^vphs/hs_event/(?P<event_id>[0-9]+)/$', views.health_and_saftey_event, name="health_safety_event"),
+    url(r'^vphs/hs_event/add/$', views.health_and_safety_event_add,
+        name="health_and_safety_event_add"),
+    url(r'^vphs/hs_event/(?P<pk>\d+)/edit/$', views.HealthAndSafetyEdit.as_view(),
+        name="health_and_safety_event_edit"),
+    url(r'^vphs/hs_event/(?P<pk>\d+)/delete/$', views.HealthAndSafetyDelete.as_view(),
+        name="health_and_safety_event_delete"),
+    url(r'^vphs/hs_event/(?P<event_id>[0-9]+)/$', views.health_and_safety_event, name="health_safety_event"),
 
     url(r'^treasurer/', views.treasurer, name="treasurer"),
 

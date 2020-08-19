@@ -45,19 +45,32 @@ textarea {
     margin-top:20px;
 }
 
-.container1 {
+.homeevent1 {
     display: grid;
-    grid-template-columns:1fr 10fr 12fr 1fr;
+    grid-template-columns: 1fr 10fr 12fr 1fr;
     gap: 40px 40px;
     align-items: center;
 }
 
-.container2 {
+.homeevent2 {
     display: grid;
     grid-template-columns: 1fr minmax(10px, 300px);
     grid-auto-columns: minmax(auto, 380px);
     gap: 10px 20px;
     word-wrap: break-word;
+}
+
+.brotherevent {
+    display: grid;
+    grid-template-columns: 4fr 8fr 5fr 2fr 4fr;
+    align-items: center;
+    gap: 5px 5px;
+}
+
+.brothergrayline {
+    grid-column: 2 / 5;
+    height: 1px;
+    background: rgb(221,221,221);
 }
 
 .grayline {

@@ -254,7 +254,7 @@ class Event(models.Model):
     semester = models.ForeignKey(
         Semester, on_delete=models.CASCADE, blank=True, null=True
     )
-    notes = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     minutes = models.URLField(blank=True, null=True)
 
     class Meta:
@@ -287,7 +287,7 @@ class RecruitmentEvent(Event):
     location = models.TextField(blank=True, null=True)
 
 
-class HealthAndSafteyEvent(Event):
+class HealthAndSafetyEvent(Event):
     pass
 
 

@@ -155,7 +155,7 @@ def brother_view(request):
         messages.error(request, "Brother needs to be logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
     brother = Brother.objects.filter(user=request.user)[0]
-    hs_events = HealthAndSafteyEvent.objects.filter(semester=get_semester()).order_by("date")
+    hs_events = HealthAndSafetyEvent.objects.filter(semester=get_semester()).order_by("date")
     chapter_events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
 
     excuses_pending = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
@@ -388,7 +388,7 @@ def brother_hs_event(request, event_id):
         messages.error(request, "Brother not logged in before viewing brother Health and Safety events")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
-    event = HealthAndSafteyEvent.objects.get(pk=event_id)
+    event = HealthAndSafetyEvent.objects.get(pk=event_id)
 
     context = {
         'type': 'brother-view',
@@ -646,7 +646,7 @@ class CommitteeMeetingEdit(UpdateView):
 @verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
 def vphs(request):
     """ Renders the VPHS and the events they can create """
-    events = HealthAndSafteyEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
+    events = HealthAndSafetyEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
 
     context = {
         'events': events,
@@ -655,7 +655,7 @@ def vphs(request):
 
 
 @verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
-def health_and_saftey_event_add(request):
+def health_and_safety_event_add(request):
     """ Renders the VPHS adding an event """
     form = HealthAndSafetyEventForm(request.POST or None)
 
@@ -687,29 +687,29 @@ def health_and_saftey_event_add(request):
     return render(request, 'model-add.html', context)
 
 
-class HealthAndSafteyEdit(UpdateView):
+class HealthAndSafetyEdit(UpdateView):
     @verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
     def get(self, request, *args, **kwargs):
-        return super(HealthAndSafteyEdit, self).get(request, *args, **kwargs)
+        return super(HealthAndSafetyEdit, self).get(request, *args, **kwargs)
 
-    model = HealthAndSafteyEvent
+    model = HealthAndSafetyEvent
     success_url = reverse_lazy('dashboard:vphs')
-    fields = ['name', 'date', 'start_time', 'end_time', 'notes', 'minutes']
+    fields = ['name', 'date', 'start_time', 'end_time', 'description', 'minutes']
 
 
-class HealthAndSafteyDelete(DeleteView):
+class HealthAndSafetyDelete(DeleteView):
     @verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
     def get(self, request, *args, **kwargs):
-        return super(HealthAndSafteyDelete, self).get(request, *args, **kwargs)
+        return super(HealthAndSafetyDelete, self).get(request, *args, **kwargs)
 
-    model = HealthAndSafteyEvent
+    model = HealthAndSafetyEvent
     template_name = 'dashboard/base_confirm_delete.html'
     success_url = reverse_lazy('dashboard:vphs')
 
 
-def health_and_saftey_event(request, event_id):
+def health_and_safety_event(request, event_id):
     """ Renders the vphs way of view events """
-    event = HealthAndSafteyEvent.objects.get(pk=event_id)
+    event = HealthAndSafetyEvent.objects.get(pk=event_id)
     brothers = Brother.objects.exclude(brother_status='2')
     brother_form_list = []
 
@@ -1016,7 +1016,7 @@ class ChapterEventEdit(UpdateView):
 
     model = ChapterEvent
     success_url = reverse_lazy('dashboard:secretary')
-    fields = ['name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes', 'notes']
+    fields = ['name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes', 'description']
 
 
 class ChapterEventDelete(DeleteView):
@@ -1328,7 +1328,7 @@ class StudyEventEdit(UpdateView):
 
     model = StudyTableEvent
     success_url = reverse_lazy('dashboard:scholarship_c')
-    fields = ['date', 'start_time', 'end_time', 'notes']
+    fields = ['date', 'start_time', 'end_time', 'description']
 
 
 @verify_position(['Scholarship Chair', 'President', 'Adviser'])
@@ -1625,7 +1625,7 @@ class RecruitmentEventEdit(UpdateView):
 
     model = RecruitmentEvent
     success_url = reverse_lazy('dashboard:recruitment_c')
-    fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'picture', 'location', 'notes']
+    fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'picture', 'location', 'description']
 
 
 @verify_position(['Service Chair', 'ec'])
@@ -1717,7 +1717,7 @@ class ServiceEventEdit(UpdateView):
 
     model = ServiceEvent
     success_url = reverse_lazy('dashboard:service_c')
-    fields = ['name', 'date', 'start_time', 'end_time', 'notes']
+    fields = ['name', 'date', 'start_time', 'end_time', 'description']
 
 
 @verify_position(['Service Chair', 'ec'])
@@ -1885,7 +1885,7 @@ class PhilanthropyEventEdit(UpdateView):
 
     model = PhilanthropyEvent
     success_url = reverse_lazy('dashboard:philanthropy_c')
-    fields = ['name', 'date', 'start_time', 'end_time', 'notes']
+    fields = ['name', 'date', 'start_time', 'end_time', 'description']
 
 
 @verify_position(['Detail Manager'])
