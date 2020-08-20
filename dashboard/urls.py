@@ -22,6 +22,16 @@ urlpatterns = [
     url(r'^general/contact-list/$', views.contact_list, name="contact_list"),
     url(r'^general/emergency-contact-list/$', views.emergency_contact_list, name="emergency_contact_list"),
     url(r'^general/event-list/$', views.event_list, name="event_list"),
+    url(r'^general/gen-r-event/(?P<event_id>[0-9]+)/$', views.general_recruitment_event,
+        name="general_recruitment_event"),
+    url(r'^general/gen-c-event/(?P<event_id>[0-9]+)/$', views.general_chapter_event,
+        name="general_chapter_event"),
+    url(r'^general/gen-p-event/(?P<event_id>[0-9]+)/$', views.general_philanthropy_event,
+        name="general_philanthropy_event"),
+    url(r'^general/gen-hs-event/(?P<event_id>[0-9]+)/$', views.general_hs_event,
+        name="general_hs_event"),
+    url(r'^general/gen-s-event/(?P<event_id>[0-9]+)/$', views.general_service_event,
+        name="general_service_event"),
 
     # Brother URL section
     url(r'^brother/$', views.brother_view, name="brother"),

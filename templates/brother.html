@@ -100,60 +100,49 @@
     <div class="panel panel-default">
         <div class="panel-heading">Committees</div>
         <div class="panel-body">
-            <div class="col-lg-2"></div>
-            <div class="col-lg-8">
-                <div class="row">
-                    <div class="col-md-6">
-                        <table class="table table-condensed">
-                            <thead style="font-weight:bold;">
-                            <tr>
-                                <td>Operational:</td>
-                                <td>Date:</td>
-                                <td>Minutes:</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for meeting in operational_meetings %}
-                                <tr>
-                                    <td><a href="">{{ meeting.get_committee_display }}</a></td>
-                                    <td>{{ meeting.date }} - {{ meeting.start_time }}</td>
-                                    {% if meeting.minutes %}
-                                        <td><a href="{{ meeting.minutes }}">link</a></td>
-                                    {% else %}
-                                        <td></td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-md-6">
-                        <table class="table table-condensed">
-                            <thead style="font-weight:bold;">
-                            <tr>
-                                <td>Standing:</td>
-                                <td>Date:</td>
-                                <td>Minutes:</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for meeting in standing_meetings %}
-                                <tr>
-                                    <td><a href="">{{ meeting.get_committee_display }}</a></td>
-                                    <td>{{ meeting.date }} - {{ meeting.start_time }}</td>
-                                    {% if meeting.minutes %}
-                                        <td><a href="{{ meeting.minutes }}">link</a></td>
-                                    {% else %}
-                                        <td></td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Operational:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Minutes:</b> </div>
+                <div></div>
+                {% for meeting in operational_meetings %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href="">{{ meeting.get_committee_display }}</a></div>
+                <div>{{ meeting.date }} - {{ meeting.start_time }}</div>
+                <div>
+                    {% if meeting.minutes %}
+                        <a href="{{ meeting.minutes }}">Link</a>
+                    {% endif %}
                 </div>
+                <div></div>
+                {% endfor %}
             </div>
-            <div class="col-lg-2"></div>
+            <br>
+            <div class="blackline"></div>
+            <br>
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Standing:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Minutes:</b> </div>
+                <div></div>
+                {% for meeting in standing_meetings %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href="">{{ meeting.get_committee_display }}</a></div>
+                <div>{{ meeting.date }} - {{ meeting.start_time }}</div>
+                <div>
+                    {% if meeting.minutes %}
+                        <a href="{{ meeting.minutes }}">Link</a>
+                    {% endif %}
+                </div>
+                <div></div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     <div class="panel panel-default">
@@ -161,9 +150,9 @@
         <div class="panel-body">
             <div class="brotherevent">
                 <div></div>
-                <div> <b>Event</b> </div>
-                <div> <b>Date</b> </div>
-                <div> <b>Attendance</b></div>
+                <div> <b>Event:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Attendance:</b></div>
                 <div></div>
                 {% for event, attendance in event_attendance %}
                 <div class="brothergrayline"></div>
@@ -185,9 +174,9 @@
         <div class="panel-body">
             <div class="brotherevent">
                 <div></div>
-                <div> <b>Events This Semester</b> </div>
-                <div> <b>Date</b> </div>
-                <div> <b>Rush</b> </div>
+                <div> <b>Events This Semester:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Rush:</b> </div>
                 <div></div>
                 {% for event in recruitment_events %}
                 <div class="brothergrayline"></div>
@@ -200,12 +189,13 @@
                 {% endfor %}
             </div>
             <br>
+            <div class="blackline"></div>
             <br>
             <div class="brotherevent">
                 <div></div>
-                <div> <b>Events Next Semester</b> </div>
-                <div> <b>Date</b> </div>
-                <div> <b>Rush</b> </div>
+                <div> <b>Events Next Semester:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Rush:</b> </div>
                 <div></div>
                 {% for event in recruitment_events_next %}
                 <div class="brothergrayline"></div>
@@ -224,8 +214,8 @@
         <div class="panel-body">
                 <div class="brotherevent">
                     <div></div>
-                    <div> <b>Event</b> </div>
-                    <div> <b>Date</b> </div>
+                    <div> <b>Event:</b> </div>
+                    <div> <b>Date:</b> </div>
                     <div></div>
                     <div></div>
                     {% for event in hs_events %}
@@ -245,8 +235,8 @@
         <div class="panel-body">
             <div class="brotherevent">
                 <div></div>
-                <div> <b>Event</b> </div>
-                <div> <b>Date</b> </div>
+                <div> <b>Event:</b> </div>
+                <div> <b>Date:</b> </div>
                 <div></div>
                 {% for event in philanthropy_events %}
                 <div class="brothergrayline"></div>
@@ -265,8 +255,8 @@
         <div class="panel-body">
             <div class="brotherevent">
                     <div></div>
-                    <div> <b>Event</b> </div>
-                    <div> <b>Date</b> </div>
+                    <div> <b>Event:</b> </div>
+                    <div> <b>Date:</b> </div>
                     <div></div>
                     <div></div>
                     {% for event in service_events %}

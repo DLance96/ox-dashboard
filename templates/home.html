@@ -106,19 +106,20 @@
         </style>
         <div id="Recruitment Events" class="eventtabcontent">
             <div class="homeevent1">
+                <div class="blackline" style="margin-top: 20px"></div>
                 {% for event in recruitment_events %}
                 <div></div>
                 <div class="homeevent2">
                     <div>Name:</div>
-                    <div>{{ event.name}}</div>
+                    <div><a href={% url 'dashboard:general_recruitment_event' event.id %}>{{ event.name }}</a></div>
                     <div class="grayline"></div>
                     <div>Date:</div>
                     <div>{{ event.date }}</div>
                     <div class="grayline"></div>
                     <div>Time Start:
-                                {% if event.end_time %}
-                                    <br>End:
-                                {% endif %}
+                        {% if event.end_time %}
+                            <br>End:
+                        {% endif %}
                     </div>
                     <div>{{ event.start_time }}
                         {% if event.end_time %}
@@ -136,6 +137,7 @@
                 <div></div>
                 <div class="blackline"></div>
                 {% endfor %}
+                <div></div>
             </div>
         </div>
 

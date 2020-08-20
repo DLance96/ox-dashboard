@@ -382,6 +382,51 @@ def brother_recruitment_event(request, event_id):
     return render(request, "recruitment-event.html", context)
 
 
+def general_recruitment_event(request, event_id):
+    event = RecruitmentEvent.objects.get(pk=event_id)
+
+    context = {
+        'event': event,
+    }
+    return render(request, "recruitment-event.html", context)
+
+
+def general_hs_event(request, event_id):
+    event = HealthAndSafetyEvent.objects.get(pk=event_id)
+
+    context = {
+        'event': event,
+    }
+    return render(request, "hs-event.html", context)
+
+
+def general_philanthropy_event(request, event_id):
+    event = PhilanthropyEvent.objects.get(pk=event_id)
+
+    context = {
+        'event': event,
+    }
+    return render(request, "philanthropy-event.html", context)
+
+
+def general_service_event(request, event_id):
+    event = ServiceEvent.objects.get(pk=event_id)
+
+    context = {
+        'event': event,
+    }
+    return render(request, "service-event.html", context)
+
+
+def general_chapter_event(request, event_id):
+    event = ChapterEvent.objects.get(pk=event_id)
+
+    context = {
+        'event': event,
+    }
+    return render(request, "chapter-event.html", context)
+
+
 def brother_hs_event(request, event_id):
     """ Renders the brother page for health and safety event with a excuse form """
     if not request.user.is_authenticated():  # brother auth check

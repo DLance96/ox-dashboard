@@ -52,6 +52,7 @@
             </div>
         </div>
     </div>
+{% if type == 'brother-view' %}
     <div class="panel panel-default">
         <div class="panel-heading">RSVP</div>
         <div class="panel-body">
@@ -70,6 +71,7 @@
             {% endfor %}
         </div>
     </div>
+{% endif %}
     {% if type == 'attendance' %}
         <div class="panel panel-default">
             <div class="panel-heading">Attendance</div>
