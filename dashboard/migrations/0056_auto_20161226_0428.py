@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0055_healthandsafteyevent'),
+        ('dashboard', '0055_healthandsafetyevent'),
     ]
 
     operations = [

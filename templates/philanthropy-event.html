@@ -36,10 +36,10 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        {% if event.notes %}
+                        {% if event.description %}
                             <tr>
-                                <td>Notes</td>
-                                <td>{{ event.notes }}</td>
+                                <td>Description</td>
+                                <td>{{ event.description }}</td>
                             </tr>
                         {% endif %}
                         </tbody>
@@ -52,6 +52,7 @@
             </div>
         </div>
     </div>
+{% if type == 'brother-view' %}
     <div class="panel panel-default">
         <div class="panel-heading">RSVP</div>
         <div class="panel-body">
@@ -70,4 +71,6 @@
             {% endfor %}
         </div>
     </div>
+{% endif %}
+
 {% endblock %}

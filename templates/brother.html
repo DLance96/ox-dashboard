@@ -98,30 +98,71 @@
         </div>
     </div>
     <div class="panel panel-default">
+        <div class="panel-heading">Committees</div>
+        <div class="panel-body">
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Operational:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Minutes:</b> </div>
+                <div></div>
+                {% for meeting in operational_meetings %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href="">{{ meeting.get_committee_display }}</a></div>
+                <div>{{ meeting.date }} - {{ meeting.start_time }}</div>
+                <div>
+                    {% if meeting.minutes %}
+                        <a href="{{ meeting.minutes }}">Link</a>
+                    {% endif %}
+                </div>
+                <div></div>
+                {% endfor %}
+            </div>
+            <br>
+            <div class="blackline"></div>
+            <br>
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Standing:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Minutes:</b> </div>
+                <div></div>
+                {% for meeting in standing_meetings %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href="">{{ meeting.get_committee_display }}</a></div>
+                <div>{{ meeting.date }} - {{ meeting.start_time }}</div>
+                <div>
+                    {% if meeting.minutes %}
+                        <a href="{{ meeting.minutes }}">Link</a>
+                    {% endif %}
+                </div>
+                <div></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
         <div class="panel-heading">Chapter Events</div>
         <div class="panel-body">
-            <div class="col-lg-2"></div>
-            <div class="col-lg-8">
-                <table class="table table-condensed">
-                    <thead style="font-weight:bold;">
-                    <tr>
-                        <td>Event</td>
-                        <td>Date</td>
-                        <td></td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for event, attendance in event_attendance %}
-                        <tr>
-                            <td>
-                                <a href={% url 'dashboard:brother_chapter_event' event.id %}>{{ event.name }}</a>
-                            </td>
-                            <td>{{ event.date }}</td>
-                            <td>{{ attendance }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Event:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Attendance:</b></div>
+                <div></div>
+                {% for event, attendance in event_attendance %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href={% url 'dashboard:brother_chapter_event' event.id %}>{{ event.name }}</a></div>
+                <div>{{ event.date }}</div>
+                <div>{{ attendance }}</div>
+                <div></div>
+                {% endfor %}
             </div>
         </div>
         <div class="panel-footer text-center">
@@ -129,98 +170,105 @@
         </div>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Excuses</div>
+        <div class="panel-heading">Recruitment Events</div>
         <div class="panel-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="panel panel-warning">
-                        <div class="panel-heading">Pending</div>
-                        <div class="panel-body">
-                            {% for excuse in excuses_pending %}
-                                <a class="btn btn-default"
-                                   href={% url 'dashboard:brother_excuse_delete' excuse.id %} role="button">X</a>
-                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }}
-                                    - {{ excuse.event.date }}</a><br>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Not Mandatory</div>
-                        <div class="panel-body">
-                            {% for excuse in excuses_not_mandatory %}
-                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }}
-                                    - {{ excuse.event.date }}</a><br>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Events This Semester:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Rush:</b> </div>
+                <div></div>
+                {% for event in recruitment_events %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href={% url 'dashboard:brother_recruitment_event' event.id %}>{{ event.name }}</a></div>
+                <div>{{ event.date }}</div>
+                <div>{{ event.rush }}</div>
+                <div></div>
+                {% endfor %}
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="panel panel-success">
-                        <div class="panel-heading">Approved</div>
-                        <div class="panel-body">
-                            {% for excuse in excuses_approved %}
-                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }}
-                                    - {{ excuse.event.date }}</a><br>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="panel panel-danger">
-                        <div class="panel-heading">Denied</div>
-                        <div class="panel-body">
-                            {% for excuse in excuses_denied %}
-                                <a href={% url 'dashboard:brother_excuse' excuse.id %}>{{ excuse.event.name }}
-                                    - {{ excuse.event.date }}</a><br>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
+            <br>
+            <div class="blackline"></div>
+            <br>
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Events Next Semester:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Rush:</b> </div>
+                <div></div>
+                {% for event in recruitment_events_next %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href={% url 'dashboard:brother_recruitment_event' event.id %}>{{ event.name }}</a></div>
+                <div>{{ event.date }}</div>
+                <div>{{ event.rush }}</div>
+                <div></div>
+                {% endfor %}
             </div>
         </div>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Potential New Members</div>
+        <div class="panel-heading">Health and Safety Events</div>
         <div class="panel-body">
-            <div class="col-lg-2"></div>
-            <div class="col-lg-8">
-                <table class="table table-condensed">
-                    <thead style="font-weight:bold;">
-                    <tr>
-                        <td>Potential New Member:</td>
-                        <td>Case ID:</td>
-                        <td>Phone Number:</td>
-                        <td>Contact Type</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for pnm in pnms %}
-                        <tr>
-                            <td>
-                                <a href={% url 'dashboard:brother_pnm' pnm.id %}>{{ pnm.first_name }}
-                                    {{ pnm.last_name }}</a>
-                            </td>
-                            <td>{{ pnm.case_ID }}</td>
-                            <td>{{ pnm.phone_number }}</td>
-                            <td> {% if pnm.primary_contact == brother %}
-                                Primary
-                            {% elif pnm.secondary_contact == brother %}
-                                Secondary
-                            {% else %}
-                                Tertiary
-                            {% endif %}
-                            </td>
-                        </tr>
+                <div class="brotherevent">
+                    <div></div>
+                    <div> <b>Event:</b> </div>
+                    <div> <b>Date:</b> </div>
+                    <div></div>
+                    <div></div>
+                    {% for event in hs_events %}
+                    <div class="brothergrayline"></div>
+                    <div></div>
+                    <div></div>
+                    <div><a href={% url 'dashboard:brother_hs_event' event.id %}>{{ event.name }}</a></div>
+                    <div>{{ event.date }}</div>
+                    <div></div>
+                    <div></div>
                     {% endfor %}
-                    </tbody>
-                </table>
-            <a class="btn btn-default" href={% url 'dashboard:all_pnm_csv' %} role="button">
-                Download full list as csv</a>
+                </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Philanthropy Events</div>
+        <div class="panel-body">
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Event:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div></div>
+                {% for event in philanthropy_events %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href={% url 'dashboard:brother_philanthropy_event' event.id %}>{{ event.name }}</a></div>
+                <div>{{ event.date }}</div>
+                <div></div>
+                <div></div>
+                {% endfor %}
             </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Service Events</div>
+        <div class="panel-body">
+            <div class="brotherevent">
+                    <div></div>
+                    <div> <b>Event:</b> </div>
+                    <div> <b>Date:</b> </div>
+                    <div></div>
+                    <div></div>
+                    {% for event in service_events %}
+                    <div class="brothergrayline"></div>
+                    <div></div>
+                    <div></div>
+                    <div><a href={% url 'dashboard:brother_service_event' event.id %}>{{ event.name }}</a></div>
+                    <div>{{ event.date }}</div>
+                    <div></div>
+                    <div></div>
+                    {% endfor %}
+                </div>
         </div>
     </div>
     <div class="panel panel-default">
@@ -294,187 +342,42 @@
         </div>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Service Events</div>
+        <div class="panel-heading">Potential New Members</div>
         <div class="panel-body">
             <div class="col-lg-2"></div>
             <div class="col-lg-8">
                 <table class="table table-condensed">
                     <thead style="font-weight:bold;">
                     <tr>
-                        <td>Event</td>
-                        <td>Date</td>
+                        <td>Potential New Member:</td>
+                        <td>Case ID:</td>
+                        <td>Phone Number:</td>
+                        <td>Contact Type</td>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for event in service_events %}
+                    {% for pnm in pnms %}
                         <tr>
                             <td>
-                                <a href={% url 'dashboard:brother_service_event' event.id %}>{{ event.name }}</a>
+                                <a href={% url 'dashboard:brother_pnm' pnm.id %}>{{ pnm.first_name }}
+                                    {{ pnm.last_name }}</a>
                             </td>
-                            <td>{{ event.date }}</td>
+                            <td>{{ pnm.case_ID }}</td>
+                            <td>{{ pnm.phone_number }}</td>
+                            <td> {% if pnm.primary_contact == brother %}
+                                Primary
+                            {% elif pnm.secondary_contact == brother %}
+                                Secondary
+                            {% else %}
+                                Tertiary
+                            {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">Health and Safety Events</div>
-        <div class="panel-body">
-            <div class="col-lg-2"></div>
-            <div class="col-lg-8">
-                <table class="table table-condensed">
-                    <thead style="font-weight:bold;">
-                    <tr>
-                        <td>Event</td>
-                        <td>Date</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for event in hs_events %}
-                        <tr>
-                            <td>
-                                <a href={% url 'dashboard:brother_hs_event' event.id %}>{{ event.name }}</a>
-                            </td>
-                            <td>{{ event.date }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">Recruitment Events</div>
-        <div class="panel-body">
-            <div class="col-lg-2"></div>
-            <div class="col-lg-8">
-                <table class="table table-condensed">
-                    <thead style="font-weight:bold;">
-                    <tr>
-                        <td>Event This Semester</td>
-                        <td>Date</td>
-                        <td>Rush</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for event in recruitment_events %}
-                        <tr>
-                            <td>
-                                <a href={% url 'dashboard:brother_recruitment_event' event.id %}>{{ event.name }}</a>
-                            </td>
-                            <td>{{ event.date }}</td>
-                            <td>{{ event.rush }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                <table class="table table-event-information">
-                    <thead style="font-weight:bold;">
-                    <tr>
-                        <td>Event Next Semester</td>
-                        <td>Date</td>
-                        <td>Rush</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for event in recruitment_events_next %}
-                        <tr>
-                            <td>
-                                <a href={% url 'dashboard:brother_recruitment_event' event.id %}>{{ event.name }}</a>
-                            </td>
-                            <td>{{ event.date }}</td>
-                            <td>{{ event.rush }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">Committees</div>
-        <div class="panel-body">
-            <div class="col-lg-2"></div>
-            <div class="col-lg-8">
-                <div class="row">
-                    <div class="col-md-6">
-                        <table class="table table-condensed">
-                            <thead style="font-weight:bold;">
-                            <tr>
-                                <td>Operational:</td>
-                                <td>Date:</td>
-                                <td>Minutes:</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for meeting in operational_meetings %}
-                                <tr>
-                                    <td><a href="">{{ meeting.get_committee_display }}</a></td>
-                                    <td>{{ meeting.date }} - {{ meeting.start_time }}</td>
-                                    {% if meeting.minutes %}
-                                        <td><a href="{{ meeting.minutes }}">link</a></td>
-                                    {% else %}
-                                        <td></td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-md-6">
-                        <table class="table table-condensed">
-                            <thead style="font-weight:bold;">
-                            <tr>
-                                <td>Standing:</td>
-                                <td>Date:</td>
-                                <td>Minutes:</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for meeting in standing_meetings %}
-                                <tr>
-                                    <td><a href="">{{ meeting.get_committee_display }}</a></td>
-                                    <td>{{ meeting.date }} - {{ meeting.start_time }}</td>
-                                    {% if meeting.minutes %}
-                                        <td><a href="{{ meeting.minutes }}">link</a></td>
-                                    {% else %}
-                                        <td></td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-2"></div>
-        </div>
-    </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">Philanthropy Events</div>
-        <div class="panel-body">
-            <div class="col-lg-2"></div>
-            <div class="col-lg-8">
-                <table class="table table-condensed">
-                    <thead style="font-weight:bold;">
-                    <tr>
-                        <td>Event</td>
-                        <td>Date</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for event in philanthropy_events %}
-                        <tr>
-                            <td>
-                                <a href={% url 'dashboard:brother_philanthropy_event' event.id %}>{{ event.name }}</a>
-                            </td>
-                            <td>{{ event.date }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+            <a class="btn btn-default" href={% url 'dashboard:all_pnm_csv' %} role="button">
+                Download full list as csv</a>
             </div>
         </div>
     </div>

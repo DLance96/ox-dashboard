@@ -1,6 +1,27 @@
 {% extends "base.html" %}
 
 {% block dropdown %}
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+       aria-expanded="false">Connect with Us!<span class="caret"></span></a>
+    <ul class="dropdown-menu">
+        <li><a href=https://discord.gg/3u6Us2D>
+                <img src="https://cdn.iconscout.com/icon/free/png-256/discord-3-569463.png" alt=" " width="15" height="15"> Discord
+        </a></li>
+        <li><a href=https://www.instagram.com/thetachicwru/>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/240px-Instagram_logo_2016.svg.png" alt=" " width="15" height="15"> Instagram
+        </a></li>
+        <li><a href={% url 'dashboard:minecraft' %}>
+            <img src="https://purepng.com/public/uploads/large/71502582731v7y8uylzhygvo3zf71tqjtrwkhwdowkysgsdhsq3vr35woaluanwa4zotpkewhamxijlulfxcrilendabjrjtozyfrqwogphaoic.png" alt=" " width="15" height="15"> Minecraft
+        </a></li>
+        <li><a href=https://www.youtube.com/watch?v=dQw4w9WgXcQ>
+            <img src="https://i.imgur.com/b061EKo.png" alt=" " width="15" height="15"> House Tour
+        </a></li>
+        <li><a href=https://www.facebook.com/BetaNuofThetaChi>
+            <img src="https://1000logos.net/wp-content/uploads/2016/11/Facebook-Logo.png" alt=" " width="15" height="15"> Facebook
+        </a></li>
+    </ul>
+</li>
 {% endblock %}
 
 {% block content %}
@@ -8,7 +29,7 @@
     <div class="jumbotron">
         <h1>Theta Chi Dashboard</h1>
         <div class="btn-group" style="width:100%">
-          <a href=https://discord.com/invite/NEvw7Vd>
+          <a href=https://discord.gg/3u6Us2D>
                     <img src="https://cdn.iconscout.com/icon/free/png-256/discord-3-569463.png" alt=" " width="15" height="15"> Discord
             </a>
           <a href=https://www.instagram.com/thetachicwru/>
@@ -73,11 +94,51 @@
                 </div>
             </div>
         </div>
-
+        <style>
+              .alternating{
+                 float:left;
+                 clear:left;
+                }
+               .alternating:nth-of-type(even){
+                    float:right;
+                    clear:right;
+                }
+        </style>
         <div id="Recruitment Events" class="eventtabcontent">
-            {% for event in recruitment_events %}
-                {{ event }} - {{ event.date }}<br>
-            {% endfor %}
+            <div class="homeevent1">
+                <div class="blackline" style="margin-top: 20px"></div>
+                {% for event in recruitment_events %}
+                <div></div>
+                <div class="homeevent2">
+                    <div>Name:</div>
+                    <div><a href={% url 'dashboard:general_recruitment_event' event.id %}>{{ event.name }}</a></div>
+                    <div class="grayline"></div>
+                    <div>Date:</div>
+                    <div>{{ event.date }}</div>
+                    <div class="grayline"></div>
+                    <div>Time Start:
+                        {% if event.end_time %}
+                            <br>End:
+                        {% endif %}
+                    </div>
+                    <div>{{ event.start_time }}
+                        {% if event.end_time %}
+                            <br>{{ event.end_time }}
+                        {% endif %}
+                    </div>
+                    <div class="grayline"></div>
+                    <div>Location:</div>
+                    <div>{{ event.location }}</div>
+                    <div class="grayline"></div>
+                    <div>Description:</div>
+                    <div>{{ event.description }}</div>
+                </div>
+                <div><img src="/media/{{ event.picture }}" alt="" style="align-self: center; display: block; max-width: 100%; max-height: 400px; margin-left: auto; margin-right: auto;"></div>
+                <div></div>
+                <div class="blackline"></div>
+                {% endfor %}
+                <div></div>
+            </div>
         </div>
 
         <script>

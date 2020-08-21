@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0055_healthandsafteyevent'),
+        ('dashboard', '0055_healthandsafetyevent'),
     ]
 
     operations = [

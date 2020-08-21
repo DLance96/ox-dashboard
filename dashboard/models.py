@@ -254,7 +254,7 @@ class Event(models.Model):
     semester = models.ForeignKey(
         Semester, on_delete=models.CASCADE, blank=True, null=True
     )
-    notes = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     minutes = models.URLField(blank=True, null=True)
 
     class Meta:
@@ -283,9 +283,11 @@ class ServiceEvent(Event):
 class RecruitmentEvent(Event):
     attendees_pnms = models.ManyToManyField(PotentialNewMember, blank=True)
     rush = models.BooleanField(default=True)
+    picture = models.ImageField(upload_to='recruitment', null=True)
+    location = models.TextField(blank=True, null=True)
 
 
-class HealthAndSafteyEvent(Event):
+class HealthAndSafetyEvent(Event):
     pass
 
 
