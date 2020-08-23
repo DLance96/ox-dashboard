@@ -47,13 +47,10 @@ textarea {
 
 .homeevent1 {
     display: grid;
-    grid-template-columns: 1fr 10fr 12fr 1fr;
-    gap: 20px 10px;
+    grid-template-columns: 1fr 11fr 11fr 1fr;
+    gap: 20px 20px;
     align-items: center;
     grid-auto-flow: dense;
-}
-
-.homeevent1 div:nth-of-type(10) {
 }
 
 .homeevent2 {
@@ -65,7 +62,7 @@ textarea {
 }
 
 .homeevent1>div:nth-of-type(10n+8) {
-    grid-column:3/4
+    grid-column: 3/4;
 }
 
 .brotherevent {
