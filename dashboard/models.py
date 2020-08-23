@@ -3,7 +3,7 @@ import django.utils.timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 class Semester(models.Model):
@@ -31,7 +31,7 @@ class Semester(models.Model):
 
 
 class Brother(models.Model):
-    user = models.OneToOneField(User, unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
 
     # General profile information
     first_name = models.CharField(max_length=45)
@@ -146,7 +146,7 @@ class Brother(models.Model):
     in_house = models.BooleanField(default=True)
 
     def __str__(self):
-        return (self.first_name + " " + self.last_name).encode('utf8')
+        return (self.first_name + " " + self.last_name)
 
 
 class Position(models.Model):
@@ -158,7 +158,7 @@ class Position(models.Model):
         return ", ".join([str(e) for e in self.brothers.all()])
 
     def __str__(self):
-        return self.title.encode('utf8')
+        return self.title
 
 
 class PotentialNewMember(models.Model):
@@ -190,7 +190,7 @@ class PotentialNewMember(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return (self.first_name + " " + self.last_name).encode('utf8')
+        return (self.first_name + " " + self.last_name)
 
 
 class ServiceSubmission(models.Model):
@@ -217,7 +217,7 @@ class ServiceSubmission(models.Model):
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name.encode('utf8')
+        return self.name
 
 
 # Given separate section to prevent accidental viewing while in admin views
@@ -261,7 +261,7 @@ class Event(models.Model):
         abstract = True
 
     def __str__(self):
-        return self.name.encode('utf8')
+        return self.name
 
 
 class ChapterEvent(Event):
@@ -351,13 +351,13 @@ class Supplies(models.Model):
     when = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return self.what.encode('utf8')
+        return self.what
 
 
 class DetailGroup(models.Model):
     """A detail group. Contains brothers and a semester"""
     brothers = models.ManyToManyField(Brother)
-    semester = models.ForeignKey(Semester)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
 
     def size(self):
         return len(self.brothers.all())
@@ -384,12 +384,12 @@ class Detail(models.Model):
         abstract = True
 
     def __str__(self):
-        return self.short_description.encode('utf8')
+        return self.short_description
 
 
 class ThursdayDetail(Detail):
     """A thursday detail.  Adds the brother who it's assigned to"""
-    brother = models.ForeignKey(Brother, null=False)
+    brother = models.ForeignKey(Brother, on_delete=models.CASCADE, null=False)
 
     def finish_link(self):
         return reverse(
@@ -403,12 +403,12 @@ class ThursdayDetail(Detail):
 
 class SundayDetail(Detail):
     """A single Sunday detail.  Keeps track of who marks it done"""
-    finished_by = models.ForeignKey(Brother, null=True)
+    finished_by = models.ForeignKey(Brother, on_delete=models.CASCADE, null=True)
 
 
 class SundayGroupDetail(models.Model):
     """A group detail.  Contains a group and a number of SundayDetails"""
-    group = models.ForeignKey(DetailGroup)
+    group = models.ForeignKey(DetailGroup, on_delete=models.CASCADE)
     details = models.ManyToManyField(SundayDetail)
     due_date = models.DateField()
 
