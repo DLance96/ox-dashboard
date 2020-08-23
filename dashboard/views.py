@@ -2,7 +2,7 @@ import csv
 import random
 
 from django.contrib import messages, auth
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -48,7 +48,7 @@ class LogoutView(View):
 
 
 def change_password(request):
-    if not request.user.is_authenticated():  # brother auth check
+    if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Cannot change password if you are not logged in")
         return HttpResponseRedirect(reverse('dashboard:home'))
     brother = Brother.objects.filter(user=request.user)[0]
@@ -152,7 +152,7 @@ def event_list(request):
 
 def brother_view(request):
     """ Renders the brother page of current user showing all standard brother information """
-    if not request.user.is_authenticated():  # brother auth check
+    if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother needs to be logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
     brother = Brother.objects.filter(user=request.user)[0]
@@ -276,7 +276,7 @@ def brother_view(request):
 
 def brother_chapter_event(request, event_id):
     """ Renders the brother page for chapter event with a excuse form """
-    if not request.user.is_authenticated():  # brother auth check
+    if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother chapter events")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
@@ -310,7 +310,7 @@ def brother_chapter_event(request, event_id):
 
 def brother_service_event(request, event_id):
     """ Renders the brother page for service event with a excuse form """
-    if not request.user.is_authenticated():  # brother auth check
+    if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother chapter events")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
@@ -339,7 +339,7 @@ def brother_service_event(request, event_id):
 
 def brother_philanthropy_event(request, event_id):
     """ Renders the brother page for service event with a excuse form """
-    if not request.user.is_authenticated():  # brother auth check
+    if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother chapter events")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
@@ -368,7 +368,7 @@ def brother_philanthropy_event(request, event_id):
 
 def brother_recruitment_event(request, event_id):
     """ Renders the brother page for recruitment event with a excuse form """
-    if not request.user.is_authenticated():  # brother auth check
+    if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother chapter events")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
@@ -385,7 +385,7 @@ def brother_recruitment_event(request, event_id):
 
 def brother_hs_event(request, event_id):
     """ Renders the brother page for health and safety event with a excuse form """
-    if not request.user.is_authenticated():  # brother auth check
+    if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother Health and Safety events")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
@@ -480,7 +480,7 @@ def brother_pnm(request, pnm_id):
 
 def brother_service_submission(request, submission_id):
     """ Renders the Brother page for viewing a service submission"""
-    if not request.user.is_authenticated():  # brother auth check
+    if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before adding service hours")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
@@ -496,7 +496,7 @@ def brother_service_submission(request, submission_id):
 
 def brother_service_submission_add(request):
     """ Renders the Brother page for adding a service submission"""
-    if not request.user.is_authenticated():  # brother auth check
+    if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before adding service hours")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
@@ -2362,7 +2362,7 @@ def minecraft(request):
     return render(request, 'minecraft.html', photo_context(MinecraftPhoto))
 
 def update_instagram(request):
-    
+
 
     update_instagram_object()
 

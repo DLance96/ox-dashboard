@@ -20,7 +20,7 @@ from django.conf import settings
 from cas import views as casviews
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^accounts/login', casviews.login, name='cas_login'),
     url(r'^accounts/logout', casviews.logout, name='cas_logout'),
     url(r'', include('dashboard.urls', namespace='dashboard')),

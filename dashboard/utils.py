@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.handlers.wsgi import WSGIRequest
 
 from .models import *
@@ -252,7 +252,7 @@ def photo_form(form_class, request):
 def get_latest_post_code():
     resp = requests.get("https://www.instagram.com/thetachicwru/")
 
-    matches = re.findall("\"shortcode\":\"([^\"]+)\"", resp.content)
+    matches = re.findall("\"shortcode\":\"([^\"]+)\"", resp.text)
 
     return matches[0]
 
