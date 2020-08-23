@@ -92,10 +92,10 @@ def home(request):
 
     context = photo_context(Photo)
     recruitment_events = RecruitmentEvent.objects.filter(semester=get_semester()).order_by("date")
-    context = {
+    context.update({
         'recruitment_events': recruitment_events,
-        'instagram': InstagramLatest.objects.all()[0].latest_shortcode
-    }
+        'instagram': InstagramLatest.objects.all()[0].latest_shortcode,
+    })
 
     return render(request, 'home.html', context)
 
