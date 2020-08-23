@@ -54,19 +54,19 @@ class PotentialNewMemberForm(forms.ModelForm):
 class StudyTableEventForm(forms.ModelForm):
     class Meta:
         model = StudyTableEvent
-        fields = ['date', 'start_time', 'end_time', 'notes']
+        fields = ['date', 'start_time', 'end_time', 'description']
 
 
 class ScholarshipEventForm(forms.ModelForm):
     class Meta:
         model = ScholarshipEvent
-        fields = ['name', 'date', 'start_time', 'end_time', 'notes']
+        fields = ['name', 'date', 'start_time', 'end_time', 'description']
 
 
 class HealthAndSafetyEventForm(forms.ModelForm):
     class Meta:
-        model = HealthAndSafteyEvent
-        fields = ['name', 'date', 'start_time', 'end_time', 'notes']
+        model = HealthAndSafetyEvent
+        fields = ['name', 'date', 'start_time', 'end_time', 'description']
 
 
 class ChapterEventForm(forms.ModelForm):
@@ -74,14 +74,14 @@ class ChapterEventForm(forms.ModelForm):
         model = ChapterEvent
         fields = [
             'name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes',
-            'notes',
+            'description',
         ]
 
 
 class RecruitmentEventForm(forms.ModelForm):
     class Meta:
         model = RecruitmentEvent
-        fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'notes']
+        fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'picture', 'location', 'description']
 
 
 class PhilanthropyEventForm(forms.ModelForm):
@@ -93,7 +93,7 @@ class PhilanthropyEventForm(forms.ModelForm):
 class ServiceEventForm(forms.ModelForm):
     class Meta:
         model = ServiceEvent
-        fields = ['name', 'date', 'start_time', 'end_time', 'notes']
+        fields = ['name', 'date', 'start_time', 'end_time', 'description']
 
 
 class ServiceSubmissionForm(forms.ModelForm):
@@ -145,6 +145,17 @@ class PnmAttendanceForm(forms.Form):
 class GPAForm(forms.Form):
     cum_GPA = forms.DecimalField(label="", max_digits=5, decimal_places=2)
     past_GPA = forms.DecimalField(label="", max_digits=5, decimal_places=2)
+
+
+class PhotoForm(forms.ModelForm):
+    class Meta:
+        model = Photo
+        fields = ['name', 'photo']
+
+class MinecraftPhotoForm(forms.ModelForm):
+    class Meta:
+        model = MinecraftPhoto
+        fields = ['name', 'photo']
 
 
 class CommitteeForm(forms.Form):

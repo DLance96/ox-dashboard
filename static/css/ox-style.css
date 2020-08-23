@@ -24,6 +24,10 @@ textarea {
 }
 
 /*Used to display event information*/
+.table-event-information {
+    table-layout:fixed;
+}
+
 .table-event-information > tbody > tr {
     border-top: 1px solid rgb(221, 221, 221);
 }
@@ -32,10 +36,58 @@ textarea {
     border-top: 0;
 }
 
-
 .table-event-information > tbody > tr > td {
     border-top: 0;
+    word-wrap: break-word;
 }
-.toppad
-{margin-top:20px;
+
+.toppad {
+    margin-top:20px;
 }
+
+.homeevent1 {
+    display: grid;
+    grid-template-columns: 1fr 11fr 11fr 1fr;
+    gap: 20px 20px;
+    align-items: center;
+    grid-auto-flow: dense;
+}
+
+.homeevent2 {
+    display: grid;
+    grid-template-columns: 1fr minmax(10px, 300px);
+    grid-auto-columns: minmax(auto, 380px);
+    gap: 10px 10px;
+    word-wrap: break-word;
+}
+
+.homeevent1>div:nth-of-type(10n+8) {
+    grid-column: 3/4;
+}
+
+.brotherevent {
+    display: grid;
+    grid-template-columns: 4fr 8fr 5fr 2fr 4fr;
+    align-items: center;
+    gap: 5px 5px;
+}
+
+.brothergrayline {
+    grid-column: 2 / 5;
+    height: 1px;
+    background: rgb(221,221,221);
+}
+
+.grayline {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: rgb(221,221,221);
+}
+
+.blackline {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: black;
+}
+
+

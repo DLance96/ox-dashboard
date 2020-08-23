@@ -1,3 +1,23 @@
-{% extends "dashboard/base_form.html" %}
+{% extends "base.html" %}
 
-{% block model %}Recruitment Event{% endblock %}
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1>Edit Recruitment Event</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {% block model_info %}
+            {% endblock %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Update"/>
+            </form>
+        </div>
+    </div>
+    </form>
+
+{% endblock %}

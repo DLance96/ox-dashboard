@@ -24,7 +24,7 @@
                     <tr>
                         <td><a href={% url 'dashboard:marshal_candidate' candidate.id %}>{{ candidate }}</a></td>
                         <td><a class="btn btn-default"
-                               href={% url 'dashboard:marshal_candidate_edit' candidate.id %}>X</a></td>
+                               href={% url 'dashboard:marshal_candidate_edit' candidate.id %}>+</a></td>
                         <td><a class="btn btn-default"
                                href={% url 'dashboard:marshal_candidate_delete' candidate.id %}>X</a></td>
                     </tr>
@@ -37,7 +37,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">Candidate Attendance</div>
         <div class="panel-body">
-            <table class="table table-event-information">
+            <table class="table table-condensed">
                 <thead style="font-weight:bold;">
                 <tr>
                     <td>Candidate:</td>

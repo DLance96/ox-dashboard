@@ -59,12 +59,12 @@ INSTALLED_APPS = (
     'cas',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'cas.middleware.CASMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -141,7 +141,11 @@ EMAIL_PORT = 25
 
 # CAS
 CAS_SERVER_URL = "https://login.case.edu/cas/"
-CAS_VERSION = '1'
+# So after migrating to python 3, the following needed to be commented out
+# not really sure why, so Im leaving this here as a note to future maintainers - jcassarly
+# also the new versions of CAS I think require the CAS_AUTO_CREATE_USERS to be true
+# CAS_VERSION = '1'
+CAS_AUTO_CREATE_USERS = True
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -170,8 +174,11 @@ LOGGING = {
 THURSDAY_DETAILS = []
 SUNDAY_DETAILS = []
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 with open(os.path.join(BASE_DIR, 'oxdashboard/sunday_details.yaml')) as f:
-    SUNDAY_DETAILS = yaml.load(f)
+    SUNDAY_DETAILS = yaml.full_load(f)
 
 with open(os.path.join(BASE_DIR, 'oxdashboard/thursday_details.yaml')) as f:
-    THURSDAY_DETAILS = yaml.load(f)
+    THURSDAY_DETAILS = yaml.full_load(f)

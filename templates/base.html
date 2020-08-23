@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,12 +15,16 @@
 
     <!-- Custom styles for this template -->
     <link href={% static "css/ox-style.css" %} rel="stylesheet">
+    <link href={% static "css/picture-carousel-tabs.css" %} rel="stylesheet">
+    <link href={% static "css/social-menu.css" %} rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script src={% static "js/tab.js" %}></script>
+    <script src="https://cdn.jsdelivr.net/npm/publicalbum@latest/embed-ui.min.js" async></script>
 </head>
 
 <body background={% static "img/ox_wallpaper.jpg" %}>
@@ -40,6 +44,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
+                {% if request.user.brother %}
                 <li><a href={% url 'dashboard:brother' %}>Brother</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -80,6 +85,7 @@
                         <li><a href={% url 'dashboard:supplies_list' %}>List Needed Supplies</a></li>
                     </ul>
                 </li>
+                {% endif %}
                 {% block dropdown %}
                 {% endblock %}
             </ul>

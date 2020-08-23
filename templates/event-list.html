@@ -8,36 +8,108 @@
     <div class="jumbotron">
         <h1>Semester Events</h1>
     </div>
-    <div class="panel panel-default">
+        <div class="panel panel-default">
         <div class="panel-heading">Chapter Events</div>
         <div class="panel-body">
-            {% for event  in chapter_events %}
-                {{ event }} - {{ event.date }}<br>
-            {% endfor %}
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Event:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div></div>
+                <div></div>
+                {% for event in chapter_events %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href={% url 'dashboard:general_chapter_event' event.id %}>{{ event.name }}</a></div>
+                <div>{{ event.date }}</div>
+                <div></div>
+                <div></div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Recruitment Events</div>
         <div class="panel-body">
-            {% for event  in recruitment_events %}
-                {{ event }} - {{ event.date }}<br>
-            {% endfor %}
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Events This Semester:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div> <b>Rush:</b> </div>
+                <div></div>
+                {% for event in recruitment_events %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href={% url 'dashboard:general_recruitment_event' event.id %}>{{ event.name }}</a></div>
+                <div>{{ event.date }}</div>
+                <div>{{ event.rush }}</div>
+                <div></div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Service Events</div>
+        <div class="panel-heading">Health and Safety Events</div>
         <div class="panel-body">
-            {% for event  in service_events %}
-                {{ event }} - {{ event.date }}<br>
-            {% endfor %}
+                <div class="brotherevent">
+                    <div></div>
+                    <div> <b>Event:</b> </div>
+                    <div> <b>Date:</b> </div>
+                    <div></div>
+                    <div></div>
+                    {% for event in hs_events %}
+                    <div class="brothergrayline"></div>
+                    <div></div>
+                    <div></div>
+                    <div><a href={% url 'dashboard:general_hs_event' event.id %}>{{ event.name }}</a></div>
+                    <div>{{ event.date }}</div>
+                    <div></div>
+                    <div></div>
+                    {% endfor %}
+                </div>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Philanthropy Events</div>
         <div class="panel-body">
-            {% for event  in philanthropy_events %}
-                {{ event }} - {{ event.date }}<br>
-            {% endfor %}
+            <div class="brotherevent">
+                <div></div>
+                <div> <b>Event:</b> </div>
+                <div> <b>Date:</b> </div>
+                <div></div>
+                {% for event in philanthropy_events %}
+                <div class="brothergrayline"></div>
+                <div></div>
+                <div></div>
+                <div><a href={% url 'dashboard:general_philanthropy_event' event.id %}>{{ event.name }}</a></div>
+                <div>{{ event.date }}</div>
+                <div></div>
+                <div></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Service Events</div>
+        <div class="panel-body">
+            <div class="brotherevent">
+                    <div></div>
+                    <div> <b>Event:</b> </div>
+                    <div> <b>Date:</b> </div>
+                    <div></div>
+                    <div></div>
+                    {% for event in service_events %}
+                    <div class="brothergrayline"></div>
+                    <div></div>
+                    <div></div>
+                    <div><a href={% url 'dashboard:general_service_event' event.id %}>{{ event.name }}</a></div>
+                    <div>{{ event.date }}</div>
+                    <div></div>
+                    <div></div>
+                    {% endfor %}
+                </div>
         </div>
     </div>
 {% endblock %}
