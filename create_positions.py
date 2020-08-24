@@ -89,6 +89,10 @@ def add_semesters():
             sem.season = season[0]
             sem.save()
 
+# add all the brothers in the given csv file path
+# the file should have each line as the following
+# firstname,lastname,caseid
+# and make sure there is a new line at the end
 def add_all_brothers(csvpath, assume_users_exist=False):
     lines = []
     with open(csvpath, "r") as inp:
@@ -96,6 +100,7 @@ def add_all_brothers(csvpath, assume_users_exist=False):
 
     for line in lines:
         first, last, caseid = line.split(",")
+        # strip newline
         caseid = caseid[:-1]
         if assume_users_exist:
             user = User.objects.get(username=caseid)
