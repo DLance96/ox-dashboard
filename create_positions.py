@@ -98,12 +98,12 @@ def add_all_brothers(csvpath, assume_users_exist=False):
 
     for line in lines:
         first, last, caseid = line.split(",")
+        caseid = caseid[:-1]
         if assume_users_exist:
             user = User.objects.get(username=caseid)
         else:
             user = User()
             user.username = caseid
-            user.last_login = datetime.datetime.now()
             user.save()
 
         add_brother(first, last, user)
