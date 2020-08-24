@@ -266,7 +266,8 @@ def update_instagram_object():
     latest.save()
 
 def create_instagram_object():
-    code = get_latest_post_code()
+    #code = get_latest_post_code()
+    code="yeet"
 
     latest = InstagramLatest()
 
