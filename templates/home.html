@@ -30,19 +30,16 @@
         <h1>Theta Chi Dashboard</h1>
         <div class="btn-group" style="width:100%">
           <a href=https://discord.gg/3u6Us2D>
-                    <img src="https://cdn.iconscout.com/icon/free/png-256/discord-3-569463.png" alt=" " width="15" height="15"> Discord
+              <img src="https://cdn.iconscout.com/icon/free/png-256/discord-3-569463.png" alt=" " width="15" height="15"><span class="mobile-hide"> Discord</span>
             </a>
           <a href=https://www.instagram.com/thetachicwru/>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/240px-Instagram_logo_2016.svg.png" alt=" " width="15" height="15"> Instagram
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/240px-Instagram_logo_2016.svg.png" alt=" " width="15" height="15"><span class="mobile-hide"> Instagram</span>
             </a>
           <a href={% url 'dashboard:minecraft' %}>
-                <img src="https://purepng.com/public/uploads/large/71502582731v7y8uylzhygvo3zf71tqjtrwkhwdowkysgsdhsq3vr35woaluanwa4zotpkewhamxijlulfxcrilendabjrjtozyfrqwogphaoic.png" alt=" " width="15" height="15"> Minecraft
+            <img src="https://purepng.com/public/uploads/large/71502582731v7y8uylzhygvo3zf71tqjtrwkhwdowkysgsdhsq3vr35woaluanwa4zotpkewhamxijlulfxcrilendabjrjtozyfrqwogphaoic.png" alt=" " width="15" height="15"><span class="mobile-hide"> Minecraft</span>
             </a>
-          <a href=https://www.youtube.com/watch?v=dQw4w9WgXcQ>
-                <img src="https://i.imgur.com/b061EKo.png" alt=" " width="15" height="15"> House Tour
-            </a>
-          <td><a href=https://www.facebook.com/BetaNuofThetaChi>
-                <img src="https://1000logos.net/wp-content/uploads/2016/11/Facebook-Logo.png" alt=" " width="15" height="15"> Facebook
+          <a href=https://www.facebook.com/BetaNuofThetaChi>
+              <img src="https://1000logos.net/wp-content/uploads/2016/11/Facebook-Logo.png" alt=" " width="15" height="15"><span class="mobile-hide"> Facebook</span>
             </a>
         </div>
         <br />
@@ -81,34 +78,24 @@
         </script>
     </div>
     <div class="panel panel-default">
-        <div class="tab">
-            <button class="eventtablinks" onclick="openView(event, 'God Calendar', 'event')" id="eventDefaultOpen">God Calendar</button>
-            <button class="eventtablinks" onclick="openView(event, 'Events', 'event')">Events</button>
-        </div>
+        <div class="panel panel-heading">Events</div>
+        <div class="panel panel-body">
+<!--        <div class="tab">-->
+<!--            <button class="eventtablinks" onclick="openView(event, 'God Calendar', 'event')" id="eventDefaultOpen">God Calendar</button>-->
+<!--            <button class="eventtablinks" onclick="openView(event, 'Events', 'event')">Events</button>-->
+<!--        </div>-->
 
-        <div id="God Calendar" class="eventtabcontent">
-            <div class="panel-body">
-                <div class="responsiveCal" style="padding:300px">
-                    <iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0&amp;height=400&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=30lk99vhhtrvdkj1it1ojn618c%40group.calendar.google.com&amp;color=%23711616&amp;ctz=America%2FNew_York"
-                            style="border-width:0" width="600" height="400" frameborder="0" scrolling="no"></iframe>
-                </div>
-            </div>
-        </div>
-        <style>
-              .alternating{
-                 float:left;
-                 clear:left;
-                }
-               .alternating:nth-of-type(even){
-                    float:right;
-                    clear:right;
-                }
-        </style>
-        <div id="Events" class="eventtabcontent">
+<!--        <div id="God Calendar" class="eventtabcontent">-->
+<!--            <div class="panel-body">-->
+<!--                <div class="responsiveCal" style="padding:300px">-->
+<!--                    <iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0&amp;height=400&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=30lk99vhhtrvdkj1it1ojn618c%40group.calendar.google.com&amp;color=%23711616&amp;ctz=America%2FNew_York"-->
+<!--                            style="border-width:0" width="600" height="400" frameborder="0" scrolling="no"></iframe>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div id="Events" class="eventtabcontent">-->
             <div class="homeevent1">
-                <div class="blackline" style="margin-top: 20px"></div>
                 {% for event in recruitment_events %}
-                <div></div>
                 <div class="homeevent2">
                     <div>Name:</div>
                     <div><a href={% url 'dashboard:general_recruitment_event' event.id %}>{{ event.name }}</a></div>
@@ -133,11 +120,9 @@
                     <div>Description:</div>
                     <div>{{ event.description }}</div>
                 </div>
-                <div><img src="/media/{{ event.picture }}" alt="" style="align-self: center; display: block; max-width: 100%; max-height: 400px; margin-left: auto; margin-right: auto;"></div>
-                <div></div>
+                <div class="grid-image"><img src="/media/{{ event.picture }}" alt="" style="align-self: center; display: block; max-width: 100%; max-height: 400px; margin-left: auto; margin-right: auto;"></div>
                 <div class="blackline"></div>
                 {% endfor %}
-                <div></div>
             </div>
         </div>
 

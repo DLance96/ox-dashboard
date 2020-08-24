@@ -73,8 +73,6 @@ def build_superuser(username):
 
     add_user_to_all_positions(user)
 
-
-
 def make_user_super(username):
     user = User.objects.get(username=username)
     user.is_staff = True
