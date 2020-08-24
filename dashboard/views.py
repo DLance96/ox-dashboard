@@ -1949,7 +1949,7 @@ class PhilanthropyEventEdit(UpdateView):
     fields = ['name', 'date', 'start_time', 'end_time', 'description']
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 def detail_m(request):
     """ Renders the detail manager page"""
     return render(request, 'detail-manager.html', {})
