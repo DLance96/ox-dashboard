@@ -87,6 +87,32 @@ def add_semesters():
     for year in Semester.YEAR_CHOICES:
         for season in Semester.SEASON_CHOICES:
             sem = Semester()
-            sem.year = year
-            sem.season = season
+            sem.year = year[0]
+            sem.season = season[0]
             sem.save()
+
+def add_all_brothers(csvpath):
+    lines = []
+    with open(csvpath, "r") as inp:
+        lines = inp.readlines()
+
+    for line in lines:
+        first, last, caseid = line.split(",")
+        if User.objects.filter(username=caseid).exists():
+            user = User.objects.get(username=caseid)
+        else:
+            user = User()
+            user.username = caseid
+            user.save()
+
+        add_brother(first, last, user)
+
+def add_brother(first, last, user):
+    new_brother = Brother()
+    new_brother.user = user
+    new_brother.first_name = first
+    new_brother.last_name = last
+    new_brother.case_ID = user.username
+    new_brother.birthday = datetime.date.today()
+    new_brother.save()
+
