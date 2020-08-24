@@ -75,19 +75,21 @@
         </script>
     </div>
     <div class="panel panel-default">
-        <div class="tab">
-            <!-- <button class="eventtablinks" onclick="openView(event, 'God Calendar', 'event')" id="eventDefaultOpen">God Calendar</button>-->
-            <button class="eventtablinks" onclick="openView(event, 'Events', 'event')" id="eventDefaultOpen">Events</button>
-        </div>
+        <div class="panel panel-heading">Events</div>
+<!--        <div class="panel panel-body">-->
+<!--        <div class="tab">-->
+<!--            <button class="eventtablinks" onclick="openView(event, 'God Calendar', 'event')" id="eventDefaultOpen">God Calendar</button>-->
+<!--            <button class="eventtablinks" onclick="openView(event, 'Events', 'event')">Events</button>-->
+<!--        </div>-->
 
-        <!--<div id="God Calendar" class="eventtabcontent">
-            <div class="panel-body">
-                <div class="responsiveCal" style="padding:300px">
-                    <iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0&amp;height=400&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=30lk99vhhtrvdkj1it1ojn618c%40group.calendar.google.com&amp;color=%23711616&amp;ctz=America%2FNew_York"
-                            style="border-width:0" width="600" height="400" frameborder="0" scrolling="no"></iframe>
-                </div>
-            </div>
-        </div>-->
+<!--        <div id="God Calendar" class="eventtabcontent">-->
+<!--            <div class="panel-body">-->
+<!--                <div class="responsiveCal" style="padding:300px">-->
+<!--                    <iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;showCalendars=0&amp;showTz=0&amp;height=400&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=30lk99vhhtrvdkj1it1ojn618c%40group.calendar.google.com&amp;color=%23711616&amp;ctz=America%2FNew_York"-->
+<!--                            style="border-width:0" width="600" height="400" frameborder="0" scrolling="no"></iframe>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
         <div id="Events" class="eventtabcontent">
             <div class="homeevent1">
                 {% for event in recruitment_events %}
