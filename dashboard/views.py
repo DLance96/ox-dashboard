@@ -100,6 +100,10 @@ def home(request):
 
 
 def brother_info_list(request):
+    if not request.user.is_authenticated:  # brother auth check
+        messages.error(request, "Brother not logged in")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     """ Renders brother info page """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
 
@@ -111,6 +115,10 @@ def brother_info_list(request):
 
 @login_required
 def contact_list(request):
+    if not request.user.is_authenticated:  # brother auth check
+        messages.error(request, "Brother not logged in")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     """ Renders contact info page """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
 
@@ -122,6 +130,10 @@ def contact_list(request):
 
 @login_required
 def emergency_contact_list(request):
+    if not request.user.is_authenticated:  # brother auth check
+        messages.error(request, "Brother not logged in")
+        return HttpResponseRedirect(reverse('dashboard:home'))
+
     """ Renders emergency contact info page """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
 
@@ -137,12 +149,14 @@ def event_list(request):
     recruitment_events = RecruitmentEvent.objects.filter(semester=get_semester()).order_by("date")
     service_events = ServiceEvent.objects.filter(semester=get_semester()).order_by("date")
     philanthropy_events = PhilanthropyEvent.objects.filter(semester=get_semester()).order_by("date")
+    hs_events = HealthAndSafetyEvent.objects.filter(semester=get_semester()).order_by("date")
 
     context = {
         'chapter_events': chapter_events,
         'recruitment_events': recruitment_events,
         'service_events': service_events,
         'philanthropy_events': philanthropy_events,
+        'hs_events' : hs_events,
     }
 
     return render(request, "event-list.html", context)
