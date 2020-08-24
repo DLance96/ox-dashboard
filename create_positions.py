@@ -103,6 +103,7 @@ def add_all_brothers(csvpath, assume_users_exist=False):
         else:
             user = User()
             user.username = caseid
+            user.last_login = datetime.datetime.now()
             user.save()
 
         add_brother(first, last, user)
