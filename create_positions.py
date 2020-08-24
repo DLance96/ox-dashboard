@@ -10,6 +10,7 @@ then in that shell import this file and run build_superuser(<your case ID>)
 
 from django.contrib.auth.models import User
 from dashboard.views import Position, Brother
+from dashboard.models import Semester
 import datetime
 
 EC_POSITIONS = [
@@ -81,3 +82,11 @@ def make_user_super(username):
     user.is_admin = True
     user.is_superuser = True
     user.save()
+
+def add_semesters():
+    for year in Semester.YEAR_CHOICES:
+        for season in Semester.SEASON_CHOICES:
+            sem = Semester()
+            sem.year = year
+            sem.season = season
+            sem.save()
