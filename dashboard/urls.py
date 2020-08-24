@@ -191,7 +191,6 @@ urlpatterns = [
     url(r'details/sunday/post$', views.post_sunday, name='post_sunday_details'),
 
     url(r'^prchair/$', views.public_relations_c, name="public_relations_c"),
-    url(r'^prchair/update_instagram/', views.update_instagram, name="update_instagram"),
 
     # Connect with Us URL section
     url(r'^minecraft/$', views.minecraft, name ='minecraft'),

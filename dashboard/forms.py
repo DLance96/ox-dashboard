@@ -150,12 +150,12 @@ class GPAForm(forms.Form):
 class PhotoForm(forms.ModelForm):
     class Meta:
         model = Photo
-        fields = ['name', 'photo']
+        fields = ['photo']
 
 class MinecraftPhotoForm(forms.ModelForm):
     class Meta:
         model = MinecraftPhoto
-        fields = ['name', 'photo']
+        fields = ['photo']
 
 
 class CommitteeForm(forms.Form):

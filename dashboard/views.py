@@ -16,7 +16,7 @@ from django.core.mail import send_mail
 from .utils import verify_position, get_semester, verify_brother,\
         get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
         build_thursday_detail_email, build_sunday_detail_email, calc_fines,\
-        photo_context, photo_form, get_latest_post_code, update_instagram_object
+        photo_context, photo_form
 from datetime import datetime
 from .forms import *
 
@@ -94,7 +94,6 @@ def home(request):
     recruitment_events = RecruitmentEvent.objects.filter(semester=get_semester()).order_by("date")
     context.update({
         'recruitment_events': recruitment_events,
-        'instagram': InstagramLatest.objects.all()[0].latest_shortcode,
     })
 
     return render(request, 'home.html', context)
@@ -2406,10 +2405,3 @@ def public_relations_c(request):
 
 def minecraft(request):
     return render(request, 'minecraft.html', photo_context(MinecraftPhoto))
-
-def update_instagram(request):
-
-
-    update_instagram_object()
-
-    return home(request)

@@ -248,29 +248,3 @@ def photo_form(form_class, request):
             return HttpResponseRedirect(reverse('dashboard:home'))
 
     return form
-
-def get_latest_post_code():
-    resp = requests.get("https://www.instagram.com/thetachicwru/")
-
-    matches = re.findall("\"shortcode\":\"([^\"]+)\"", resp.text)
-
-    return matches[0]
-
-def update_instagram_object():
-    code = get_latest_post_code()
-
-    latest = InstagramLatest.objects.all()[0]
-
-    latest.latest_shortcode = code
-
-    latest.save()
-
-def create_instagram_object():
-    #code = get_latest_post_code()
-    code="yeet"
-
-    latest = InstagramLatest()
-
-    latest.latest_shortcode = code
-
-    latest.save()
