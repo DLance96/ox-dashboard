@@ -14,9 +14,6 @@
         <li><a href={% url 'dashboard:minecraft' %}>
             <img src="https://purepng.com/public/uploads/large/71502582731v7y8uylzhygvo3zf71tqjtrwkhwdowkysgsdhsq3vr35woaluanwa4zotpkewhamxijlulfxcrilendabjrjtozyfrqwogphaoic.png" alt=" " width="15" height="15"> Minecraft
         </a></li>
-        <li><a href=https://www.youtube.com/watch?v=dQw4w9WgXcQ>
-            <img src="https://i.imgur.com/b061EKo.png" alt=" " width="15" height="15"> House Tour
-        </a></li>
         <li><a href=https://www.facebook.com/BetaNuofThetaChi>
             <img src="https://1000logos.net/wp-content/uploads/2016/11/Facebook-Logo.png" alt=" " width="15" height="15"> Facebook
         </a></li>
@@ -54,7 +51,7 @@
     <div class="panel panel-default">
         <div class="tab">
             <button class="tablinks" onclick="openView(event, 'Slideshow', '')" id="defaultOpen">Slideshow</button>
-            <button class="tablinks" onclick="openView(event, 'House Tour', '')">Virtual House Tour</button>
+<!--            <button class="tablinks" onclick="openView(event, 'House Tour', '')">Virtual House Tour</button>-->
         </div>
 
         <div id="Slideshow" class="tabcontent">
@@ -68,9 +65,9 @@
             </div>
         </div>
 
-        <div id="House Tour" class="tabcontent">
-            <iframe width="100%" height="480px" src="https://www.youtube.com/embed/QMW4AqbuSGg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
+<!--        <div id="House Tour" class="tabcontent">-->
+<!--            <iframe width="100%" height="480px" src="https://www.youtube.com/embed/QMW4AqbuSGg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
+<!--        </div>-->
 
         <!-- This is copy pasted from w3 schools -->
         <script>
@@ -93,7 +90,7 @@
 <!--                </div>-->
 <!--            </div>-->
 <!--        </div>-->
-<!--        <div id="Events" class="eventtabcontent">-->
+        <div id="Events" class="eventtabcontent">
             <div class="homeevent1">
                 {% for event in recruitment_events %}
                 <div class="homeevent2">
