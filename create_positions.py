@@ -91,14 +91,14 @@ def add_semesters():
             sem.season = season[0]
             sem.save()
 
-def add_all_brothers(csvpath):
+def add_all_brothers(csvpath, assume_users_exist=False):
     lines = []
     with open(csvpath, "r") as inp:
         lines = inp.readlines()
 
     for line in lines:
         first, last, caseid = line.split(",")
-        if User.objects.filter(username=caseid).exists():
+        if assume_users_exist:
             user = User.objects.get(username=caseid)
         else:
             user = User()
