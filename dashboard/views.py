@@ -2011,7 +2011,7 @@ def in_house(request):
     return render(request, 'in_house.html', context)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 @transaction.atomic
 def house_detail_toggle(request):
     """Selects who does house details"""
@@ -2031,7 +2031,7 @@ def house_detail_toggle(request):
     return render(request, 'house_detail_toggle.html', context)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 @transaction.atomic
 def create_groups(request):
     """Create detail groups for a specific semester. Decides how many to create
@@ -2053,7 +2053,7 @@ def create_groups(request):
     return render(request, 'create_groups.html', context)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 @transaction.atomic
 def select_groups(request):
     """Select brothers in detail groups (for this semester)"""
@@ -2070,7 +2070,7 @@ def select_groups(request):
     return render(request, 'select_groups.html', context)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 @transaction.atomic
 def delete_groups(request):
     """Delete detail groups.  Can select a semester to delete form"""
@@ -2091,7 +2091,7 @@ def delete_groups(request):
     return render(request, 'delete_groups.html', context)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 @transaction.atomic
 def post_thursday(request):
     """Post Thursday Details, due on the date from the form"""
@@ -2157,7 +2157,7 @@ def finish_thursday_detail(request, detail_id):
     return render(request, 'finish_thursday_detail.html', context)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 @transaction.atomic
 def post_sunday(request):
     """Post Sunday Details, due on the date from the form"""
@@ -2250,7 +2250,7 @@ def current_details(request):
     return current_details_helper(request, brother)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 def current_details_brother(request, brother_id):
     brother = Brother.objects.get(pk=brother_id)
     return current_details_helper(request, brother)
@@ -2295,7 +2295,7 @@ def all_details(request):
     return all_details_helper(request, brother)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 def all_details_brother(request, brother_id):
     brother = Brother.objects.get(pk=brother_id)
     return all_details_helper(request, brother)
@@ -2325,7 +2325,7 @@ def all_details_helper(request, brother):
     return render(request, 'all_details.html', context)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 def all_users_details(request):
     brothers = Brother.objects.filter(brother_status='1')
     b = {e: (
@@ -2338,7 +2338,7 @@ def all_users_details(request):
     return render(request, 'all_users_details.html', context)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 def detail_dates(request):
     semester_form = SelectSemester(request.GET or None)
     if semester_form.is_valid():
@@ -2368,7 +2368,7 @@ def detail_dates(request):
     return render(request, 'details_by_date.html', context)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 def details_on_date(request, date):
     d_format = "%Y-%m-%d"
     date = datetime.datetime.strptime(date, d_format).date()
@@ -2391,7 +2391,7 @@ def detail_fines(request):
     return detail_fine_helper(request, brother)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 def detail_fines_brother(request, brother_id):
     brother = Brother.objects.get(pk=brother_id)
     return detail_fine_helper(request, brother)
