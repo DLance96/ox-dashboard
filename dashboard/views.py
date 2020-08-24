@@ -91,7 +91,10 @@ def home(request):
     """ Renders home page """
 
     context = photo_context(Photo)
-    recruitment_events = RecruitmentEvent.objects.filter(semester=get_semester()).order_by("date")
+    recruitment_events = RecruitmentEvent.objects \
+                                         .filter(semester=get_semester()) \
+                                         .filter(date__gte=datetime.date.today()) \
+                                         .order_by("date")
     context.update({
         'recruitment_events': recruitment_events,
     })
