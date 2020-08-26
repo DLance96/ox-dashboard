@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.core.handlers.wsgi import WSGIRequest
 
+from .forms import BrotherAttendanceForm
 from .models import *
 
 import requests
@@ -248,3 +249,15 @@ def photo_form(form_class, request):
             return HttpResponseRedirect(reverse('dashboard:home'))
 
     return form
+
+def attendance_list(request, event):
+    brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')
+    brother_form_list = []
+
+    for counter, brother in enumerate(brothers):
+        new_form = BrotherAttendanceForm(request.POST or None, initial={'present':  event.attendees_brothers.filter(id=brother.id).exists()},
+                                         prefix=counter,
+                                         brother="- %s %s" % (brother.first_name, brother.last_name))
+        brother_form_list.append(new_form)
+
+    return brothers, brother_form_list

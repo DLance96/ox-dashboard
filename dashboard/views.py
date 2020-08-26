@@ -13,10 +13,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 
-from .utils import verify_position, get_semester, verify_brother,\
-        get_season, get_year, forms_is_valid, get_season_from, ec, non_ec,\
-        build_thursday_detail_email, build_sunday_detail_email, calc_fines,\
-        photo_context, photo_form
+from .utils import *
 from datetime import datetime
 from .forms import *
 
@@ -768,20 +765,7 @@ class HealthAndSafetyDelete(DeleteView):
 def health_and_safety_event(request, event_id):
     """ Renders the vphs way of view events """
     event = HealthAndSafetyEvent.objects.get(pk=event_id)
-    brothers = Brother.objects.exclude(brother_status='2')
-    brother_form_list = []
-
-    for brother in brothers:
-        if event.attendees_brothers.filter(id=brother.id):
-            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
-                                             prefix=brother.roster_number,
-                                             brother="- %s %s" % (brother.first_name, brother.last_name))
-            brother_form_list.append(new_form)
-        else:
-            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
-                                             prefix=brother.roster_number,
-                                             brother="- %s %s" % (brother.first_name, brother.last_name))
-            brother_form_list.append(new_form)
+    brothers, brother_form_list = attendance_list(request, event)
 
     if request.method == 'POST':
         if forms_is_valid(brother_form_list):
@@ -857,23 +841,11 @@ def secretary_attendance(request):
 def secretary_event(request, event_id):
     """ Renders the attendance sheet for any event """
     event = ChapterEvent.objects.get(pk=event_id)
-    brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')
-    form_list = []
-    for brother in brothers:
-        if event.attendees_brothers.filter(id=brother.id):
-            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
-                                             prefix=brother.roster_number,
-                                             brother="- %s %s" % (brother.first_name, brother.last_name))
-            form_list.append(new_form)
-        else:
-            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
-                                             prefix=brother.roster_number,
-                                             brother="- %s %s" % (brother.first_name, brother.last_name))
-            form_list.append(new_form)
+    brothers, brother_form_list = attendance_list(request, event)
 
     if request.method == 'POST':
-        if forms_is_valid(form_list):
-            for counter, form in enumerate(form_list):
+        if forms_is_valid(brother_form_list):
+            for counter, form in enumerate(brother_form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
                     event.attendees_brothers.add(brothers[counter])
@@ -885,7 +857,7 @@ def secretary_event(request, event_id):
 
     context = {
         'type': 'attendance',
-        'brother_form_list': form_list,
+        'brother_form_list': brother_form_list,
         'event': event,
     }
     return render(request, "chapter-event.html", context)
@@ -1300,20 +1272,7 @@ def scholarship_c(request):
 def study_table_event(request, event_id):
     """ Renders the scholarship chair way of view StudyTables """
     event = StudyTableEvent.objects.get(pk=event_id)
-    brothers = Brother.objects.exclude(brother_status='2')
-    brother_form_list = []
-
-    for brother in brothers:
-        if event.attendees_brothers.filter(id=brother.id):
-            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
-                                             prefix=brother.roster_number,
-                                             brother="- %s %s" % (brother.first_name, brother.last_name))
-            brother_form_list.append(new_form)
-        else:
-            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
-                                             prefix=brother.roster_number,
-                                             brother="- %s %s" % (brother.first_name, brother.last_name))
-            brother_form_list.append(new_form)
+    brothers, brother_form_list = attendance_list(request, event)
 
     if request.method == 'POST':
         if forms_is_valid(brother_form_list):
@@ -1575,31 +1534,15 @@ class PnmEdit(UpdateView):
 def recruitment_c_event(request, event_id):
     """ Renders the recruitment chair way of view RecruitmentEvents """
     event = RecruitmentEvent.objects.get(pk=event_id)
-    pnms = PotentialNewMember.objects.all()
-    brothers = Brother.objects.exclude(brother_status='2')
+    pnms = PotentialNewMember.objects.all().order_by('last_name')
     pnm_form_list = []
-    brother_form_list = []
-    for pnm in pnms:
-        if event.attendees_pnms.filter(pk=pnm.id):
-            new_form = PnmAttendanceForm(request.POST or None, initial={'present': True}, prefix=pnm.id,
-                                         pnm="- %s %s" % (pnm.first_name, pnm.last_name))
-            pnm_form_list.append(new_form)
-        else:
-            new_form = PnmAttendanceForm(request.POST or None, initial={'present': False}, prefix=pnm.id,
-                                         pnm="- %s %s" % (pnm.first_name, pnm.last_name))
-            pnm_form_list.append(new_form)
+    brothers, brother_form_list = attendance_list(request, event)
 
-    for brother in brothers:
-        if event.attendees_brothers.filter(id=brother.id):
-            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
-                                             prefix=brother.roster_number,
-                                             brother="- %s %s" % (brother.first_name, brother.last_name))
-            brother_form_list.append(new_form)
-        else:
-            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
-                                             prefix=brother.roster_number,
-                                             brother="- %s %s" % (brother.first_name, brother.last_name))
-            brother_form_list.append(new_form)
+    for counter, pnm in enumerate(pnms):
+        new_form = PnmAttendanceForm(request.POST or None, initial={'present': event.attendees_pnms.filter(pk=pnm.id).exists()},
+                                     prefix=counter,
+                                     pnm="- %s %s" % (pnm.first_name, pnm.last_name))
+        pnm_form_list.append(new_form)
 
     if request.method == 'POST':
         if forms_is_valid(pnm_form_list) and forms_is_valid(brother_form_list):
@@ -1720,25 +1663,12 @@ def service_c(request):
 def service_c_event(request, event_id):
     """ Renders the service chair way of adding ServiceEvent """
     event = ServiceEvent.objects.get(pk=event_id)
-    brothers = Brother.objects.exclude(brother_status='2')
     brothers_rsvp = event.rsvp_brothers.all()
-    form_list = []
-
-    for brother in brothers:
-        if event.attendees_brothers.filter(id=brother.id):
-            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': True},
-                                             prefix=brother.roster_number,
-                                             brother="- %s %s" % (brother.first_name, brother.last_name))
-            form_list.append(new_form)
-        else:
-            new_form = BrotherAttendanceForm(request.POST or None, initial={'present': False},
-                                             prefix=brother.roster_number,
-                                             brother="- %s %s" % (brother.first_name, brother.last_name))
-            form_list.append(new_form)
+    brothers, brother_form_list = attendance_list(request, event)
 
     if request.method == 'POST':
-        if forms_is_valid(form_list):
-            for counter, form in enumerate(form_list):
+        if forms_is_valid(brother_form_list):
+            for counter, form in enumerate(brother_form_list):
                 instance = form.cleaned_data
                 if instance['present'] is True:
                     event.attendees_brothers.add(brothers[counter])
@@ -1750,7 +1680,7 @@ def service_c_event(request, event_id):
 
     context = {
         'type': 'attendance',
-        'brother_form_list': form_list,
+        'brother_form_list': brother_form_list,
         'brothers_rsvp': brothers_rsvp,
         'event': event,
     }
