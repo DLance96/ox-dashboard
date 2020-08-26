@@ -1541,9 +1541,11 @@ def recruitment_c_event(request, event_id):
     pnm_form_list = []
     brothers, brother_form_list = attendance_list(request, event)
 
+    num_actives = len(brothers)
+
     for counter, pnm in enumerate(pnms):
         new_form = PnmAttendanceForm(request.POST or None, initial={'present': event.attendees_pnms.filter(pk=pnm.id).exists()},
-                                     prefix=counter,
+                                     prefix=num_actives + counter,
                                      pnm="- %s %s" % (pnm.first_name, pnm.last_name))
         pnm_form_list.append(new_form)
 
@@ -1565,7 +1567,7 @@ def recruitment_c_event(request, event_id):
                 if instance['present'] is False:
                     event.attendees_brothers.remove(brothers[counter])
                     event.save()
-            return HttpResponseRedirect(reverse('dashboard:recruitment_c'))
+            return HttpResponseRedirect(reverse('dashboard:recruitment_c_event', args=[event_id]))
 
     context = {
         'type': 'attendance',

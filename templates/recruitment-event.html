@@ -63,26 +63,23 @@
     </div>
     {% if type == 'attendance' %}
         <div class="panel panel-default">
-            <div class="panel-heading">General Attendance</div>
+            <div class="panel-heading">Attendance</div>
             <div class="panel-body">
                 <form action="" method="post">
                     {% csrf_token %}
-                    {% for form in pnm_form_list %}
+		    <hr>
+		    <h3>Brother Attendance</h3>
+		    <hr>
+		    {% for form in brother_form_list %}
                         {% for field in form %}
                             {{ field }}{{ field.label_tag }}
                         {% endfor %}
                         <br>
                     {% endfor %}
-                    <input type="submit" value="Update"/>
-                </form>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">Brother Attendance</div>
-            <div class="panel-body">
-                <form action="" method="post">
-                    {% csrf_token %}
-                    {% for form in brother_form_list %}
+		    <hr>
+		    <h3>General Attendence</h3>
+		    <hr>
+                    {% for form in pnm_form_list %}
                         {% for field in form %}
                             {{ field }}{{ field.label_tag }}
                         {% endfor %}
