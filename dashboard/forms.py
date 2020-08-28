@@ -332,3 +332,12 @@ class FinishSundayDetail(forms.Form):
 
 class CalcFinesForm(forms.Form):
     max_fine = forms.IntegerField()
+
+class BrotherMassEntryForm(forms.Form):
+    brothers = forms.CharField(widget=forms.Textarea)
+    brother_status = forms.ChoiceField(
+        label="Brother Status", choices=Brother.BROTHER_STATUS_CHOICES
+    )
+
+    semesters = Semester.objects.all()
+    semester = forms.ModelChoiceField(semesters)
