@@ -111,7 +111,7 @@ class ServiceSubmissionResponseForm(forms.ModelForm):
 class CommitteeMeetingForm(forms.ModelForm):
     class Meta:
         model = CommitteeMeetingEvent
-        fields = ['date', 'start_time', 'end_time', 'committee', 'minutes']
+        fields = ['date', 'start_time', 'end_time', 'committee', 'minutes', 'committee_chair']
 
 
 class SuppliesForm(forms.ModelForm):

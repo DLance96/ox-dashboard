@@ -33,7 +33,7 @@
                 <tbody>
                 {% for meeting in committee_meetings %}
                     <tr>
-                        <td><a href="">{{ meeting.get_committee_display }}</a></td>
+                        <td><a href={% url 'dashboard:recruitment_committee_event' meeting.id%}>{{ meeting.get_committee_display }}</a></td>
                         <td>{{ meeting.date }} - {{ meeting.start_time }}</td>
                         {% if meeting.minutes %}
                             <td><a href="{{ meeting.minutes }}">link</a></td>

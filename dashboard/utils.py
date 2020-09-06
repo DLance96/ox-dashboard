@@ -123,6 +123,57 @@ def verify_position(positions):
     return verify_decorator
 
 
+def enumerated_choices(choices):
+    enum_choices = set()
+
+    for counter, choice in enumerate(choices):
+        string_counter = str(counter)
+        enum_choices.add((string_counter, choice))
+
+    return enum_choices
+
+
+class CommitteeMap:
+    def __init__ (self, standing, operational):
+        self.__standing_map = enumerated_choices(standing + ["Unassigned"])
+        self.__operational_map = enumerated_choices(operational + ["Unassigned"])
+        self.__combined_list = standing + operational
+        self.__combined_map = enumerated_choices(self.__combined_list)
+        self.__length_standing = len(standing)
+
+    @property
+    def standing_unassigned(self):
+        return str(len(self.__standing_map) - 1)
+
+    @property
+    def operational_unassigned(self):
+        return str(len(self.__operational_map) - 1)
+
+    @property
+    def standing_map(self):
+        return self.__standing_map
+
+    @property
+    def operational_map(self):
+        return self.__operational_map
+
+    @property
+    def combined_map(self):
+        return self.__combined_map
+
+    def committee_name(self, committee_id):
+        return self.__combined_list(int(committee_id))
+
+    def committee_id(self, committee_name):
+        for counter, committee in enumerate(self.__combined_list):
+            if committee == committee_name:
+                if counter >= self.__length_standing:
+                    return {'operational_committee' : str(counter)}
+                else:
+                    return {'standing_committee' : str(counter)}
+        return {}
+
+
 def verify_brother(brother, user):
     """ Verify user is the same as brother """
     return user.brother.id == brother.id

@@ -67,18 +67,18 @@
             <div class="panel-body">
                 <form action="" method="post">
                     {% csrf_token %}
-		    <hr>
-		    <h3>Brother Attendance</h3>
-		    <hr>
-		    {% for form in brother_form_list %}
+                    <hr>
+                    <h3>Brother Attendance</h3>
+                    <hr>
+                    {% for form in brother_form_list %}
                         {% for field in form %}
                             {{ field }}{{ field.label_tag }}
                         {% endfor %}
                         <br>
                     {% endfor %}
-		    <hr>
-		    <h3>General Attendence</h3>
-		    <hr>
+                    <hr>
+                    <h3>General Attendence</h3>
+                    <hr>
                     {% for form in pnm_form_list %}
                         {% for field in form %}
                             {{ field }}{{ field.label_tag }}

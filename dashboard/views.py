@@ -16,6 +16,7 @@ from django.core.mail import send_mail
 from .utils import *
 from datetime import datetime
 from .forms import *
+from .models import COMMITTEES
 
 class LoginView(View):
     """ Logs in and redirects to the homepage """
@@ -283,7 +284,6 @@ def brother_view(request):
         'hours_pending': hours_pending,
     }
     return render(request, "brother.html", context)
-
 
 def brother_chapter_event(request, event_id):
     """ Renders the brother page for chapter event with a excuse form """
@@ -652,6 +652,56 @@ def vice_president_committee_assignments(request):
     return render(request, 'committee-assignment.html', context)
 
 
+def recruitment_committee_event(request, event_id):
+    event = CommitteeMeetingEvent.objects.get(pk=event_id)
+
+    brothers = Brother.objects.filter(**COMMITTEES.committee_id(event.committee)).order_by('last_name')
+    brother_form_list = []
+    current_brother = Brother.objects.filter(user=request.user)[0]
+
+    if current_brother in event.committee_chair.brothers.all():
+        type = 'attendance'
+    else:
+        type = 'brother'
+
+    for counter, brother in enumerate(brothers):
+        new_form = BrotherAttendanceForm(request.POST or None, initial={'present':  event.attendees_brothers.filter(id=brother.id).exists()},
+                                         prefix=counter,
+                                         brother="- %s %s" % (brother.first_name, brother.last_name))
+        brother_form_list.append(new_form)
+
+    if request.method == 'POST':
+        if forms_is_valid(brother_form_list):
+            for counter, form in enumerate(brother_form_list):
+                instance = form.cleaned_data
+                if instance['present'] is True:
+                    event.attendees_brothers.add(brothers[counter])
+                    event.save()
+                if instance['present'] is False:
+                    event.attendees_brothers.remove(brothers[counter])
+                    event.save()
+            return HttpResponseRedirect(reverse('dashboard: home'))
+
+    context = {
+        'type': type,
+        'brother_form_list': brother_form_list,
+        'event': event,
+
+    }
+
+    return render(request, "recruitment_committee_event.html", context)
+
+
+class RecruitmentCommitteeEventEdit(UpdateView):
+    @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
+    def get(self, request, *args, **kwargs):
+        return super(RecruitmentCommitteeEventEdit, self).get(request, *args, **kwargs)
+
+    model = CommitteeMeetingEvent
+    success_url = reverse_lazy('dashboard: home')
+    fields = ['date', 'start_time', 'semester', 'committee', 'minutes']
+
+
 @verify_position(['Vice President', 'President', 'Adviser'])
 def vice_president_committee_meeting_add(request):
     """ Renders the committee meeting add page """
@@ -697,7 +747,7 @@ class CommitteeMeetingEdit(UpdateView):
 
     model = CommitteeMeetingEvent
     success_url = reverse_lazy('dashboard:vice_president')
-    fields = ['date', 'start_time', 'semester', 'committee', 'minutes']
+    fields = ['date', 'start_time', 'semester', 'committee', 'minutes', 'committee_chair']
 
 
 @verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])

@@ -125,6 +125,10 @@ urlpatterns = [
         name="recruitment_c_pnm_edit"),
     url(r'^recruitment-chair/pnm/add/$', views.recruitment_c_pnm_add, name="recruitment_c_pnm_add"),
     url(r'^recruitment-chair/pnm/(?P<pk>\d+)/delete/$', views.PnmDelete.as_view(), name="recruitment_c_pnm_delete"),
+    url(r'^recruitment-chair/committee/event/(?P<event_id>[0-9]+)/$', views.recruitment_committee_event,
+        name='recruitment_committee_event'),
+    url(r'^recruitment-chair/committee/event/(?P<pk>\d+)/edit/$', views.RecruitmentCommitteeEventEdit.as_view(),
+        name='recruitment_committee_event_edit'),
 
     url(r'^recruitment-chair/pnm/all_pnms.csv$', views.all_pnm_csv, name="all_pnm_csv"),
 
@@ -191,7 +195,7 @@ urlpatterns = [
     url(r'details/sunday/post$', views.post_sunday, name='post_sunday_details'),
 
     url(r'^prchair/$', views.public_relations_c, name="public_relations_c"),
-
+    
     # Connect with Us URL section
     url(r'^minecraft/$', views.minecraft, name ='minecraft'),
 

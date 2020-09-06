@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>{{ event.get_committee_display }}
+            <br>{{event.date}}</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Event</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class=" col-lg-2 "></div>
+                <div class=" col-lg-8 ">
+                    <table class="table table-event-information">
+                        <tbody>
+                        <tr>
+                            <td>Name:</td>
+                            <td>{{ event.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date:</td>
+                            <td>{{ event.date }}</td>
+                        </tr>
+                        <tr>
+                            <td>Time Start:
+                                {% if event.end_time %}
+                                    <br>End:
+                                {% endif %}</td>
+                            </td>
+                            <td>{{ event.start_time }}
+                                {% if event.end_time %}
+                                    <br>{{ event.end_time }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if event.description %}
+                            <tr>
+                                <td>Description</td>
+                                <td>{{ event.description }}</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                        {% if event.committee %}
+                            <tr>
+                                <td>Committee</td>
+                                <td>{{ event.get_committee_display }}</td>
+                            </tr>
+                        {% endif %}
+                    </table>
+                        <a class="btn btn-default" href={% url 'dashboard:recruitment_committee_event_edit' event.id %} role="button">Edit event</a>
+                </div>
+                <div class=" col-lg-2 "></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Brother Attendance</div>
+        <div class="panel-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                {% for form in brother_form_list %}
+                    {% for field in form %}
+                        {{ field }}{{ field.label_tag }}
+                    {% endfor %}
+                    <br>
+                {% endfor %}
+                <input type="submit" value="Update"/>
+            </form>
+        </div>
+        </div>
+
+{% endblock %}

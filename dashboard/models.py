@@ -30,6 +30,74 @@ class Semester(models.Model):
         return "%s - %s" % (self.year, self.get_season_display())
 
 
+def enumerated_choices(choices):
+    enum_choices = set()
+
+    for counter, choice in enumerate(choices):
+        string_counter = str(counter)
+        enum_choices.add((string_counter, choice))
+
+    return enum_choices
+
+
+class CommitteeMap:
+    def __init__ (self, standing, operational):
+        self.__standing_map = enumerated_choices(standing + ["Unassigned"])
+        self.__operational_map = enumerated_choices(operational + ["Unassigned"])
+        self.__combined_list = standing + operational
+        self.__combined_map = enumerated_choices(self.__combined_list)
+        self.__length_standing = len(standing)
+
+    @property
+    def standing_unassigned(self):
+        return str(len(self.__standing_map) - 1)
+
+    @property
+    def operational_unassigned(self):
+        return str(len(self.__operational_map) - 1)
+
+    @property
+    def standing_map(self):
+        return self.__standing_map
+
+    @property
+    def operational_map(self):
+        return self.__operational_map
+
+    @property
+    def combined_map(self):
+        return self.__combined_map
+
+    def committee_name(self, committee_id):
+        return self.__combined_list(int(committee_id))
+
+    def committee_id(self, committee_name):
+        for counter, committee in enumerate(self.__combined_list):
+            if committee == committee_name:
+                if counter >= self.__length_standing:
+                    return {'operational_committee' : str(counter)}
+                else:
+                    return {'standing_committee' : str(counter)}
+        return {}
+
+
+STANDING_COMMITTEES = [
+    'Recruitment',
+    'Public Relations',
+    'Health and Safety',
+    'Social'
+]
+
+
+OPERATIONAL_COMMITTEES = [
+    'Alumni Relations',
+    'Membership Development',
+    'Scholarship'
+]
+
+COMMITTEES = CommitteeMap(STANDING_COMMITTEES, OPERATIONAL_COMMITTEES)
+
+
 class Brother(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
 
@@ -105,26 +173,15 @@ class Brother(models.Model):
     room_number = models.CharField(max_length=3, default="NA")
     address = models.CharField(max_length=200, default="Theta Chi House")
 
-    STANDING_COMMITTEE_CHOICES = {
-        ('0', 'Recruitment'),
-        ('1', 'Public Relations'),
-        ('2', 'Health and Safety'),
-        ('3', 'Social'),
-        ('4', 'Unassigned')
-    }
+    STANDING_COMMITTEE_CHOICES = COMMITTEES.standing_map
 
-    OPERATIONAL_COMMITTEE_CHOICES = {
-        ('0', 'Alumni Relations'),
-        ('1', 'Membership Development'),
-        ('2', 'Scholarship'),
-        ('3', 'Unassigned')
-    }
+    OPERATIONAL_COMMITTEE_CHOICES = COMMITTEES.operational_map
 
     standing_committee = models.CharField(
-        max_length=1, choices=STANDING_COMMITTEE_CHOICES, default='4'
+        max_length=1, choices=STANDING_COMMITTEE_CHOICES, default=COMMITTEES.standing_unassigned
     )
     operational_committee = models.CharField(
-        max_length=1, choices=OPERATIONAL_COMMITTEE_CHOICES, default='3'
+        max_length=1, choices=OPERATIONAL_COMMITTEE_CHOICES, default=COMMITTEES.operational_unassigned
     )
 
     # Treasurer Information
@@ -300,19 +357,12 @@ class StudyTableEvent(Event):
         return "Study Tables - %s" % self.date
 
 
-COMMITTEE_CHOICES = {
-        ('0', 'Recruitment'),
-        ('1', 'Public Relations'),
-        ('2', 'Health and Safety'),
-        ('3', 'Social'),
-        ('4', 'Alumni Relations'),
-        ('5', 'Membership Development'),
-        ('6', 'Scholarship'),
-    }
+COMMITTEE_CHOICES = COMMITTEES.combined_map
 
 
 class CommitteeMeetingEvent(Event):
     committee = models.CharField(max_length=1, choices=COMMITTEE_CHOICES)
+    committee_chair = models.ForeignKey(Position, on_delete=models.CASCADE)
 
     def __str__(self):
         return "%s - %s" % (self.get_committee_display(), self.date)
