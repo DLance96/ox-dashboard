@@ -655,14 +655,14 @@ def vice_president_committee_assignments(request):
 def recruitment_committee_event(request, event_id):
     event = CommitteeMeetingEvent.objects.get(pk=event_id)
 
-    brothers = Brother.objects.filter(**COMMITTEES.committee_id(event.committee)).order_by('last_name')
+    brothers = Brother.objects.filter(**COMMITTEES.committee_mapping(event.committee)).order_by('last_name')
     brother_form_list = []
     current_brother = Brother.objects.filter(user=request.user)[0]
 
     if current_brother in event.committee_chair.brothers.all():
-        type = 'attendance'
+        view_type = 'chairman'
     else:
-        type = 'brother'
+        view_type = 'brother'
 
     for counter, brother in enumerate(brothers):
         new_form = BrotherAttendanceForm(request.POST or None, initial={'present':  event.attendees_brothers.filter(id=brother.id).exists()},
@@ -683,7 +683,7 @@ def recruitment_committee_event(request, event_id):
             return HttpResponseRedirect(reverse('dashboard: home'))
 
     context = {
-        'type': type,
+        'type': view_type,
         'brother_form_list': brother_form_list,
         'event': event,
 

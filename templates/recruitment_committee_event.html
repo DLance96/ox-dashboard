@@ -51,13 +51,16 @@
                             </tr>
                         {% endif %}
                     </table>
-                        <a class="btn btn-default" href={% url 'dashboard:recruitment_committee_event_edit' event.id %} role="button">Edit event</a>
+                    {% if type == 'chairman' %}
+                    <a class="btn btn-default" href={% url 'dashboard:recruitment_committee_event_edit' event.id %} role="button">Edit event</a>
+                    {% endif %}
                 </div>
                 <div class=" col-lg-2 "></div>
             </div>
         </div>
     </div>
 
+    {% if type == 'chairman' %}
     <div class="panel panel-default">
         <div class="panel-heading">Brother Attendance</div>
         <div class="panel-body">
@@ -72,6 +75,7 @@
                 <input type="submit" value="Update"/>
             </form>
         </div>
-        </div>
+    </div>
+    {% endif %}
 
 {% endblock %}

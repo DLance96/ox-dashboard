@@ -74,12 +74,18 @@ class CommitteeMap:
     def committee_id(self, committee_name):
         for counter, committee in enumerate(self.__combined_list):
             if committee == committee_name:
-                if counter >= self.__length_standing:
-                    return {'operational_committee' : str(counter)}
-                else:
-                    return {'standing_committee' : str(counter)}
-        return {}
+                return str(counter)
+        return None
 
+    def committee_mapping(self, committee_id):
+        id_value = int(committee_id)
+        if id_value >= self.__length_standing:
+            return {'operational_committee' : str(id_value - self.__length_standing)}
+        else:
+            return {'standing_committee' : str(id_value)}
+
+    def mapping_from_name(self, committee_name):
+        return self.committee_mapping(self.committee_id(committee_name))
 
 STANDING_COMMITTEES = [
     'Recruitment',
