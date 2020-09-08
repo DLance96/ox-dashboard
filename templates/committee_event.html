@@ -6,7 +6,7 @@
 {% block content %}
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <h1>{{ event.get_committee_display }}
+        <h1>{{ event.committee.get_committee_display }} Committee
             <br>{{event.date}}</h1>
     </div>
     <div class="panel panel-default">
@@ -18,8 +18,14 @@
                     <table class="table table-event-information">
                         <tbody>
                         <tr>
-                            <td>Name:</td>
-                            <td>{{ event.name }}</td>
+                            <td>Committee</td>
+                            <td>{{ event.committee.get_committee_display }}</td>
+                        </tr>
+                        <tr>
+                            <td>Chairs</td>
+                            <td>
+                                {{ event.committee.chair.get_brothers }}
+                            </td>
                         </tr>
                         <tr>
                             <td>Date:</td>
@@ -43,24 +49,11 @@
                                 <td>{{ event.description }}</td>
                             </tr>
                         {% endif %}
-                        {% if event.committee %}
-                            <tr>
-                                <td>Committee</td>
-                                <td>{{ event.get_committee_display }}</td>
-                            </tr>
-                        {% endif %}
-                        <tr>
-                            <td>Chairs</td>
-                            <td>
-                            {% for brother in event.committee_chair.brothers.all %}
-                                {{ brother.first_name }} {{brother.last_name}}<br>
-                            {% endfor %}
-                            </td>
-                        </tr>
                         </tbody>
+                        {{ event.committee.members.objects.all }}
                     </table>
                     {% if type == 'chairman' %}
-                    <a class="btn btn-default" href={% url 'dashboard:committee_event_edit' event.id %} role="button">Edit event</a>
+                    <a class="btn btn-default" href={% url 'dashboard:committee_event_edit' event.id %}?id={{ event.id }} role="button">Edit event</a>
                     {% endif %}
                 </div>
                 <div class=" col-lg-2 "></div>

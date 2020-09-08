@@ -20,15 +20,15 @@
     <div class="panel panel-default">
         <div class="panel-heading">Committee Meeting</div>
         <div class="panel-body">
-            {% for id, committee in committees %}
+            {% for committee in committees %}
                 <div class="committeeeventlist">
                     <div></div>
-                    <div><b>{{ committee }} Committee</b></div>
+                    <div><b>{{ committee.get_committee_display }} Committee</b></div>
                     <div><b>Minutes:</b></div>
                     <div></div>
                     <div class="grayline"></div>
                     {% for meeting in committee_meetings %}
-                        {% if meeting.get_committee_display == committee %}
+                        {% if meeting.committee == committee %}
                             <div></div>
                             <div><a href={% url 'dashboard:committee_event' meeting.id%}>{{ meeting.date }} - {{ meeting.start_time }}</div></a>
                             {% if meeting.minutes %}

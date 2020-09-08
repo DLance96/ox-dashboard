@@ -37,7 +37,7 @@ urlpatterns = [
 
     url(r'^committee/event/(?P<event_id>[0-9]+)/$', views.committee_event, name='committee_event'),
     url(r'^committee/event/(?P<pk>\d+)/edit/$', views.CommitteeEventEdit.as_view(), name='committee_event_edit'),
-    url(r'^(?P<position>\D+)/(?P<committee>\D+)/committee-event/add/$',
+    url(r'^(?P<position>\D+)/committee-event/add/$',
         views.committee_event_add, name="committee_event_add"),
     url(r'^committee-meeting/(?P<pk>\d+)/delete/$', views.CommitteeEventDelete.as_view(),
         name="committee_event_delete"),

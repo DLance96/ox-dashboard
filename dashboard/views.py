@@ -16,11 +16,10 @@ from django.core.mail import send_mail
 from .utils import *
 from datetime import datetime
 from .forms import *
-from .models import COMMITTEES
+
 
 class LoginView(View):
     """ Logs in and redirects to the homepage """
-
     def post(self, request, *args, **kwargs):
         user = auth.authenticate(
             username=request.POST['username'],
@@ -207,19 +206,18 @@ def brother_view(request):
     event_attendance = zip(chapter_events, attendance)
     chapter_attendance = "%s / %s" % (chapter_event_attendance, past_chapter_event_count)
 
-    committee_reverse = dict((v, k) for k, v in COMMITTEE_CHOICES)
     standing_meetings = []
     operational_meetings = []
-    if brother.get_operational_committee_display() != 'Unassigned':
+    if brother.operational_committee != 'NA':
         operational_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester(),
-                                                                    committee=committee_reverse[
-                                                                        brother.get_operational_committee_display()]) \
-            .order_by("start_time").order_by("date")
-    if brother.get_standing_committee_display() != 'Unassigned':
+                                                                    committee=Committee.objects.get(committee=
+                                                                    brother.operational_committee))\
+                                                                    .order_by("start_time").order_by("date")
+    if brother.standing_committee != 'NA':
         standing_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester(),
-                                                                 committee=committee_reverse[
-                                                                     brother.get_standing_committee_display()]) \
-            .order_by("start_time").order_by("date")
+                                                                 committee=Committee.objects.get(committee=
+                                                                 brother.standing_committee))\
+                                                                 .order_by("start_time").order_by("date")
 
     current_season = get_season()
     if current_season is '0':
@@ -284,6 +282,7 @@ def brother_view(request):
         'hours_pending': hours_pending,
     }
     return render(request, "brother.html", context)
+
 
 def brother_chapter_event(request, event_id):
     """ Renders the brother page for chapter event with a excuse form """
@@ -614,7 +613,7 @@ def vice_president(request):
     """ Renders the Vice President page and all relevant information, primarily committee related """
     committee_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester())\
         .order_by("start_time").order_by("date")
-    committees = COMMITTEES.combined_map
+    committees = Committee.objects.all()
 
     context = {
         'position': 'Vice President',
@@ -633,7 +632,7 @@ def vice_president_committee_assignments(request):
     for brother in brothers:
         new_form = CommitteeForm(request.POST or None, initial={'standing_committee': brother.standing_committee,
                                                                 'operational_committee': brother.operational_committee},
-                                 prefix=brother.id)
+                                prefix=brother.id)
         form_list.append(new_form)
 
     brother_forms = zip(brothers, form_list)
@@ -643,6 +642,10 @@ def vice_president_committee_assignments(request):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 brother = brothers[counter]
+                for committee in Committee.objects.all():
+                    committee.members.remove(brother)
+                Committee.objects.get(committee=instance['standing_committee']).members.add(brother)
+                Committee.objects.get(committee=instance['operational_committee']).members.add(brother)
                 brother.standing_committee = instance['standing_committee']
                 brother.operational_committee = instance['operational_committee']
                 brother.save()
@@ -656,7 +659,7 @@ def vice_president_committee_assignments(request):
 
 
 def committee_list(request):
-    committees = COMMITTEES.combined_map
+    committees = Committee.objects.all()
     brothers = Brother.objects.order_by('last_name')
 
     context = {
@@ -670,11 +673,11 @@ def committee_list(request):
 def committee_event(request, event_id):
     event = CommitteeMeetingEvent.objects.get(pk=event_id)
 
-    brothers = Brother.objects.filter(**COMMITTEES.committee_mapping(event.committee)).order_by('last_name')
+    brothers = event.committee.members.order_by('last_name')
     brother_form_list = []
     current_brother = Brother.objects.filter(user=request.user)[0]
 
-    if current_brother in event.committee_chair.brothers.all():
+    if current_brother in event.committee.chair.brothers.all():
         view_type = 'chairman'
     else:
         view_type = 'brother'
@@ -708,7 +711,7 @@ def committee_event(request, event_id):
 
 
 @verify_position(['Public Relations Chair', 'Vice President', 'President', 'Adviser'])
-def committee_event_add(request, position, committee):
+def committee_event_add(request, position):
     """ Renders the committee meeting add page """
     form = CommitteeMeetingForm(request.POST or None)
 
@@ -723,8 +726,8 @@ def committee_event_add(request, position, committee):
                 semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
-            instance.committee_chair = Position.objects.get(title=position)
-            instance.committee = COMMITTEES.committee_id(committee)
+            instance.committee = Committee.objects.get(chair=Position.objects.get(title=position))
+            instance.committee_chair = position
             instance.semester = semester
             instance.save()
             next = request.GET.get('next')
@@ -733,8 +736,7 @@ def committee_event_add(request, position, committee):
     context = {
         'title': 'Committee Meeting',
         'form': form,
-        'position': position,
-        'committee': committee
+        'position': position
     }
     return render(request, 'event-add.html', context)
 
@@ -757,7 +759,7 @@ class CommitteeEventEdit(UpdateView):
         return super(CommitteeEventEdit, self).get(request, *args, **kwargs)
 
     def get_success_url(self):
-        return self.request.GET.get('next')
+        return reverse('dashboard:committee_event', args=[int(self.request.GET.get('id'))])
 
     model = CommitteeMeetingEvent
     fields = ['date', 'start_time', 'semester', 'minutes']
@@ -767,11 +769,10 @@ class CommitteeEventEdit(UpdateView):
 def vphs(request):
     """ Renders the VPHS and the events they can create """
     events = HealthAndSafetyEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
-    committee_meetings, context = committee_meeting_panel('Health and Safety')
+    committee_meetings, context = committee_meeting_panel('HS')
 
     context.update({
         'position': 'Vice President of Health and Safety',
-        'committee': 'Health and Safety',
         'events': events,
     })
     return render(request, 'vphs.html', context)
@@ -1422,7 +1423,7 @@ def scholarship_c(request):
 
     brother_plans = zip(brothers, plans)
 
-    committee_meetings, context = committee_meeting_panel('Scholarship')
+    committee_meetings, context = committee_meeting_panel('SC')
 
     context.update({
         'position': 'Scholarship Chair',
@@ -1588,11 +1589,10 @@ def recruitment_c(request):
 
     potential_new_members = PotentialNewMember.objects.all()
 
-    committee_meetings, context = committee_meeting_panel('Recruitment')
+    committee_meetings, context = committee_meeting_panel('RE')
 
     context.update({
         'position': 'Recruitment Chair',
-        'committee': 'Recruitment',
         'events': semester_events,
         'events_future': semester_events_next,
         'potential_new_members': potential_new_members,
@@ -1972,11 +1972,10 @@ def service_c_hours(request):
 def philanthropy_c(request):
     """ Renders the philanthropy chair's RSVP page for different events """
     events = PhilanthropyEvent.objects.filter(semester=get_semester())
-    committee_meetings, context = committee_meeting_panel('Philanthropy')
+    committee_meetings, context = committee_meeting_panel('PH')
 
     context.update({
         'position': 'Philanthropy Chair',
-        'committee': 'Philanthropy',
         'events': events,
     })
 
@@ -2517,42 +2516,31 @@ def detail_fine_helper(request, brother):
 
 @verify_position(['Public Relations Chair', 'Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def public_relations_c(request):
-    committee_meetings, context = committee_meeting_panel('Public Relations')
+    committee_meetings, context = committee_meeting_panel('PR')
     context.update({
         'form': photo_form(PhotoForm, request),
-        'position': 'Public Relations Chair',
-        'committee': 'Public Relations'
     })
 
     return render(request, 'public-relations-chair.html', context)
 
 
 def social_c(request):
-    committee_meetings, context = committee_meeting_panel('Social')
+    committee_meetings, context = committee_meeting_panel('SO')
     context.update({
         'position': 'Social Chair',
-        'committee': 'Social'
     })
 
     return render(request, 'social-chair.html', context)
 
 
 def memdev_c(request):
-    committee_meetings, context = committee_meeting_panel('Membership Development')
-    context.update({
-        'position': 'Membership Development Chair',
-        'committee': 'Membership Development'
-    })
+    committee_meetings, context = committee_meeting_panel('MD')
 
     return render(request, 'memdev-chair.html', context)
 
 
 def alumni_relations_c(request):
-    committee_meetings, context = committee_meeting_panel('Alumni Relations')
-    context.update({
-        'position': 'Alumni Relations Chair',
-        'committee': 'Alumni Relations'
-    })
+    committee_meetings, context = committee_meeting_panel('AR')
 
     return render(request, 'alumni-relations-chair.html', context)
 

@@ -88,22 +88,15 @@ class CommitteeMap:
         return self.committee_mapping(self.committee_id(committee_name))
 
 
-STANDING_COMMITTEES = [
-    'Recruitment',
-    'Public Relations',
-    'Health and Safety',
-    'Social'
-]
-
-
-OPERATIONAL_COMMITTEES = [
-    'Alumni Relations',
-    'Membership Development',
-    'Scholarship',
-    'Philanthropy'
-]
-
-COMMITTEES = CommitteeMap(STANDING_COMMITTEES, OPERATIONAL_COMMITTEES)
+ALUMNI_RELATIONS = 'AR'
+MEMBERSHIP_DEVELOPMENT = 'MD'
+PHILANTHROPY = 'PH'
+PUBLIC_RELATIONS = 'PR'
+RECRUITMENT = 'RE'
+SCHOLARSHIP = 'SC'
+SOCIAL = 'SO'
+HEALTH_AND_SAFETY = 'HS'
+UNASSIGNED = 'NA'
 
 
 class Brother(models.Model):
@@ -181,16 +174,24 @@ class Brother(models.Model):
     room_number = models.CharField(max_length=3, default="NA")
     address = models.CharField(max_length=200, default="Theta Chi House")
 
-    STANDING_COMMITTEE_CHOICES = COMMITTEES.standing_map
+    STANDING_COMMITTEE_CHOICES = [
+        (PUBLIC_RELATIONS, 'Public Relations'),
+        (RECRUITMENT, 'Recruitment'),
+        (SOCIAL, 'Social'),
+        (HEALTH_AND_SAFETY, 'Health and Safety'),
+        (UNASSIGNED, 'Unassigned')
+    ]
 
-    OPERATIONAL_COMMITTEE_CHOICES = COMMITTEES.operational_map
+    OPERATIONAL_COMMITTEE_CHOICES = [
+        (ALUMNI_RELATIONS, 'Alumni Relations'),
+        (MEMBERSHIP_DEVELOPMENT, 'Membership Development'),
+        (PHILANTHROPY, 'Philanthropy'),
+        (SCHOLARSHIP, 'Scholarship'),
+        (UNASSIGNED, 'Unassigned')
+    ]
 
-    standing_committee = models.CharField(
-        max_length=1, choices=STANDING_COMMITTEE_CHOICES, default=COMMITTEES.standing_unassigned
-    )
-    operational_committee = models.CharField(
-        max_length=1, choices=OPERATIONAL_COMMITTEE_CHOICES, default=COMMITTEES.operational_unassigned
-    )
+    standing_committee = models.CharField(max_length=2, choices=STANDING_COMMITTEE_CHOICES, default=UNASSIGNED)
+    operational_committee = models.CharField(max_length=2, choices=OPERATIONAL_COMMITTEE_CHOICES, default=UNASSIGNED)
 
     # Treasurer Information
     # TODO: Add treasury models
@@ -211,13 +212,14 @@ class Brother(models.Model):
     in_house = models.BooleanField(default=True)
 
     def __str__(self):
-        return (self.first_name + " " + self.last_name)
+        return self.first_name + " " + self.last_name
 
 
 class Position(models.Model):
     title = models.CharField(max_length=45)
     ec = models.BooleanField(default=False)
     brothers = models.ManyToManyField(Brother, related_name='brothers')
+    has_committee = models.BooleanField(default=False)
 
     def get_brothers(self):
         return ", ".join([str(e) for e in self.brothers.all()])
@@ -365,15 +367,38 @@ class StudyTableEvent(Event):
         return "Study Tables - %s" % self.date
 
 
-COMMITTEE_CHOICES = COMMITTEES.combined_map
+class Committee(models.Model):
+    COMMITTEE_CHOICES = [
+        (ALUMNI_RELATIONS, 'Alumni Relations'),
+        (MEMBERSHIP_DEVELOPMENT, 'Membership Development'),
+        (PHILANTHROPY, 'Philanthropy'),
+        (PUBLIC_RELATIONS, 'Public Relations'),
+        (RECRUITMENT, 'Recruitment'),
+        (SCHOLARSHIP, 'Scholarship'),
+        (SOCIAL, 'Social'),
+        (HEALTH_AND_SAFETY, 'Health and Safety'),
+    ]
+    committee = models.CharField(max_length=2, choices=COMMITTEE_CHOICES, unique=True)
+    STANDING = 'S'
+    OPERATIONAL = 'O'
+    TYPE_CHOICES = [
+        (STANDING, 'Standing'),
+        (OPERATIONAL, 'Operational')
+    ]
+    type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+    members = models.ManyToManyField(Brother, blank=True)
+    chair = models.OneToOneField(Position, on_delete=models.PROTECT, limit_choices_to={'has_committee': True})
+
+    class MeetingTimes(datetime.timedelta, models.Choices):
+        WEEKLY = 168, 'Weekly'
+        BIWEEKLY = 336, 'Biweekly'
+        MONTHLY = 672, 'Monthly'
+
+    meeting_time = models.DurationField(blank=True, choices=MeetingTimes.choices)
 
 
 class CommitteeMeetingEvent(Event):
-    committee = models.CharField(max_length=1, choices=COMMITTEE_CHOICES)
-    committee_chair = models.ForeignKey(Position, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "%s - %s" % (self.get_committee_display(), self.date)
+    committee = models.ForeignKey(Committee, on_delete=models.PROTECT)
 
 
 class Excuse(models.Model):
@@ -407,6 +432,9 @@ class Supplies(models.Model):
     what = models.CharField(max_length=256)
     done = models.BooleanField(default=False)
     when = models.DateField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Supplies"
 
     def __str__(self):
         return self.what

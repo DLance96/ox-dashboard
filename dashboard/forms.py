@@ -152,6 +152,7 @@ class PhotoForm(forms.ModelForm):
         model = Photo
         fields = ['photo']
 
+
 class MinecraftPhotoForm(forms.ModelForm):
     class Meta:
         model = MinecraftPhoto
@@ -159,15 +160,11 @@ class MinecraftPhotoForm(forms.ModelForm):
 
 
 class CommitteeForm(forms.Form):
-    STANDING_COMMITTEE_CHOICES = COMMITTEES.standing_map
-
-    OPERATIONAL_COMMITTEE_CHOICES = COMMITTEES.operational_map
-
     standing_committee = forms.ChoiceField(
-        label="", choices=STANDING_COMMITTEE_CHOICES
+        label="", choices=Brother.STANDING_COMMITTEE_CHOICES
     )
     operational_committee = forms.ChoiceField(
-        label="", choices=OPERATIONAL_COMMITTEE_CHOICES
+        label="", choices=Brother.OPERATIONAL_COMMITTEE_CHOICES
     )
 
 

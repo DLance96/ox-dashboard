@@ -125,10 +125,13 @@ def verify_position(positions):
 
 def committee_meeting_panel(committee_name):
     committee_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester()) \
-        .filter(committee=COMMITTEES.committee_id(committee_name)).order_by("start_time").order_by("date")
+        .filter(committee=Committee.objects.get(committee=committee_name)).order_by("start_time").order_by("date")
+    position = Committee.objects.get(committee=committee_name).chair.title
+    committee = Committee.objects.get(committee=committee_name).get_committee_display
     context = {
-        'type': 'chairman',
-        'committee_meetings': committee_meetings
+        'committee_meetings': committee_meetings,
+        'position': position,
+        'committee': committee
     }
 
     return committee_meetings, context

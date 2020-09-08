@@ -102,14 +102,14 @@
             <a class="btn btn-default" href={% url 'dashboard:all_pnm_csv' %} role="button">Download list as csv</a>
         </div>
     </div>
+
     <div class="panel panel-default">
         <div class="panel-heading">Committee Meeting</div>
         <div class="panel-body">
             <table class="table table-condensed">
                 <thead style="font-weight:bold;">
                 <tr>
-                    <td>Committee:</td>
-                    <td>Date:</td>
+                    <td>{{ committee }}</td>
                     <td>Minutes:</td>
                     <td>Edit?</td>
                     <td>Delete?</td>
@@ -118,22 +118,21 @@
                 <tbody>
                 {% for meeting in committee_meetings %}
                     <tr>
-                        <td><a href={% url 'dashboard:committee_event' meeting.id%}>{{ meeting.get_committee_display }}</a></td>
-                        <td>{{ meeting.date }} - {{ meeting.start_time }}</td>
+                        <td><a href={% url 'dashboard:committee_event' meeting.id%}>{{ meeting.date }} - {{ meeting.start_time }}</a></td>
                         {% if meeting.minutes %}
                             <td><a href="{{ meeting.minutes }}">link</a></td>
                         {% else %}
                             <td></td>
                         {% endif %}
                         <td><a class="btn btn-default"
-                               href={% url 'dashboard:committee_event_edit' meeting.id %}?next={{ request.path }}>+</a></td>
+                              href={% url 'dashboard:committee_event_edit' meeting.id %}?id={{ meeting.id }}>+</a></td>
                         <td><a class="btn btn-default"
                                href={% url 'dashboard:committee_event_delete' meeting.id %}?next={{ request.path }}>X</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <a class="btn btn-default" href={% url 'dashboard:committee_event_add' position committee %}?next={{ request.path }}
+            <a class="btn btn-default" href={% url 'dashboard:committee_event_add' position %}?next={{ request.path }}
                     role="button">Add Meeting</a>
         </div>
     </div>
