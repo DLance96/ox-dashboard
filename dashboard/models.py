@@ -87,6 +87,7 @@ class CommitteeMap:
     def mapping_from_name(self, committee_name):
         return self.committee_mapping(self.committee_id(committee_name))
 
+
 STANDING_COMMITTEES = [
     'Recruitment',
     'Public Relations',
@@ -98,7 +99,8 @@ STANDING_COMMITTEES = [
 OPERATIONAL_COMMITTEES = [
     'Alumni Relations',
     'Membership Development',
-    'Scholarship'
+    'Scholarship',
+    'Philanthropy'
 ]
 
 COMMITTEES = CommitteeMap(STANDING_COMMITTEES, OPERATIONAL_COMMITTEES)

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Committee List</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Committee Meeting</div>
+        <div class="panel-body">
+            {% for id, committee in committees %}
+                <div class="committeelist">
+                    <div></div>
+                    <div><b>{{ committee }} Committee</b></div>
+                    <div><b>Meeting Time:  </b></div>
+                    <div></div>
+                    <div class="committeegrayline"></div>
+                    {% for brother in brothers %}
+                        {% if brother.get_standing_committee_display == committee or brother.get_operational_committee_display == committee %}
+                            <div></div>
+                            <div style="grid-column: 2/3;">{{ brother.first_name }} {{ brother.last_name }}</div></a>
+                            <div></div>
+                            <div></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            <br>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

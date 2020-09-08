@@ -43,16 +43,24 @@
                                 <td>{{ event.description }}</td>
                             </tr>
                         {% endif %}
-                        </tbody>
                         {% if event.committee %}
                             <tr>
                                 <td>Committee</td>
                                 <td>{{ event.get_committee_display }}</td>
                             </tr>
                         {% endif %}
+                        <tr>
+                            <td>Chairs</td>
+                            <td>
+                            {% for brother in event.committee_chair.brothers.all %}
+                                {{ brother.first_name }} {{brother.last_name}}<br>
+                            {% endfor %}
+                            </td>
+                        </tr>
+                        </tbody>
                     </table>
                     {% if type == 'chairman' %}
-                    <a class="btn btn-default" href={% url 'dashboard:recruitment_committee_event_edit' event.id %} role="button">Edit event</a>
+                    <a class="btn btn-default" href={% url 'dashboard:committee_event_edit' event.id %} role="button">Edit event</a>
                     {% endif %}
                 </div>
                 <div class=" col-lg-2 "></div>

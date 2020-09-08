@@ -111,7 +111,7 @@ class ServiceSubmissionResponseForm(forms.ModelForm):
 class CommitteeMeetingForm(forms.ModelForm):
     class Meta:
         model = CommitteeMeetingEvent
-        fields = ['date', 'start_time', 'end_time', 'committee', 'minutes', 'committee_chair']
+        fields = ['date', 'start_time', 'end_time', 'minutes']
 
 
 class SuppliesForm(forms.ModelForm):
@@ -159,20 +159,9 @@ class MinecraftPhotoForm(forms.ModelForm):
 
 
 class CommitteeForm(forms.Form):
-    STANDING_COMMITTEE_CHOICES = {
-        ('0', 'Recruitment'),
-        ('1', 'Public Relations'),
-        ('2', 'Health and Safety'),
-        ('3', 'Social'),
-        ('4', 'Unassigned')
-    }
+    STANDING_COMMITTEE_CHOICES = COMMITTEES.standing_map
 
-    OPERATIONAL_COMMITTEE_CHOICES = {
-        ('0', 'Alumni Relations'),
-        ('1', 'Membership Development'),
-        ('2', 'Scholarship'),
-        ('3', 'Unassigned')
-    }
+    OPERATIONAL_COMMITTEE_CHOICES = COMMITTEES.operational_map
 
     standing_committee = forms.ChoiceField(
         label="", choices=STANDING_COMMITTEE_CHOICES

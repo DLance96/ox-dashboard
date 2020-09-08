@@ -15,41 +15,33 @@
 {% block content %}
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <h1>Vice President</h1>
+        <h1>{{ position }}</h1>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Committee Meeting</div>
         <div class="panel-body">
-            <table class="table table-condensed">
-                <thead style="font-weight:bold;">
-                <tr>
-                    <td>Committee:</td>
-                    <td>Date:</td>
-                    <td>Minutes:</td>
-                    <td>Edit?</td>
-                    <td>Delete?</td>
-                </tr>
-                </thead>
-                <tbody>
-                {% for meeting in committee_meetings %}
-                    <tr>
-                        <td><a href={% url 'dashboard:recruitment_committee_event' meeting.id%}>{{ meeting.get_committee_display }}</a></td>
-                        <td>{{ meeting.date }} - {{ meeting.start_time }}</td>
-                        {% if meeting.minutes %}
-                            <td><a href="{{ meeting.minutes }}">link</a></td>
-                        {% else %}
-                            <td></td>
+            {% for id, committee in committees %}
+                <div class="committeeeventlist">
+                    <div></div>
+                    <div><b>{{ committee }} Committee</b></div>
+                    <div><b>Minutes:</b></div>
+                    <div></div>
+                    <div class="grayline"></div>
+                    {% for meeting in committee_meetings %}
+                        {% if meeting.get_committee_display == committee %}
+                            <div></div>
+                            <div><a href={% url 'dashboard:committee_event' meeting.id%}>{{ meeting.date }} - {{ meeting.start_time }}</div></a>
+                            {% if meeting.minutes %}
+                                <div><a href="{{ meeting.minutes }}">link</a></div>
+                            {% else %}
+                                <div></div>
+                            {% endif %}
+                            <div></div>
                         {% endif %}
-                        <td><a class="btn btn-default"
-                               href={% url 'dashboard:vice_president_committee_meeting_edit' meeting.id %}>+</a></td>
-                        <td><a class="btn btn-default"
-                               href={% url 'dashboard:vice_president_committee_meeting_delete' meeting.id %}>X</a></td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            <a class="btn btn-default" href={% url 'dashboard:vice_president_committee_meeting_add' %}
-                    role="button">Add Meeting</a>
+                    {% endfor %}
+                </div>
+            <br>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}

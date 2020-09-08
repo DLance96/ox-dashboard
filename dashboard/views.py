@@ -614,8 +614,11 @@ def vice_president(request):
     """ Renders the Vice President page and all relevant information, primarily committee related """
     committee_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester())\
         .order_by("start_time").order_by("date")
+    committees = COMMITTEES.combined_map
 
     context = {
+        'position': 'Vice President',
+        'committees': committees,
         'committee_meetings': committee_meetings,
     }
 
@@ -652,7 +655,19 @@ def vice_president_committee_assignments(request):
     return render(request, 'committee-assignment.html', context)
 
 
-def recruitment_committee_event(request, event_id):
+def committee_list(request):
+    committees = COMMITTEES.combined_map
+    brothers = Brother.objects.order_by('last_name')
+
+    context = {
+        'committees': committees,
+        'brothers': brothers,
+    }
+
+    return render(request, 'committee-list.html', context)
+
+
+def committee_event(request, event_id):
     event = CommitteeMeetingEvent.objects.get(pk=event_id)
 
     brothers = Brother.objects.filter(**COMMITTEES.committee_mapping(event.committee)).order_by('last_name')
@@ -680,7 +695,7 @@ def recruitment_committee_event(request, event_id):
                 if instance['present'] is False:
                     event.attendees_brothers.remove(brothers[counter])
                     event.save()
-            return HttpResponseRedirect(reverse('dashboard: home'))
+            return HttpResponseRedirect(reverse('dashboard:committee_event', args=[event_id]))
 
     context = {
         'type': view_type,
@@ -689,21 +704,11 @@ def recruitment_committee_event(request, event_id):
 
     }
 
-    return render(request, "recruitment_committee_event.html", context)
+    return render(request, "committee_event.html", context)
 
 
-class RecruitmentCommitteeEventEdit(UpdateView):
-    @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
-    def get(self, request, *args, **kwargs):
-        return super(RecruitmentCommitteeEventEdit, self).get(request, *args, **kwargs)
-
-    model = CommitteeMeetingEvent
-    success_url = reverse_lazy('dashboard: home')
-    fields = ['date', 'start_time', 'semester', 'committee', 'minutes']
-
-
-@verify_position(['Vice President', 'President', 'Adviser'])
-def vice_president_committee_meeting_add(request):
+@verify_position(['Public Relations Chair', 'Vice President', 'President', 'Adviser'])
+def committee_event_add(request, position, committee):
     """ Renders the committee meeting add page """
     form = CommitteeMeetingForm(request.POST or None)
 
@@ -718,46 +723,57 @@ def vice_president_committee_meeting_add(request):
                 semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
-
+            instance.committee_chair = Position.objects.get(title=position)
+            instance.committee = COMMITTEES.committee_id(committee)
             instance.semester = semester
             instance.save()
-            return HttpResponseRedirect(reverse('dashboard:vice_president'))
+            next = request.GET.get('next')
+            return HttpResponseRedirect(next)
 
     context = {
         'title': 'Committee Meeting',
         'form': form,
+        'position': position,
+        'committee': committee
     }
     return render(request, 'event-add.html', context)
 
 
-class CommitteeMeetingDelete(DeleteView):
+class CommitteeEventDelete(DeleteView):
     @verify_position(['Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
-        return super(CommitteeMeetingDelete, self).get(request, *args, **kwargs)
+        return super(CommitteeEventDelete, self).get(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return self.request.GET.get('next')
 
     model = CommitteeMeetingEvent
     template_name = 'dashboard/base_confirm_delete.html'
-    success_url = reverse_lazy('dashboard:vice_president')
 
 
-class CommitteeMeetingEdit(UpdateView):
+class CommitteeEventEdit(UpdateView):
     @verify_position(['Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
-        return super(CommitteeMeetingEdit, self).get(request, *args, **kwargs)
+        return super(CommitteeEventEdit, self).get(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return self.request.GET.get('next')
 
     model = CommitteeMeetingEvent
-    success_url = reverse_lazy('dashboard:vice_president')
-    fields = ['date', 'start_time', 'semester', 'committee', 'minutes', 'committee_chair']
+    fields = ['date', 'start_time', 'semester', 'minutes']
 
 
 @verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
 def vphs(request):
     """ Renders the VPHS and the events they can create """
     events = HealthAndSafetyEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
+    committee_meetings, context = committee_meeting_panel('Health and Safety')
 
-    context = {
+    context.update({
+        'position': 'Vice President of Health and Safety',
+        'committee': 'Health and Safety',
         'events': events,
-    }
+    })
     return render(request, 'vphs.html', context)
 
 
@@ -829,7 +845,7 @@ def health_and_safety_event(request, event_id):
                 if instance['present'] is False:
                     event.attendees_brothers.remove(brothers[counter])
                     event.save()
-            return HttpResponseRedirect(reverse('dashboard:scholarship_c'))
+            return HttpResponseRedirect(reverse('dashboard:vphs'))
 
     context = {
         'type': 'attendance',
@@ -1406,10 +1422,14 @@ def scholarship_c(request):
 
     brother_plans = zip(brothers, plans)
 
-    context = {
+    committee_meetings, context = committee_meeting_panel('Scholarship')
+
+    context.update({
+        'position': 'Scholarship Chair',
+        'committee': 'Scholarship',
         'events': events,
         'brother_plans': brother_plans,
-    }
+    })
     return render(request, "scholarship-chair.html", context)
 
 
@@ -1557,7 +1577,7 @@ class ScholarshipReportEdit(UpdateView):
 
 @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def recruitment_c(request):
-    """ Renders Scholarship chair page with events for the current and following semester """
+    """ Renders Recruitment chair page with events for the current and following semester """
     current_season = get_season()
     if current_season is '0':
         semester_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year())
@@ -1568,11 +1588,15 @@ def recruitment_c(request):
 
     potential_new_members = PotentialNewMember.objects.all()
 
-    context = {
+    committee_meetings, context = committee_meeting_panel('Recruitment')
+
+    context.update({
+        'position': 'Recruitment Chair',
+        'committee': 'Recruitment',
         'events': semester_events,
         'events_future': semester_events_next,
         'potential_new_members': potential_new_members,
-    }
+    })
     return render(request, 'recruitment-chair.html', context)
 
 
@@ -1948,9 +1972,14 @@ def service_c_hours(request):
 def philanthropy_c(request):
     """ Renders the philanthropy chair's RSVP page for different events """
     events = PhilanthropyEvent.objects.filter(semester=get_semester())
-    context = {
+    committee_meetings, context = committee_meeting_panel('Philanthropy')
+
+    context.update({
+        'position': 'Philanthropy Chair',
+        'committee': 'Philanthropy',
         'events': events,
-    }
+    })
+
     return render(request, 'philanthropy-chair.html', context)
 
 
@@ -2485,14 +2514,48 @@ def detail_fine_helper(request, brother):
 
     return render(request, 'detail_fines.html', context)
 
+
 @verify_position(['Public Relations Chair', 'Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def public_relations_c(request):
-
-    context = {
-        'form': photo_form(PhotoForm, request)
-    }
+    committee_meetings, context = committee_meeting_panel('Public Relations')
+    context.update({
+        'form': photo_form(PhotoForm, request),
+        'position': 'Public Relations Chair',
+        'committee': 'Public Relations'
+    })
 
     return render(request, 'public-relations-chair.html', context)
+
+
+def social_c(request):
+    committee_meetings, context = committee_meeting_panel('Social')
+    context.update({
+        'position': 'Social Chair',
+        'committee': 'Social'
+    })
+
+    return render(request, 'social-chair.html', context)
+
+
+def memdev_c(request):
+    committee_meetings, context = committee_meeting_panel('Membership Development')
+    context.update({
+        'position': 'Membership Development Chair',
+        'committee': 'Membership Development'
+    })
+
+    return render(request, 'memdev-chair.html', context)
+
+
+def alumni_relations_c(request):
+    committee_meetings, context = committee_meeting_panel('Alumni Relations')
+    context.update({
+        'position': 'Alumni Relations Chair',
+        'committee': 'Alumni Relations'
+    })
+
+    return render(request, 'alumni-relations-chair.html', context)
+
 
 def minecraft(request):
     return render(request, 'minecraft.html', photo_context(MinecraftPhoto))

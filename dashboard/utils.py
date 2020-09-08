@@ -123,55 +123,15 @@ def verify_position(positions):
     return verify_decorator
 
 
-def enumerated_choices(choices):
-    enum_choices = set()
+def committee_meeting_panel(committee_name):
+    committee_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester()) \
+        .filter(committee=COMMITTEES.committee_id(committee_name)).order_by("start_time").order_by("date")
+    context = {
+        'type': 'chairman',
+        'committee_meetings': committee_meetings
+    }
 
-    for counter, choice in enumerate(choices):
-        string_counter = str(counter)
-        enum_choices.add((string_counter, choice))
-
-    return enum_choices
-
-
-class CommitteeMap:
-    def __init__ (self, standing, operational):
-        self.__standing_map = enumerated_choices(standing + ["Unassigned"])
-        self.__operational_map = enumerated_choices(operational + ["Unassigned"])
-        self.__combined_list = standing + operational
-        self.__combined_map = enumerated_choices(self.__combined_list)
-        self.__length_standing = len(standing)
-
-    @property
-    def standing_unassigned(self):
-        return str(len(self.__standing_map) - 1)
-
-    @property
-    def operational_unassigned(self):
-        return str(len(self.__operational_map) - 1)
-
-    @property
-    def standing_map(self):
-        return self.__standing_map
-
-    @property
-    def operational_map(self):
-        return self.__operational_map
-
-    @property
-    def combined_map(self):
-        return self.__combined_map
-
-    def committee_name(self, committee_id):
-        return self.__combined_list(int(committee_id))
-
-    def committee_id(self, committee_name):
-        for counter, committee in enumerate(self.__combined_list):
-            if committee == committee_name:
-                if counter >= self.__length_standing:
-                    return {'operational_committee' : str(counter)}
-                else:
-                    return {'standing_committee' : str(counter)}
-        return {}
+    return committee_meetings, context
 
 
 def verify_brother(brother, user):
@@ -203,7 +163,7 @@ def build_thursday_detail_email(thursday_detail, host):
         thursday_detail.due_date, thursday_detail.short_description
     )
 
-    return (subject, email, to)
+    return subject, email, to
 
 
 def build_sunday_detail_email(sunday_group_detail, host):
@@ -233,7 +193,7 @@ def build_sunday_detail_email(sunday_group_detail, host):
 
     subject = "[DETAILS] Sunday details for %s" % due
 
-    return (subject, email, to)
+    return subject, email, to
 
 
 def fine_generator():
@@ -273,6 +233,7 @@ def calc_fines(brother):
 
     return fine
 
+
 def photo_context(photo_class):
     photo_urls = []
     for photo in photo_class.objects.all():
@@ -283,6 +244,7 @@ def photo_context(photo_class):
     }
 
     return context
+
 
 def photo_form(form_class, request):
     form = form_class(request.POST or None)
@@ -300,6 +262,7 @@ def photo_form(form_class, request):
             return HttpResponseRedirect(reverse('dashboard:home'))
 
     return form
+
 
 def attendance_list(request, event):
     brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')

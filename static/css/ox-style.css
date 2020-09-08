@@ -45,6 +45,26 @@ textarea {
     margin-top:20px;
 }
 
+.committeelist {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr 1fr;
+    gap: 5px 0px;
+    align-items: top;
+}
+
+.committeegrayline {
+    grid-column: 2 / 4;
+    height: 1px;
+    background: rgb(221,221,221);
+}
+
+.committeeeventlist {
+    display: grid;
+    grid-template-columns: 1fr 20fr 2fr 1fr;
+    gap: 5px 0px;
+    align-items: top;
+}
+
 .homeevent1 {
     display: grid;
     grid-template-columns: 1fr 11fr 11fr 1fr;

@@ -32,6 +32,15 @@ urlpatterns = [
         name="general_hs_event"),
     url(r'^general/gen-s-event/(?P<event_id>[0-9]+)/$', views.general_service_event,
         name="general_service_event"),
+    url(r'^general/committee-list/$', views.committee_list,
+        name="committee_list"),
+
+    url(r'^committee/event/(?P<event_id>[0-9]+)/$', views.committee_event, name='committee_event'),
+    url(r'^committee/event/(?P<pk>\d+)/edit/$', views.CommitteeEventEdit.as_view(), name='committee_event_edit'),
+    url(r'^(?P<position>\D+)/(?P<committee>\D+)/committee-event/add/$',
+        views.committee_event_add, name="committee_event_add"),
+    url(r'^committee-meeting/(?P<pk>\d+)/delete/$', views.CommitteeEventDelete.as_view(),
+        name="committee_event_delete"),
 
     # Brother URL section
     url(r'^brother/$', views.brother_view, name="brother"),
@@ -61,12 +70,6 @@ urlpatterns = [
     url(r'^vice-president/$', views.vice_president, name="vice_president"),
     url(r'^vice-president/committee-assignments/$', views.vice_president_committee_assignments,
         name="vice_president_committee_assignments"),
-    url(r'^vice-president/committee-meeting/add/$', views.vice_president_committee_meeting_add,
-        name="vice_president_committee_meeting_add"),
-    url(r'^vice-president/committee-meeting/(?P<pk>\d+)/edit/$', views.CommitteeMeetingEdit.as_view(),
-        name="vice_president_committee_meeting_edit"),
-    url(r'^vice-president/committee-meeting/(?P<pk>\d+)/delete/$', views.CommitteeMeetingDelete.as_view(),
-        name="vice_president_committee_meeting_delete"),
     url(r'^vice_president/in_house', views.in_house, name='vice_president_in_house'),
 
     # Vice President Health and Safety URL Section
@@ -125,10 +128,6 @@ urlpatterns = [
         name="recruitment_c_pnm_edit"),
     url(r'^recruitment-chair/pnm/add/$', views.recruitment_c_pnm_add, name="recruitment_c_pnm_add"),
     url(r'^recruitment-chair/pnm/(?P<pk>\d+)/delete/$', views.PnmDelete.as_view(), name="recruitment_c_pnm_delete"),
-    url(r'^recruitment-chair/committee/event/(?P<event_id>[0-9]+)/$', views.recruitment_committee_event,
-        name='recruitment_committee_event'),
-    url(r'^recruitment-chair/committee/event/(?P<pk>\d+)/edit/$', views.RecruitmentCommitteeEventEdit.as_view(),
-        name='recruitment_committee_event_edit'),
 
     url(r'^recruitment-chair/pnm/all_pnms.csv$', views.all_pnm_csv, name="all_pnm_csv"),
 
@@ -195,7 +194,10 @@ urlpatterns = [
     url(r'details/sunday/post$', views.post_sunday, name='post_sunday_details'),
 
     url(r'^prchair/$', views.public_relations_c, name="public_relations_c"),
-    
+    url(r'^social-chair/$', views.social_c, name="social_c"),
+    url(r'^alumni-relations-chair/$', views.alumni_relations_c, name="alumni_relations_c"),
+    url(r'^memdev-chair/$', views.memdev_c, name="memdev_c"),
+
     # Connect with Us URL section
     url(r'^minecraft/$', views.minecraft, name ='minecraft'),
 

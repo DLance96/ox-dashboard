@@ -110,7 +110,7 @@
                 <div class="brothergrayline"></div>
                 <div></div>
                 <div></div>
-                <div><a href={% url 'dashboard:recruitment_committee_event' meeting.id%}>{{ meeting.get_committee_display }}</a></div>
+                <div><a href={% url 'dashboard:committee_event' meeting.id%}>{{ meeting.get_committee_display }}</a></div>
                 <div>{{ meeting.date }} - {{ meeting.start_time }}</div>
                 <div>
                     {% if meeting.minutes %}
@@ -133,7 +133,7 @@
                 <div class="brothergrayline"></div>
                 <div></div>
                 <div></div>
-                <div><a href={% url 'dashboard:recruitment_committee_event' meeting.id%}>{{ meeting.get_committee_display }}</a></div>
+                <div><a href={% url 'dashboard:committee_event' meeting.id%}>{{ meeting.get_committee_display }}</a></div>
                 <div>{{ meeting.date }} - {{ meeting.start_time }}</div>
                 <div>
                     {% if meeting.minutes %}
