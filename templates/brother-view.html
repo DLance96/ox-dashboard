@@ -86,9 +86,13 @@
                         </tr>
                         </tbody>
                     </table>
-                    <a class="btn btn-default" href={% url 'dashboard:secretary_brother_edit' brother.id %} role="button">Edit
-                        information</a>
-                <a class="btn btn-default" href={% url 'dashboard:secretary_brother_delete' brother.id %} role="button">Delete</a>
+                    {% if position == 'Secretary' %}
+                        <a class="btn btn-default" href={% url 'dashboard:secretary_brother_edit' brother.id %} role="button">Edit information</a>
+                        <a class="btn btn-default" href={% url 'dashboard:secretary_brother_delete' brother.id %} role="button">Delete</a>
+                    {% elif position == 'Marshal' %}
+                        <a class="btn btn-default" href={% url 'dashboard:marshal_candidate_edit' brother.id %}>Edit information</a>
+                        <a class="btn btn-default" href={% url 'dashboard:marshal_candidate_delete' brother.id %}>Delete</a>
+                    {% endif %}
                 </div>
                 <div class="col-lg-2"></div>
             </div>

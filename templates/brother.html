@@ -158,7 +158,7 @@
                 <div class="brothergrayline"></div>
                 <div></div>
                 <div></div>
-                <div><a href={% url 'dashboard:brother_chapter_event' event.id %}>{{ event.name }}</a></div>
+                <div><a href={% url 'dashboard:brother_chapter_event' type event.id %}>{{ event.name }}</a></div>
                 <div>{{ event.date }}</div>
                 <div>{{ attendance }}</div>
                 <div></div>
@@ -182,7 +182,7 @@
                 <div class="brothergrayline"></div>
                 <div></div>
                 <div></div>
-                <div><a href={% url 'dashboard:brother_recruitment_event' event.id %}>{{ event.name }}</a></div>
+                <div><a href={% url 'dashboard:brother_recruitment_event' type event.id %}>{{ event.name }}</a></div>
                 <div>{{ event.date }}</div>
                 <div>{{ event.rush }}</div>
                 <div></div>
@@ -201,7 +201,7 @@
                 <div class="brothergrayline"></div>
                 <div></div>
                 <div></div>
-                <div><a href={% url 'dashboard:brother_recruitment_event' event.id %}>{{ event.name }}</a></div>
+                <div><a href={% url 'dashboard:brother_recruitment_event' type event.id %}>{{ event.name }}</a></div>
                 <div>{{ event.date }}</div>
                 <div>{{ event.rush }}</div>
                 <div></div>
@@ -222,7 +222,7 @@
                     <div class="brothergrayline"></div>
                     <div></div>
                     <div></div>
-                    <div><a href={% url 'dashboard:brother_hs_event' event.id %}>{{ event.name }}</a></div>
+                    <div><a href={% url 'dashboard:brother_hs_event' type event.id %}>{{ event.name }}</a></div>
                     <div>{{ event.date }}</div>
                     <div></div>
                     <div></div>
@@ -242,7 +242,7 @@
                 <div class="brothergrayline"></div>
                 <div></div>
                 <div></div>
-                <div><a href={% url 'dashboard:brother_philanthropy_event' event.id %}>{{ event.name }}</a></div>
+                <div><a href={% url 'dashboard:brother_philanthropy_event' type event.id %}>{{ event.name }}</a></div>
                 <div>{{ event.date }}</div>
                 <div></div>
                 <div></div>
@@ -263,7 +263,7 @@
                     <div class="brothergrayline"></div>
                     <div></div>
                     <div></div>
-                    <div><a href={% url 'dashboard:brother_service_event' event.id %}>{{ event.name }}</a></div>
+                    <div><a href={% url 'dashboard:brother_service_event' type event.id %}>{{ event.name }}</a></div>
                     <div>{{ event.date }}</div>
                     <div></div>
                     <div></div>

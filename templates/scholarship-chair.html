@@ -56,6 +56,7 @@
                 <tr>
                     <td>Date:</td>
                     <td>Time:</td>
+                    <td>Edit?</td>
                     <td>Delete?</td>
                 </tr>
                 </thead>
@@ -68,6 +69,8 @@
                                 <br>{{ event.end_time }}
                             {% endif %}
                         </td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:scholarship_c_event_edit' event.id %}>+</a></td>
                         <td><a class="btn btn-default"
                                href={% url 'dashboard:scholarship_c_event_delete' event.id %}>X</a></td>
                     </tr>

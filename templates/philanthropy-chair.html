@@ -9,13 +9,14 @@
         <h1>{{ position }}</h1>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Semester Events</div>
+        <div class="panel-heading">Philanthropy Events</div>
         <div class="panel-body">
-            <table class="table table-event-information">
+            <table class="table table-condensed">
                 <thead style="font-weight:bold;">
                 <tr>
                     <td>Event:</td>
                     <td>Date:</td>
+                    <td>Edit?</td>
                     <td>Delete?</td>
                 </tr>
                 </thead>
@@ -24,6 +25,8 @@
                     <tr>
                         <td><a href={% url 'dashboard:philanthropy_c_event' event.id %}>{{ event.name }}</a></td>
                         <td>{{ event.date }}</td>
+                        <td><a class="btn btn-default"
+                               href={% url 'dashboard:philanthropy_c_event_delete' event.id %}>X</a></td>
                         <td><a class="btn btn-default"
                                href={% url 'dashboard:philanthropy_c_event_delete' event.id %}>X</a></td>
                     </tr>

@@ -1,3 +1,5 @@
+from django.forms import SelectDateWidget
+
 from .models import *
 from django import forms
 
@@ -22,6 +24,24 @@ class BrotherForm(forms.ModelForm):
             'room_number', 'address', 'emergency_contact',
             'emergency_contact_phone_number',
         ]
+        widgets = {
+            'birthday': SelectDateWidget(years={1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020}),
+        }
+
+
+class BrotherEditForm(forms.ModelForm):
+    class Meta:
+        model = Brother
+        fields = [
+            'first_name', 'last_name', 'roster_number', 'semester_joined',
+            'school_status', 'brother_status', 'case_ID', 'major', 'minor',
+            'birthday', 'hometown', 't_shirt_size', 'phone_number',
+            'room_number', 'address', 'emergency_contact',
+            'emergency_contact_phone_number',
+        ]
+        widgets = {
+            'birthday': SelectDateWidget(years={1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020}),
+        }
 
 
 class PositionForm(forms.ModelForm):
@@ -47,7 +67,7 @@ class PotentialNewMemberForm(forms.ModelForm):
         model = PotentialNewMember
         fields = [
             'first_name', 'last_name', 'case_ID', 'phone_number',
-            'primary_contact', 'secondary_contact', 'tertiary_contact',
+            'primary_contact', 'secondary_contact', 'tertiary_contact', 'notes'
         ]
 
 
@@ -55,18 +75,27 @@ class StudyTableEventForm(forms.ModelForm):
     class Meta:
         model = StudyTableEvent
         fields = ['date', 'start_time', 'end_time', 'description']
+        widgets = {
+            'date': SelectDateWidget(),
+        }
 
 
 class ScholarshipEventForm(forms.ModelForm):
     class Meta:
         model = ScholarshipEvent
         fields = ['name', 'date', 'start_time', 'end_time', 'description']
+        widgets = {
+            'date': SelectDateWidget(),
+        }
 
 
 class HealthAndSafetyEventForm(forms.ModelForm):
     class Meta:
         model = HealthAndSafetyEvent
         fields = ['name', 'date', 'start_time', 'end_time', 'description']
+        widgets = {
+            'date': SelectDateWidget(),
+        }
 
 
 class ChapterEventForm(forms.ModelForm):
@@ -76,30 +105,59 @@ class ChapterEventForm(forms.ModelForm):
             'name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes',
             'description',
         ]
+        widgets = {
+            'date': SelectDateWidget(),
+        }
+
+
+class CandidateEditForm(forms.ModelForm):
+    class Meta:
+        model = Brother
+        fields = ['first_name', 'last_name', 'roster_number', 'semester_joined',
+                  'school_status', 'brother_status', 'major', 'minor', 't_shirt_size',
+                  'case_ID', 'birthday', 'hometown', 'phone_number',
+                  'emergency_contact_phone_number', 'emergency_contact', 'room_number',
+                  'address'
+        ]
+        widgets = {
+            'birthday': SelectDateWidget(years={1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020}),
+        }
 
 
 class RecruitmentEventForm(forms.ModelForm):
     class Meta:
         model = RecruitmentEvent
         fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'picture', 'location', 'description']
+        widgets = {
+            'date': SelectDateWidget(),
+        }
 
 
 class PhilanthropyEventForm(forms.ModelForm):
     class Meta:
         model = PhilanthropyEvent
         fields = ['name', 'date', 'start_time', 'end_time']
+        widgets = {
+            'date': SelectDateWidget(),
+        }
 
 
 class ServiceEventForm(forms.ModelForm):
     class Meta:
         model = ServiceEvent
         fields = ['name', 'date', 'start_time', 'end_time', 'description']
+        widgets = {
+            'date': SelectDateWidget(),
+        }
 
 
 class ServiceSubmissionForm(forms.ModelForm):
     class Meta:
         model = ServiceSubmission
         fields = ['name', 'date', 'hours', 'description']
+        widgets = {
+            'date': SelectDateWidget(),
+        }
 
 
 class ServiceSubmissionResponseForm(forms.ModelForm):
@@ -112,6 +170,9 @@ class CommitteeMeetingForm(forms.ModelForm):
     class Meta:
         model = CommitteeMeetingEvent
         fields = ['date', 'start_time', 'end_time', 'minutes']
+        widgets = {
+            'date': SelectDateWidget(),
+        }
 
 
 class SuppliesForm(forms.ModelForm):

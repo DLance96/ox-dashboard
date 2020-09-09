@@ -23,6 +23,7 @@
                 <tr>
                     <td>Event:</td>
                     <td>Date:</td>
+                    <td>Edit?</td>
                     <td>Delete?</td>
                 </tr>
                 </thead>
@@ -31,6 +32,8 @@
                     <tr>
                         <td><a href={% url 'dashboard:recruitment_c_event' event.id %}>{{ event }}</a></td>
                         <td>{{ event.date }}</td>
+                        <td><a class="btn btn-default"
+                            href={% url 'dashboard:recruitment_c_event_edit' event.id %}>+</a></td>
                         <td><a class="btn btn-default"
                                href={% url 'dashboard:recruitment_c_event_delete' event.id %}>X</a></td>
                     </tr>
@@ -56,6 +59,8 @@
                     <tr>
                         <td><a href={% url 'dashboard:recruitment_c_event' event.id %}>{{ event }}</a></td>
                         <td>{{ event.date }}</td>
+                        <td><a class="btn btn-default"
+                            href={% url 'dashboard:recruitment_c_event_edit' event.id %}>+</a></td>
                         <td><a class="btn btn-default"
                                href={% url 'dashboard:recruitment_c_event_delete' event.id %}>X</a></td>
                     </tr>
@@ -148,7 +153,7 @@
                 <tbody>
                 {% for meeting in committee_meetings %}
                     <tr>
-                        <td><a href={% url 'dashboard:committee_event' meeting.id%}>{{ meeting.date }} - {{ meeting.start_time }}</a></td>
+                        <td><a href={% url 'dashboard:committee_event' meeting.id %}>{{ meeting.date }} - {{ meeting.start_time }}</a></td>
                         {% if meeting.minutes %}
                             <td><a href="{{ meeting.minutes }}">link</a></td>
                         {% else %}

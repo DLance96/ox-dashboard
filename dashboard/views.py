@@ -156,7 +156,8 @@ def event_list(request):
         'recruitment_events': recruitment_events,
         'service_events': service_events,
         'philanthropy_events': philanthropy_events,
-        'hs_events' : hs_events,
+        'hs_events': hs_events,
+        'type': 'general'
     }
 
     return render(request, "event-list.html", context)
@@ -281,11 +282,12 @@ def brother_view(request):
         'philanthropy_events': philanthropy_events,
         'hours_approved': hours_approved,
         'hours_pending': hours_pending,
+        'type': 'brother-view'
     }
     return render(request, "brother.html", context)
 
 
-def brother_chapter_event(request, event_id):
+def brother_chapter_event(request, event_id, view):
     """ Renders the brother page for chapter event with a excuse form """
     if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother chapter events")
@@ -312,14 +314,14 @@ def brother_chapter_event(request, event_id):
             return HttpResponseRedirect(reverse('dashboard:brother'))
 
     context = {
-        'type': 'brother-view',
+        'type': view,
         'form': form,
         'event': event,
     }
     return render(request, "chapter-event.html", context)
 
 
-def brother_service_event(request, event_id):
+def brother_service_event(request, event_id, view):
     """ Renders the brother page for service event with a excuse form """
     if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother chapter events")
@@ -339,7 +341,7 @@ def brother_service_event(request, event_id):
         return HttpResponseRedirect(reverse('dashboard:brother'))
 
     context = {
-        'type': 'brother-view',
+        'type': view,
         'brothers_rsvp': brothers_rsvp,
         'rsvpd': rsvp_brother.exists(),
         'event': event,
@@ -348,7 +350,7 @@ def brother_service_event(request, event_id):
     return render(request, "service-event.html", context)
 
 
-def brother_philanthropy_event(request, event_id):
+def brother_philanthropy_event(request, event_id, view):
     """ Renders the brother page for service event with a excuse form """
     if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother chapter events")
@@ -368,7 +370,7 @@ def brother_philanthropy_event(request, event_id):
         return HttpResponseRedirect(reverse('dashboard:brother'))
 
     context = {
-        'type': 'brother-view',
+        'type': view,
         'brothers_rsvp': brothers_rsvp,
         'rsvpd': rsvp_brother.exists(),
         'event': event,
@@ -377,7 +379,7 @@ def brother_philanthropy_event(request, event_id):
     return render(request, "philanthropy-event.html", context)
 
 
-def brother_recruitment_event(request, event_id):
+def brother_recruitment_event(request, event_id, view):
     """ Renders the brother page for recruitment event with a excuse form """
     if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother chapter events")
@@ -387,59 +389,14 @@ def brother_recruitment_event(request, event_id):
     attendees_pnms = event.attendees_pnms.all()
 
     context = {
-        'type': 'brother-view',
+        'type': view,
         'attendees_pnms': attendees_pnms,
         'event': event,
     }
     return render(request, "recruitment-event.html", context)
 
 
-def general_recruitment_event(request, event_id):
-    event = RecruitmentEvent.objects.get(pk=event_id)
-
-    context = {
-        'event': event,
-    }
-    return render(request, "recruitment-event.html", context)
-
-
-def general_hs_event(request, event_id):
-    event = HealthAndSafetyEvent.objects.get(pk=event_id)
-
-    context = {
-        'event': event,
-    }
-    return render(request, "hs-event.html", context)
-
-
-def general_philanthropy_event(request, event_id):
-    event = PhilanthropyEvent.objects.get(pk=event_id)
-
-    context = {
-        'event': event,
-    }
-    return render(request, "philanthropy-event.html", context)
-
-
-def general_service_event(request, event_id):
-    event = ServiceEvent.objects.get(pk=event_id)
-
-    context = {
-        'event': event,
-    }
-    return render(request, "service-event.html", context)
-
-
-def general_chapter_event(request, event_id):
-    event = ChapterEvent.objects.get(pk=event_id)
-
-    context = {
-        'event': event,
-    }
-    return render(request, "chapter-event.html", context)
-
-
-def brother_hs_event(request, event_id):
+def brother_hs_event(request, event_id, view):
     """ Renders the brother page for health and safety event with a excuse form """
     if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother not logged in before viewing brother Health and Safety events")
@@ -448,7 +405,7 @@ def brother_hs_event(request, event_id):
     event = HealthAndSafetyEvent.objects.get(pk=event_id)
 
     context = {
-        'type': 'brother-view',
+        'type': view,
         'event': event,
     }
     return render(request, "hs-event.html", context)
@@ -506,10 +463,7 @@ class BrotherEdit(UpdateView):
 
     model = Brother
     success_url = reverse_lazy('dashboard:brother')
-    fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
-              'major', 'minor', 't_shirt_size', 'case_ID', 'birthday', 'hometown', 'phone_number',
-              'emergency_contact_phone_number', 'emergency_contact', 'room_number',
-              'address']
+    form_class = BrotherEditForm
 
 
 def brother_pnm(request, pnm_id):
@@ -600,7 +554,7 @@ class ServiceSubmissionEdit(UpdateView):
 
     model = ServiceSubmission
     success_url = reverse_lazy('dashboard:brother')
-    fields = ['name', 'date', 'description', 'hours', 'status']
+    form_class = ServiceSubmissionForm
 
 
 @verify_position(['President', 'Adviser'])
@@ -826,7 +780,7 @@ class CommitteeEventEdit(UpdateView):
         return reverse('dashboard:committee_event', args=[int(self.request.GET.get('id'))])
 
     model = CommitteeMeetingEvent
-    fields = ['date', 'start_time', 'semester', 'minutes']
+    form_class = CommitteeMeetingForm
 
 
 @verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
@@ -882,7 +836,7 @@ class HealthAndSafetyEdit(UpdateView):
 
     model = HealthAndSafetyEvent
     success_url = reverse_lazy('dashboard:vphs')
-    fields = ['name', 'date', 'start_time', 'end_time', 'description', 'minutes']
+    form_class = HealthAndSafetyEventForm
 
 
 class HealthAndSafetyDelete(DeleteView):
@@ -1169,7 +1123,8 @@ def secretary_brother_view(request, brother_id):
     """ Renders the Secretary way of viewing a brother """
     brother = Brother.objects.get(pk=brother_id)
     context = {
-        'brother': brother
+        'brother': brother,
+        'position': 'Secretary'
     }
     return render(request, "brother-view.html", context)
 
@@ -1215,10 +1170,7 @@ class SecretaryBrotherEdit(UpdateView):
 
     model = Brother
     success_url = reverse_lazy('dashboard:secretary_brother_list')
-    fields = ['first_name', 'last_name', 'roster_number', 'semester_joined', 'school_status', 'brother_status',
-              'major', 'minor', 't_shirt_size', 'case_ID', 'birthday', 'hometown', 'phone_number',
-              'emergency_contact_phone_number', 'emergency_contact', 'standing_committee', 'operational_committee',
-              'room_number', 'address']
+    form_class = BrotherEditForm
 
 
 class SecretaryBrotherDelete(DeleteView):
@@ -1272,7 +1224,7 @@ class ChapterEventEdit(UpdateView):
 
     model = ChapterEvent
     success_url = reverse_lazy('dashboard:secretary')
-    fields = ['name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes', 'description']
+    form_class = ChapterEventForm
 
 
 class ChapterEventDelete(DeleteView):
@@ -1403,7 +1355,8 @@ def marshal_candidate(request, brother_id):
     """ Renders the marshal page to view candidate info """
     brother = Brother.objects.get(pk=brother_id)
     context = {
-        'brother': brother
+        'brother': brother,
+        'position': 'Marshal',
     }
     return render(request, "brother-view.html", context)
 
@@ -1449,13 +1402,7 @@ class CandidateEdit(UpdateView):
 
     model = Brother
     success_url = reverse_lazy('dashboard:marshal')
-    fields = [
-        'first_name', 'last_name', 'roster_number', 'semester_joined',
-        'school_status', 'brother_status', 'major', 'minor', 't_shirt_size',
-        'case_ID', 'birthday', 'hometown', 'phone_number',
-        'emergency_contact_phone_number', 'emergency_contact', 'room_number',
-        'address'
-    ]
+    form_class = CandidateEditForm
 
 
 class CandidateDelete(DeleteView):
@@ -1574,7 +1521,7 @@ class StudyEventEdit(UpdateView):
 
     model = StudyTableEvent
     success_url = reverse_lazy('dashboard:scholarship_c')
-    fields = ['date', 'start_time', 'end_time', 'description']
+    form_class = StudyTableEventForm
 
 
 @verify_position(['Scholarship Chair', 'President', 'Adviser'])
@@ -1758,8 +1705,7 @@ class PnmEdit(UpdateView):
 
     model = PotentialNewMember
     success_url = reverse_lazy('dashboard:recruitment_c')
-    fields = ['first_name', 'last_name', 'case_ID', 'phone_number', 'primary_contact', 'secondary_contact',
-              'tertiary_contact', 'notes']
+    form_class = PotentialNewMemberForm
 
 
 @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
@@ -1858,9 +1804,9 @@ class RecruitmentEventEdit(UpdateView):
     def get(self, request, *args, **kwargs):
         return super(RecruitmentEventEdit, self).get(request, *args, **kwargs)
 
+    form_class = RecruitmentEventForm
     model = RecruitmentEvent
     success_url = reverse_lazy('dashboard:recruitment_c')
-    fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'picture', 'location', 'description']
 
 
 @verify_position(['Service Chair', 'ec', 'Adviser'])
@@ -1939,7 +1885,7 @@ class ServiceEventEdit(UpdateView):
 
     model = ServiceEvent
     success_url = reverse_lazy('dashboard:service_c')
-    fields = ['name', 'date', 'start_time', 'end_time', 'description']
+    form_class = ServiceEventForm
 
 
 @verify_position(['Service Chair', 'ec', 'Adviser'])
@@ -2111,7 +2057,7 @@ class PhilanthropyEventEdit(UpdateView):
 
     model = PhilanthropyEvent
     success_url = reverse_lazy('dashboard:philanthropy_c')
-    fields = ['name', 'date', 'start_time', 'end_time', 'description']
+    form_class = PhilanthropyEventForm
 
 
 @verify_position(['Detail Manager', 'Adviser'])

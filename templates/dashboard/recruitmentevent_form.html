@@ -7,13 +7,33 @@
     <div class="jumbotron">
         <h1>Edit Recruitment Event</h1>
     </div>
+
     <div class="panel panel-default">
+        <div class="panel-heading">Edit</div>
         <div class="panel-body">
             {% block model_info %}
             {% endblock %}
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <table>{{ form.as_table }}</table>
+                <table class="table table-condensed">
+                    {% for field in form %}
+                    {% if forloop.counter == 1 %}
+                        <thead>
+                        <tr>
+                            <td>{{ field.label_tag }}</td>
+                            <td>{{ field }}</td>
+                        </tr>
+                        </thead>
+                    <tbody>
+                    {% else %}
+                        <tr>
+                            <td>{{ field.label_tag }}</td>
+                            <td>{{ field }}</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                    {% endfor %}
+                </table>
                 <input type="submit" value="Update"/>
             </form>
         </div>

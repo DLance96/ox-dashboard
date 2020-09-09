@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.urls import reverse
+from django import forms
 
 
 class Semester(models.Model):
@@ -281,11 +282,37 @@ class ScholarshipReport(models.Model):
 
 
 class Event(models.Model):
+    class TimeChoices(datetime.time, models.Choices):
+        T_9 = 9, '9:00 A.M.'
+        T_9_30 = 9,30, '9:30 A.M.'
+        T_10 = 10, '10:00 A.M.'
+        T_10_30 = 10, 30, '10:30 A.M.'
+        T_11 = 11, '11:00 A.M.'
+        T_11_30 = 11, 30, '11:30 A.M.'
+        T_12 = 12, '12:00 P.M.'
+        T_12_30 = 12, 30, '12:30 P.M.'
+        T_13 = 13, '1:00 P.M.'
+        T_13_30 = 13, 30, '1:30 P.M.'
+        T_14 = 14, '2:00 P.M.'
+        T_14_30 = 14, 30, '2:30 P.M.'
+        T_15 = 15, '3:00 P.M.'
+        T_15_30 = 15, 30, '3:30 P.M.'
+        T_16 = 16, '4:00 P.M.'
+        T_16_30 = 16, 30, '4:30 P.M.'
+        T_17 = 17, '5:00 P.M.'
+        T_17_30 = 17, 30, '5:30 P.M.'
+        T_18 = 18, '6:00 P.M.'
+        T_18_30 = 18, 30, '6:30 P.M.'
+        T_19 = 19, '7:00 P.M.'
+        T_19_30 = 19, 30, '7:30 P.M.'
+        T_20 = 20, '8:00 P.M.'
+        T_20_30 = 20, 30, '8:30 P.M.'
+
     name = models.CharField(max_length=200, default="Event")
     date = models.DateField(default=django.utils.timezone.now)
     all_day = models.BooleanField(default=False)
-    start_time = models.TimeField(default=datetime.time(hour=0, minute=0))
-    end_time = models.TimeField(blank=True, null=True)
+    start_time = models.TimeField(default=datetime.time(hour=0, minute=0), choices=TimeChoices.choices)
+    end_time = models.TimeField(blank=True, null=True, choices=TimeChoices.choices)
     attendees_brothers = models.ManyToManyField(Brother, blank=True)
     semester = models.ForeignKey(
         Semester, on_delete=models.CASCADE, blank=True, null=True
@@ -378,18 +405,30 @@ class Committee(models.Model):
     meeting_day = models.IntegerField(choices=MEETING_DAY, blank=True, null=True)
 
     class MeetingTime(datetime.time, models.Choices):
-        T_9 = 9, '9:00'
-        T_10 = 10, '10:00'
-        T_11 = 11, '11:00'
-        T_12 = 12, '12:00'
-        T_13 = 13, '13:00'
-        T_14 = 14, '14:00'
-        T_15 = 15, '15:00'
-        T_16 = 16, '16:00'
-        T_17 = 17, '17:00'
-        T_18 = 18, '18:00'
-        T_19 = 19, '19:00'
-        T_20 = 20, '20:00'
+        T_9 = 9, '9:00 A.M.'
+        T_9_30 = 9,30, '9:30 A.M.'
+        T_10 = 10, '10:00 A.M.'
+        T_10_30 = 10, 30, '10:30 A.M.'
+        T_11 = 11, '11:00 A.M.'
+        T_11_30 = 11, 30, '11:30 A.M.'
+        T_12 = 12, '12:00 P.M.'
+        T_12_30 = 12, 30, '12:30 P.M.'
+        T_13 = 13, '1:00 P.M.'
+        T_13_30 = 13, 30, '1:30 P.M.'
+        T_14 = 14, '2:00 P.M.'
+        T_14_30 = 14, 30, '2:30 P.M.'
+        T_15 = 15, '3:00 P.M.'
+        T_15_30 = 15, 30, '3:30 P.M.'
+        T_16 = 16, '4:00 P.M.'
+        T_16_30 = 16, 30, '4:30 P.M.'
+        T_17 = 17, '5:00 P.M.'
+        T_17_30 = 17, 30, '5:30 P.M.'
+        T_18 = 18, '6:00 P.M.'
+        T_18_30 = 18, 30, '6:30 P.M.'
+        T_19 = 19, '7:00 P.M.'
+        T_19_30 = 19, 30, '7:30 P.M.'
+        T_20 = 20, '8:00 P.M.'
+        T_20_30 = 20, 30, '8:30 P.M.'
 
     meeting_time = models.TimeField(choices=MeetingTime.choices, blank=True)
 

@@ -23,7 +23,7 @@
             {% for committee in committees %}
                 <div class="committeeeventlist">
                     <div></div>
-                    <div><b>{{ committee.get_committee_display }} Committee</b></div>
+                    <div><b>{{ committee.get_committee_display }} Committee</b> - Meets {{ committee.get_meeting_interval_display }} on {{ committee.get_meeting_day_display }} - {{ committee.meeting_time }}</div>
                     <div><b>Minutes:</b></div>
                     <div></div>
                     <div class="grayline"></div>
