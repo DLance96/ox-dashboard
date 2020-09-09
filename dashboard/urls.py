@@ -35,11 +35,13 @@ urlpatterns = [
     url(r'^general/committee-list/$', views.committee_list,
         name="committee_list"),
 
+    url(r'^committee/(?P<pk>\d+)/edit/$', views.CommitteeEdit.as_view(), name='committee_edit'),
+    url(r'^committee/(?P<pk>\d+)/delete/$', views.CommitteeDelete.as_view(), name='committee_delete'),
     url(r'^committee/event/(?P<event_id>[0-9]+)/$', views.committee_event, name='committee_event'),
     url(r'^committee/event/(?P<pk>\d+)/edit/$', views.CommitteeEventEdit.as_view(), name='committee_event_edit'),
     url(r'^(?P<position>\D+)/committee-event/add/$',
         views.committee_event_add, name="committee_event_add"),
-    url(r'^committee-meeting/(?P<pk>\d+)/delete/$', views.CommitteeEventDelete.as_view(),
+    url(r'^committee/event//(?P<pk>\d+)/delete/$', views.CommitteeEventDelete.as_view(),
         name="committee_event_delete"),
 
     # Brother URL section

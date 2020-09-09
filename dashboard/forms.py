@@ -27,7 +27,7 @@ class BrotherForm(forms.ModelForm):
 class PositionForm(forms.ModelForm):
     class Meta:
         model = Position
-        fields = ['title', 'brothers']
+        fields = ['title', 'brothers', 'has_committee']
 
 
 class ExcuseForm(forms.ModelForm):
@@ -157,6 +157,12 @@ class MinecraftPhotoForm(forms.ModelForm):
     class Meta:
         model = MinecraftPhoto
         fields = ['photo']
+
+
+class CommitteeCreateForm(forms.ModelForm):
+    class Meta:
+        model = Committee
+        fields = ['committee', 'type', 'chair', 'meeting_interval', 'meeting_time', 'meeting_day']
 
 
 class CommitteeForm(forms.Form):

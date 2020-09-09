@@ -13,6 +13,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 
+
 from .utils import *
 from datetime import datetime
 from .forms import *
@@ -649,7 +650,7 @@ def vice_president_committee_assignments(request):
                 brother.standing_committee = instance['standing_committee']
                 brother.operational_committee = instance['operational_committee']
                 brother.save()
-            return HttpResponseRedirect(reverse('dashboard:vice_president'))
+            return HttpResponseRedirect(reverse('dashboard:committee_list'))
 
     context = {
         'brother_forms': brother_forms,
@@ -661,13 +662,76 @@ def vice_president_committee_assignments(request):
 def committee_list(request):
     committees = Committee.objects.all()
     brothers = Brother.objects.order_by('last_name')
+    current_brother = Brother.objects.filter(user=request.user)[0]
+
+    form = CommitteeCreateForm(request.POST or None)
+
+    if current_brother in Position.objects.get(title='Vice President').brothers.all():
+        view_type = 'Vice President'
+    else:
+        view_type = 'brother'
+
+    if request.method == 'POST':
+        if form.is_valid():
+            date = datetime.datetime.now()
+            instance = form.save()
+            try:
+                semester = Semester.objects.filter(season=get_season_from(date.month),
+                                                   year=date.year)[0]
+            except IndexError:
+                semester = Semester(season=get_season_from(date.month),
+                                    year=date.year)
+                semester.save()
+            instance = form.cleaned_data
+            if date.weekday() >= instance['meeting_day']:
+                date_offset = 7 + instance['meeting_day'] - date.weekday()
+            elif date.weekday() < instance['meeting_day']:
+                date_offset = instance['meeting_day'] - date.weekday()
+            date = date + datetime.timedelta(days=date_offset)
+            start_date = date
+            end_date = date
+            if semester.season == '2':
+                end_date = datetime.datetime(date.year, 12, 31)
+            elif semester.season == '0':
+                end_date = datetime.datetime(date.year, 5, 31)
+            day_count = int((end_date - start_date).days/instance['meeting_interval']) + 1
+            for date in (start_date + datetime.timedelta(instance['meeting_interval'])*n for n in range(day_count)):
+                event = CommitteeMeetingEvent(date=date, start_time=instance['meeting_time'], semester=semester,
+                                              committee=Committee.objects.get(committee=instance['committee']))
+                event.save()
+            return HttpResponseRedirect(reverse('dashboard:committee_list'))
 
     context = {
         'committees': committees,
         'brothers': brothers,
+        'form': form,
+        'view_type': view_type
     }
 
     return render(request, 'committee-list.html', context)
+
+
+class CommitteeDelete(DeleteView):
+    @verify_position(['Vice President', 'President', 'Adviser'])
+    def get(self, request, *args, **kwargs):
+        return super(CommitteeDelete, self).get(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return HttpResponseRedirect(reverse('dashboard:committee_list'))
+
+    model = Committee
+    template_name = 'dashboard/base_confirm_delete.html'
+
+
+class CommitteeEdit(UpdateView):
+    def get(self, request, *args, **kwargs):
+        return super(CommitteeEdit, self).get(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return self.request.GET.get('next')
+
+    model = Committee
+    fields = ['meeting_day', 'meeting_time', 'meeting_interval']
 
 
 def committee_event(request, event_id):
@@ -742,7 +806,7 @@ def committee_event_add(request, position):
 
 
 class CommitteeEventDelete(DeleteView):
-    @verify_position(['Vice President', 'President', 'Adviser'])
+#    @verify_position(['Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(CommitteeEventDelete, self).get(request, *args, **kwargs)
 
@@ -754,7 +818,7 @@ class CommitteeEventDelete(DeleteView):
 
 
 class CommitteeEventEdit(UpdateView):
-    @verify_position(['Vice President', 'President', 'Adviser'])
+#    @verify_position(['Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(CommitteeEventEdit, self).get(request, *args, **kwargs)
 
@@ -1287,7 +1351,7 @@ class PositionEdit(UpdateView):
 
     model = Position
     success_url = reverse_lazy('dashboard:secretary_positions')
-    fields = ['brother']
+    fields = ['brothers', 'has_committee']
 
 
 class PositionDelete(DeleteView):
@@ -1427,7 +1491,6 @@ def scholarship_c(request):
 
     context.update({
         'position': 'Scholarship Chair',
-        'committee': 'Scholarship',
         'events': events,
         'brother_plans': brother_plans,
     })

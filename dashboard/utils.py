@@ -17,7 +17,15 @@ ec = [
     'Scholarship Chair',
 ]
 # Positions not on EC that have importance on the dashboard
-non_ec = ['Service Chair', 'Philanthropy Chair', 'Detail Manager']
+non_ec = ['Service Chair', 'Philanthropy Chair', 'Detail Manager', 'Alumni Relations Chair',
+          'Membership Development Chair', 'Social Chair', 'Public Relations Chair'
+]
+
+has_committee = [
+    'Vice President of Health and Safety', 'Recruitment Chair',
+    'Scholarship Chair', 'Philanthropy Chair', 'Alumni Relations Chair',
+    'Membership Development Chair', 'Social Chair', 'Public Relations Chair'
+]
 
 # Toggle dependant on whether you want position verification
 # if os.environ.get('DEBUG'):
@@ -127,7 +135,7 @@ def committee_meeting_panel(committee_name):
     committee_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester()) \
         .filter(committee=Committee.objects.get(committee=committee_name)).order_by("start_time").order_by("date")
     position = Committee.objects.get(committee=committee_name).chair.title
-    committee = Committee.objects.get(committee=committee_name).get_committee_display
+    committee = Committee.objects.get(committee=committee_name)
     context = {
         'committee_meetings': committee_meetings,
         'position': position,

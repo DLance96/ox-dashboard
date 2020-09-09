@@ -104,12 +104,42 @@
     </div>
 
     <div class="panel panel-default">
+        <div class="panel-heading">Committee Info</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class=" col-lg-2 "></div>
+                <div class=" col-lg-8 ">
+                    <table class="table table-event-information">
+                        <tr>
+                            <td>Committee:</td>
+                            <td>{{ committee.get_committee_display }}</td>
+                        </tr>
+                        <tr>
+                            <td>Meeting Day:</td>
+                            <td>{{ committee.get_meeting_day_display }}</td>
+                        </tr>
+                        <tr>
+                            <td>Meeting Time:</td>
+                            <td>{{ committee.meeting_time }}</td>
+                        </tr>
+                        <tr>
+                            <td>Meeting Frequency</td>
+                            <td>{{ committee.get_meeting_interval_display }}</td>
+                        </tr>
+                    </table>
+                    <a class="btn btn-default" href={% url 'dashboard:committee_edit' committee.id %}?next={{ request.path }} role="button">Edit Committee</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
         <div class="panel-heading">Committee Meeting</div>
         <div class="panel-body">
             <table class="table table-condensed">
                 <thead style="font-weight:bold;">
                 <tr>
-                    <td>{{ committee }}</td>
+                    <td>{{ committee.get_committee_display }} Committee</td>
                     <td>Minutes:</td>
                     <td>Edit?</td>
                     <td>Delete?</td>

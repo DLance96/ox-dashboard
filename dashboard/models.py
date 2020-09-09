@@ -39,55 +39,6 @@ def enumerated_choices(choices):
 
     return enum_choices
 
-
-class CommitteeMap:
-    def __init__ (self, standing, operational):
-        self.__standing_map = enumerated_choices(standing + ["Unassigned"])
-        self.__operational_map = enumerated_choices(operational + ["Unassigned"])
-        self.__combined_list = standing + operational
-        self.__combined_map = enumerated_choices(self.__combined_list)
-        self.__length_standing = len(standing)
-
-    @property
-    def standing_unassigned(self):
-        return str(len(self.__standing_map) - 1)
-
-    @property
-    def operational_unassigned(self):
-        return str(len(self.__operational_map) - 1)
-
-    @property
-    def standing_map(self):
-        return self.__standing_map
-
-    @property
-    def operational_map(self):
-        return self.__operational_map
-
-    @property
-    def combined_map(self):
-        return self.__combined_map
-
-    def committee_name(self, committee_id):
-        return self.__combined_list(int(committee_id))
-
-    def committee_id(self, committee_name):
-        for counter, committee in enumerate(self.__combined_list):
-            if committee == committee_name:
-                return str(counter)
-        return None
-
-    def committee_mapping(self, committee_id):
-        id_value = int(committee_id)
-        if id_value >= self.__length_standing:
-            return {'operational_committee' : str(id_value - self.__length_standing)}
-        else:
-            return {'standing_committee' : str(id_value)}
-
-    def mapping_from_name(self, committee_name):
-        return self.committee_mapping(self.committee_id(committee_name))
-
-
 ALUMNI_RELATIONS = 'AR'
 MEMBERSHIP_DEVELOPMENT = 'MD'
 PHILANTHROPY = 'PH'
@@ -216,7 +167,25 @@ class Brother(models.Model):
 
 
 class Position(models.Model):
-    title = models.CharField(max_length=45)
+    class PositionChoices(models.TextChoices):
+        PRESIDENT = 'President'
+        VICE_PRESIDENT = 'Vice President'
+        VPHS = 'Vice President of Health and Safety'
+        SECRETARY = 'Secretary'
+        TREASURER = 'Treasurer'
+        MARSHEL = 'Marshal'
+        RECRUITMENT_CHAIR = 'Recruitment Chair'
+        SCHOLARSHIP_CHAIR = 'Scholarship Chair'
+        DETAIL_MANAGER = 'Detail Manager'
+        PHILANTHROPY_CHAIR = 'Philanthropy Chair'
+        PUBLIC_RELATIONS_CHAIR = 'Public Relations Chair'
+        SERVICE_CHAIR = 'Service Chair'
+        ALUMNI_RELATIONS_CHAIR = 'Alumni Relations Chair'
+        MEMBERSHIP_DEVELOPMENT_CHAIR = 'Membership Development Chair'
+        SOCIAL_CHAIR = 'Social Chair'
+        ADVISER = 'Adviser'
+
+    title = models.CharField(max_length=45, choices=PositionChoices.choices, unique=True)
     ec = models.BooleanField(default=False)
     brothers = models.ManyToManyField(Brother, related_name='brothers')
     has_committee = models.BooleanField(default=False)
@@ -389,12 +358,40 @@ class Committee(models.Model):
     members = models.ManyToManyField(Brother, blank=True)
     chair = models.OneToOneField(Position, on_delete=models.PROTECT, limit_choices_to={'has_committee': True})
 
-    class MeetingTimes(datetime.timedelta, models.Choices):
-        WEEKLY = 168, 'Weekly'
-        BIWEEKLY = 336, 'Biweekly'
-        MONTHLY = 672, 'Monthly'
+    class MeetingIntervals(models.IntegerChoices):
+        WEEKLY = 7, 'Weekly'
+        BIWEEKLY = 14, 'Biweekly'
+        MONTHLY = 28, 'Monthly'
 
-    meeting_time = models.DurationField(blank=True, choices=MeetingTimes.choices)
+    meeting_interval = models.IntegerField(choices=MeetingIntervals.choices, blank=True, null=True)
+
+    MEETING_DAY = [
+        (0, 'Monday'),
+        (1, 'Tuesday'),
+        (2, 'Wednesday'),
+        (3, 'Thursday'),
+        (4, 'Friday'),
+        (5, 'Saturday'),
+        (6, 'Sunday'),
+    ]
+
+    meeting_day = models.IntegerField(choices=MEETING_DAY, blank=True, null=True)
+
+    class MeetingTime(datetime.time, models.Choices):
+        T_9 = 9, '9:00'
+        T_10 = 10, '10:00'
+        T_11 = 11, '11:00'
+        T_12 = 12, '12:00'
+        T_13 = 13, '13:00'
+        T_14 = 14, '14:00'
+        T_15 = 15, '15:00'
+        T_16 = 16, '16:00'
+        T_17 = 17, '17:00'
+        T_18 = 18, '18:00'
+        T_19 = 19, '19:00'
+        T_20 = 20, '20:00'
+
+    meeting_time = models.TimeField(choices=MeetingTime.choices, blank=True)
 
 
 class CommitteeMeetingEvent(Event):

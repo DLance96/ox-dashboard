@@ -14,14 +14,14 @@
             {% for committee in committees %}
                 <div class="committeelist">
                     <div></div>
-                    <div><b>{{ committee.get_committee_display }} Committee</b></div>
-                    <div><b>Meeting Time:</b> {{ committee.get_meeting_time_display }}</div>
+                    <div><b>{{ committee.get_committee_display }} Committee</b> - {% if view_type == 'Vice President' %} <a href={% url 'dashboard:committee_delete' committee.id %}>Delete? {% endif %}</a></div>
+                    <div style="justify-self: end;"><b>Meeting Time:</b> {{ committee.get_meeting_interval_display }} on {{ committee.get_meeting_day_display }} - {{ committee.meeting_time }}</div>
                     <div></div>
                     <div class="committeegrayline"></div>
                     {% for brother in committee.chair.brothers.all %}
                     <div></div>
-                    <div style="grid-column: 2/3;">{{ brother.first_name }} {{ brother.last_name }}</div>
-                    <div>Chairman</div>
+                    <div style="grid-column: 2/3;">{{ brother.first_name }} {{ brother.last_name }} - Chairman</div>
+                    <div></div>
                     <div></div>
                     {% endfor %}
                     {% for brother in committee.members.all %}
@@ -37,4 +37,22 @@
             {% endfor %}
         </div>
     </div>
+
+    {% if view_type == 'Vice President' %}
+    <div class="panel panel-default">
+        <div class="panel-heading">Add Committee</div>
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <div class="panel-body">
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Add Photo"/>
+            </form>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}

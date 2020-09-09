@@ -50,7 +50,6 @@
                             </tr>
                         {% endif %}
                         </tbody>
-                        {{ event.committee.members.objects.all }}
                     </table>
                     {% if type == 'chairman' %}
                     <a class="btn btn-default" href={% url 'dashboard:committee_event_edit' event.id %}?id={{ event.id }} role="button">Edit event</a>
