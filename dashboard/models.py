@@ -31,15 +31,6 @@ class Semester(models.Model):
         return "%s - %s" % (self.year, self.get_season_display())
 
 
-def enumerated_choices(choices):
-    enum_choices = set()
-
-    for counter, choice in enumerate(choices):
-        string_counter = str(counter)
-        enum_choices.add((string_counter, choice))
-
-    return enum_choices
-
 ALUMNI_RELATIONS = 'AR'
 MEMBERSHIP_DEVELOPMENT = 'MD'
 PHILANTHROPY = 'PH'
@@ -126,25 +117,6 @@ class Brother(models.Model):
     room_number = models.CharField(max_length=3, default="NA")
     address = models.CharField(max_length=200, default="Theta Chi House")
 
-    STANDING_COMMITTEE_CHOICES = [
-        (PUBLIC_RELATIONS, 'Public Relations'),
-        (RECRUITMENT, 'Recruitment'),
-        (SOCIAL, 'Social'),
-        (HEALTH_AND_SAFETY, 'Health and Safety'),
-        (UNASSIGNED, 'Unassigned')
-    ]
-
-    OPERATIONAL_COMMITTEE_CHOICES = [
-        (ALUMNI_RELATIONS, 'Alumni Relations'),
-        (MEMBERSHIP_DEVELOPMENT, 'Membership Development'),
-        (PHILANTHROPY, 'Philanthropy'),
-        (SCHOLARSHIP, 'Scholarship'),
-        (UNASSIGNED, 'Unassigned')
-    ]
-
-    standing_committee = models.CharField(max_length=2, choices=STANDING_COMMITTEE_CHOICES, default=UNASSIGNED)
-    operational_committee = models.CharField(max_length=2, choices=OPERATIONAL_COMMITTEE_CHOICES, default=UNASSIGNED)
-
     # Treasurer Information
     # TODO: Add treasury models
 
@@ -174,7 +146,7 @@ class Position(models.Model):
         VPHS = 'Vice President of Health and Safety'
         SECRETARY = 'Secretary'
         TREASURER = 'Treasurer'
-        MARSHEL = 'Marshal'
+        MARSHAL = 'Marshal'
         RECRUITMENT_CHAIR = 'Recruitment Chair'
         SCHOLARSHIP_CHAIR = 'Scholarship Chair'
         DETAIL_MANAGER = 'Detail Manager'
@@ -187,7 +159,19 @@ class Position(models.Model):
         ADVISER = 'Adviser'
 
     title = models.CharField(max_length=45, choices=PositionChoices.choices, unique=True)
-    ec = models.BooleanField(default=False)
+
+    def in_ec(self):
+        return self.title in (
+            'President',
+            'Vice President',
+            'Vice President of Health and Safety',
+            'Secretary',
+            'Treasurer',
+            'Marshal',
+            'Recruitment Chair',
+            'Scholarship Chair',
+        )
+
     brothers = models.ManyToManyField(Brother, related_name='brothers')
     has_committee = models.BooleanField(default=False)
 
@@ -363,6 +347,30 @@ class StudyTableEvent(Event):
         return "Study Tables - %s" % self.date
 
 
+def get_committees(brother):
+    committees = []
+    for committee in Committee.objects.all():
+        if brother in committee.members.all():
+            committees.append(committee.committee)
+    return committees
+
+
+def get_standing_committees(brother):
+    committees = []
+    for committee in Committee.objects.all():
+        if brother in committee.members.all() and committee.in_standing():
+            committees.append(committee.committee)
+    return committees
+
+
+def get_operational_committees(brother):
+    committees = []
+    for committee in Committee.objects.all():
+        if brother in committee.members.all() and committee.in_operational():
+            committees.append(committee.committee)
+    return committees
+
+
 class Committee(models.Model):
     COMMITTEE_CHOICES = [
         (ALUMNI_RELATIONS, 'Alumni Relations'),
@@ -374,15 +382,31 @@ class Committee(models.Model):
         (SOCIAL, 'Social'),
         (HEALTH_AND_SAFETY, 'Health and Safety'),
     ]
-    committee = models.CharField(max_length=2, choices=COMMITTEE_CHOICES, unique=True)
-    STANDING = 'S'
-    OPERATIONAL = 'O'
-    TYPE_CHOICES = [
-        (STANDING, 'Standing'),
-        (OPERATIONAL, 'Operational')
+
+    STANDING_COMMITTEE_CHOICES = [
+        (PUBLIC_RELATIONS, 'Public Relations'),
+        (RECRUITMENT, 'Recruitment'),
+        (SOCIAL, 'Social'),
+        (HEALTH_AND_SAFETY, 'Health and Safety'),
     ]
-    type = models.CharField(max_length=1, choices=TYPE_CHOICES)
+
+    OPERATIONAL_COMMITTEE_CHOICES = [
+        (ALUMNI_RELATIONS, 'Alumni Relations'),
+        (MEMBERSHIP_DEVELOPMENT, 'Membership Development'),
+        (PHILANTHROPY, 'Philanthropy'),
+        (SCHOLARSHIP, 'Scholarship'),
+    ]
+
+    committee = models.CharField(max_length=2, choices=COMMITTEE_CHOICES, unique=True)
+
+    def in_standing(self):
+        return self.committee in (x[0] for x in self.STANDING_COMMITTEE_CHOICES)
+
+    def in_operational(self):
+        return self.committee in (x[0] for x in self.OPERATIONAL_COMMITTEE_CHOICES)
+
     members = models.ManyToManyField(Brother, blank=True)
+
     chair = models.OneToOneField(Position, on_delete=models.PROTECT, limit_choices_to={'has_committee': True})
 
     class MeetingIntervals(models.IntegerChoices):

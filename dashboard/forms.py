@@ -223,15 +223,19 @@ class MinecraftPhotoForm(forms.ModelForm):
 class CommitteeCreateForm(forms.ModelForm):
     class Meta:
         model = Committee
-        fields = ['committee', 'type', 'chair', 'meeting_interval', 'meeting_time', 'meeting_day']
+        fields = ['committee', 'chair', 'meeting_interval', 'meeting_time', 'meeting_day']
 
 
 class CommitteeForm(forms.Form):
-    standing_committee = forms.ChoiceField(
-        label="", choices=Brother.STANDING_COMMITTEE_CHOICES
+    standing_committees = forms.MultipleChoiceField(
+        label="", choices=Committee.STANDING_COMMITTEE_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=False
     )
-    operational_committee = forms.ChoiceField(
-        label="", choices=Brother.OPERATIONAL_COMMITTEE_CHOICES
+    operational_committees = forms.MultipleChoiceField(
+        label="", choices=Committee.OPERATIONAL_COMMITTEE_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=False
     )
 
 

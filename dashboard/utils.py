@@ -11,14 +11,12 @@ import requests
 import re
 
 # EC Positions
-ec = [
+all_positions = [
     'President', 'Vice President', 'Vice President of Health and Safety',
     'Secretary', 'Treasurer', 'Marshal', 'Recruitment Chair',
-    'Scholarship Chair',
-]
-# Positions not on EC that have importance on the dashboard
-non_ec = ['Service Chair', 'Philanthropy Chair', 'Detail Manager', 'Alumni Relations Chair',
-          'Membership Development Chair', 'Social Chair', 'Public Relations Chair'
+    'Scholarship Chair', 'Service Chair', 'Philanthropy Chair',
+    'Detail Manager', 'Alumni Relations Chair',
+    'Membership Development Chair', 'Social Chair', 'Public Relations Chair'
 ]
 
 has_committee = [
@@ -90,7 +88,7 @@ def forms_is_valid(form_list):
 
 
 def do_verify(pos, user):
-    if pos == 'ec' and Position.objects.get(brothers__user=user).ec:
+    if pos == 'ec' and Position.objects.get(brothers__user=user).in_ec:
         return True
     brothers = Position.objects.get(title=pos).brothers.all()
     if user.brother in brothers:

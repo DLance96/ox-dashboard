@@ -7,7 +7,6 @@
         <ul class="dropdown-menu">
             <li><a href={% url 'dashboard:vice_president_committee_assignments' %}>Committee Assignments</a></li>
             <li><a href={% url 'dashboard:vice_president_in_house' %}>Select housing</a></li>
-            <li><a href="">Past Meetings</a></li>
         </ul>
     </li>
 {% endblock %}
@@ -18,9 +17,10 @@
         <h1>{{ position }}</h1>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Committee Meeting</div>
+        <div class="panel-heading">Standing Committee</div>
         <div class="panel-body">
             {% for committee in committees %}
+            {% if committee.in_standing %}
                 <div class="committeeeventlist">
                     <div></div>
                     <div><b>{{ committee.get_committee_display }} Committee</b> - Meets {{ committee.get_meeting_interval_display }} on {{ committee.get_meeting_day_display }} - {{ committee.meeting_time }}</div>
@@ -41,6 +41,36 @@
                     {% endfor %}
                 </div>
             <br>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Operational Committee</div>
+        <div class="panel-body">
+            {% for committee in committees %}
+            {% if committee.in_operational %}
+                <div class="committeeeventlist">
+                    <div></div>
+                    <div><b>{{ committee.get_committee_display }} Committee</b> - Meets {{ committee.get_meeting_interval_display }} on {{ committee.get_meeting_day_display }} - {{ committee.meeting_time }}</div>
+                    <div><b>Minutes:</b></div>
+                    <div></div>
+                    <div class="grayline"></div>
+                    {% for meeting in committee_meetings %}
+                        {% if meeting.committee == committee %}
+                            <div></div>
+                            <div><a href={% url 'dashboard:committee_event' meeting.id%}>{{ meeting.date }} - {{ meeting.start_time }}</div></a>
+                            {% if meeting.minutes %}
+                                <div><a href="{{ meeting.minutes }}">link</a></div>
+                            {% else %}
+                                <div></div>
+                            {% endif %}
+                            <div></div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            <br>
+            {% endif %}
             {% endfor %}
         </div>
     </div>

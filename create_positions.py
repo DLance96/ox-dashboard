@@ -28,7 +28,10 @@ NON_EC_POSITIONS = [
     "Service Chair",
     "Philanthropy Chair",
     "Detail Manager",
-    "Public Relations Chair"
+    "Public Relations Chair",
+    "Alumni Relations Chair",
+    "Social Chair",
+    "Membership Development Chair"
 ]
 
 ALL_POSITIONS = EC_POSITIONS + NON_EC_POSITIONS
@@ -56,7 +59,6 @@ def create_positions():
     for title in ALL_POSITIONS:
         new_position = Position()
         new_position.title = title
-        new_position.ec = title in EC_POSITIONS
         new_position.save()
 
 def add_user_to_all_positions(user):

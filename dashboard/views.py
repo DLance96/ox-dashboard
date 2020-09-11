@@ -180,6 +180,27 @@ def brother_view(request):
                                            status='2').order_by("event__date")
     excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
                                                   status='3').order_by("event__date")
+    operational_committees = []
+    standing_committees = []
+
+    for committee in Committee.objects.all():
+        if brother in committee.members.all() and committee.in_standing():
+            standing_committees.append(committee)
+
+    for committee in Committee.objects.all():
+        if brother in committee.members.all() and committee.in_operational():
+            operational_committees.append(committee)
+
+    meetings = []
+
+    for committee in standing_committees:
+        for meeting in CommitteeMeetingEvent.objects.filter(committee=committee):
+            meetings.append(meeting)
+
+    for committee in operational_committees:
+        for meeting in CommitteeMeetingEvent.objects.filter(committee=committee):
+            meetings.append(meeting)
+
 
     # Event attendance value
     attendance = []
@@ -207,19 +228,6 @@ def brother_view(request):
 
     event_attendance = zip(chapter_events, attendance)
     chapter_attendance = "%s / %s" % (chapter_event_attendance, past_chapter_event_count)
-
-    standing_meetings = []
-    operational_meetings = []
-    if brother.operational_committee != 'NA':
-        operational_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester(),
-                                                                    committee=Committee.objects.get(committee=
-                                                                    brother.operational_committee))\
-                                                                    .order_by("start_time").order_by("date")
-    if brother.standing_committee != 'NA':
-        standing_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester(),
-                                                                 committee=Committee.objects.get(committee=
-                                                                 brother.standing_committee))\
-                                                                 .order_by("start_time").order_by("date")
 
     current_season = get_season()
     if current_season is '0':
@@ -264,8 +272,9 @@ def brother_view(request):
         'event_attendance': event_attendance,
         'chapter_attendance': chapter_attendance,
         'unexcused_events': unexcused_events,
-        'operational_meetings': operational_meetings,
-        'standing_meetings': standing_meetings,
+        'operational_committees': operational_committees,
+        'standing_committees': standing_committees,
+        'meetings': meetings,
         'excuses_pending': excuses_pending,
         'excuses_approved': excuses_approved,
         'excuses_denied': excuses_denied,
@@ -585,9 +594,10 @@ def vice_president_committee_assignments(request):
     form_list = []
     brothers = Brother.objects.exclude(brother_status='2')
     for brother in brothers:
-        new_form = CommitteeForm(request.POST or None, initial={'standing_committee': brother.standing_committee,
-                                                                'operational_committee': brother.operational_committee},
-                                prefix=brother.id)
+        new_form = CommitteeForm(request.POST or None,
+                                 initial={'standing_committees': get_standing_committees(brother),
+                                          'operational_committees': get_operational_committees(brother)},
+                                 prefix=brother.id)
         form_list.append(new_form)
 
     brother_forms = zip(brothers, form_list)
@@ -599,13 +609,14 @@ def vice_president_committee_assignments(request):
                 brother = brothers[counter]
                 for committee in Committee.objects.all():
                     committee.members.remove(brother)
-                Committee.objects.get(committee=instance['standing_committee']).members.add(brother)
-                Committee.objects.get(committee=instance['operational_committee']).members.add(brother)
-                brother.standing_committee = instance['standing_committee']
-                brother.operational_committee = instance['operational_committee']
-                brother.save()
+                    committee.save()
+                for standing_committee in instance['standing_committees']:
+                    Committee.objects.get(committee=standing_committee).members.add(brother)
+                    Committee.objects.get(committee=standing_committee).save()
+                for operational_committee in instance['operational_committees']:
+                    Committee.objects.get(committee=operational_committee).members.add(brother)
+                    Committee.objects.get(committee=operational_committee).save()
             return HttpResponseRedirect(reverse('dashboard:committee_list'))
-
     context = {
         'brother_forms': brother_forms,
     }
@@ -1256,25 +1267,18 @@ def secretary_all_events(request):
     return render(request, "chapter-event-all.html", context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
+#@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_positions(request):
     """ Renders all of the positions currently in the chapter """
     # Checking to make sure all of the EC and dashboard required positions are setup
-    for position in ec:
-        if not Position.objects.filter(title=position).exists():
-            new_position = Position(title=position, ec=True)
-            new_position.save()
-    for position in non_ec:
+    for position in all_positions:
         if not Position.objects.filter(title=position).exists():
             new_position = Position(title=position)
             new_position.save()
 
-    ec_positions = Position.objects.filter(ec=True)
-    positions = Position.objects.filter(ec=False).order_by("title")
-
+    positions = Position.objects.order_by("title")
     context = {
         'positions': positions,
-        'ec_positions': ec_positions,
     }
     return render(request, "positions.html", context)
 

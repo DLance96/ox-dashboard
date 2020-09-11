@@ -18,12 +18,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for position in ec_positions %}
+                {% for position in positions %}
+                {% if position.in_ec %}
                     <tr>
                         <td>{{ position.title }}</td>
                         <td>{{ position.get_brothers }}</td>
                         <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_edit' position.id %}>+</a></td>
                     </tr>
+                {% endif %}
                 {% endfor %}
                 </tbody>
             </table>
@@ -44,12 +46,14 @@
                 </thead>
                 <tbody>
                 {% for position in positions %}
+                {% if not position.in_ec %}
                     <tr>
                         <td>{{ position.title }}</td>
                         <td>{{ position.get_brothers }}</td>
                         <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_edit' position.id %}>+</a></td>
                         <td><a class="btn btn-default" href={% url 'dashboard:secretary_position_delete' position.id %}>X</a></td>
                     </tr>
+                {% endif %}
                 {% endfor %}
                 </tbody>
             </table>
