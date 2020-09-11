@@ -3,13 +3,10 @@
 {% block dropdown %}
     <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-           aria-expanded="false">Secretary <span class="caret"></span></a>
+           aria-expanded="false">Vice President <span class="caret"></span></a>
         <ul class="dropdown-menu">
-            <li><a href={% url 'dashboard:secretary_attendance' %}>Attendance</a></li>
-            <li><a href={% url 'dashboard:secretary_positions' %}>Positions</a></li>
-            <li><a href={% url 'dashboard:secretary_event_all' %}>All Events</a></li>
-            <li><a href={% url 'dashboard:secretary_brother_list' %}>Active Brothers</a></li>
-            <li><a href={% url 'dashboard:secretary_excuses' %}>All Excuses</a></li>
+            <li><a href={% url 'dashboard:vice_president_committee_assignments' %}>Committee Assignments</a></li>
+            <li><a href={% url 'dashboard:vice_president_in_house' %}>Select housing</a></li>
         </ul>
     </li>
 {% endblock %}

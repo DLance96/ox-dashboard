@@ -132,7 +132,7 @@
                             <td>{{ committee.get_meeting_interval_display }}</td>
                         </tr>
                     </table>
-                    <a class="btn btn-default" href={% url 'dashboard:committee_edit' committee.id %}?next={{ request.path }} role="button">Edit Committee</a>
+                    <a class="btn btn-default" href={% url 'dashboard:committee_edit' committee.id %}?next={{ request.path }}&committee={{ committee.url_name }} role="button">Edit Committee</a>
                 </div>
             </div>
         </div>

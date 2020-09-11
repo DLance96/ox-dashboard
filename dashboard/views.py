@@ -695,6 +695,11 @@ class CommitteeEdit(UpdateView):
     def get_success_url(self):
         return self.request.GET.get('next')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['next'] = self.request.GET.get('committee')
+        return context
+
     model = Committee
     fields = ['meeting_day', 'meeting_time', 'meeting_interval']
 
@@ -1307,7 +1312,7 @@ class PositionEdit(UpdateView):
 
     model = Position
     success_url = reverse_lazy('dashboard:secretary_positions')
-    fields = ['brothers', 'has_committee']
+    fields = ['brothers']
 
 
 class PositionDelete(DeleteView):

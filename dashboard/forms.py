@@ -47,7 +47,7 @@ class BrotherEditForm(forms.ModelForm):
 class PositionForm(forms.ModelForm):
     class Meta:
         model = Position
-        fields = ['title', 'brothers', 'has_committee']
+        fields = ['title', 'brothers']
 
 
 class ExcuseForm(forms.ModelForm):

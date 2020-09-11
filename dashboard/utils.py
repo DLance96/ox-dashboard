@@ -1,7 +1,8 @@
 from datetime import datetime
+from urllib.parse import quote_plus
+
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.core.handlers.wsgi import WSGIRequest
 
 from .forms import BrotherAttendanceForm
@@ -137,7 +138,7 @@ def committee_meeting_panel(committee_name):
     context = {
         'committee_meetings': committee_meetings,
         'position': position,
-        'committee': committee
+        'committee': committee,
     }
 
     return committee_meetings, context

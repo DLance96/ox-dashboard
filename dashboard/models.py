@@ -1,8 +1,11 @@
 import datetime
+from urllib.parse import quote_plus
+
 import django.utils.timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+from django.db.models import Q
 from django.urls import reverse
 from django import forms
 
@@ -139,6 +142,22 @@ class Brother(models.Model):
         return self.first_name + " " + self.last_name
 
 
+def get_positions_with_committee():
+    choices = Q()
+    for position in (
+        'Vice President of Health and Safety',
+        'Recruitment Chair',
+        'Scholarship Chair',
+        'Philanthropy Chair',
+        'Public Relations Chair',
+        'Alumni Relations Chair',
+        'Membership Development Chair',
+        'Social Chair'
+    ):
+        choices = choices | Q(title=position)
+    return choices
+
+
 class Position(models.Model):
     class PositionChoices(models.TextChoices):
         PRESIDENT = 'President'
@@ -173,7 +192,6 @@ class Position(models.Model):
         )
 
     brothers = models.ManyToManyField(Brother, related_name='brothers')
-    has_committee = models.BooleanField(default=False)
 
     def get_brothers(self):
         return ", ".join([str(e) for e in self.brothers.all()])
@@ -399,6 +417,10 @@ class Committee(models.Model):
 
     committee = models.CharField(max_length=2, choices=COMMITTEE_CHOICES, unique=True)
 
+    def url_name(self):
+        committee_names = dict(self.COMMITTEE_CHOICES)
+        return quote_plus(committee_names[self.committee])
+
     def in_standing(self):
         return self.committee in (x[0] for x in self.STANDING_COMMITTEE_CHOICES)
 
@@ -407,7 +429,7 @@ class Committee(models.Model):
 
     members = models.ManyToManyField(Brother, blank=True)
 
-    chair = models.OneToOneField(Position, on_delete=models.PROTECT, limit_choices_to={'has_committee': True})
+    chair = models.OneToOneField(Position, on_delete=models.PROTECT, limit_choices_to=get_positions_with_committee())
 
     class MeetingIntervals(models.IntegerChoices):
         WEEKLY = 7, 'Weekly'
