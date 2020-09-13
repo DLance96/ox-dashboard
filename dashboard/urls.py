@@ -56,6 +56,8 @@ urlpatterns = [
     url(r'^brother/service-submission/add/$', views.brother_service_submission_add,
         name="brother_service_submission_add"),
     url(r'^brother/pnm/(?P<pnm_id>[0-9]+)/$', views.brother_pnm, name="brother_pnm"),
+    url(r'^brother/media-account/add/$', views.media_account_add, name="media_account_add"),
+    url(r'^brother/media/add/$', views.media_add, name="media_add"),
 
     url(r'^president/$', views.president, name="president"),
 

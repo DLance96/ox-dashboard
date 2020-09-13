@@ -15,7 +15,7 @@
             {% if committee.in_standing %}
                 <div class="committeelist">
                     <div></div>
-                    <div><b>{{ committee.get_committee_display }} Committee</b> - {% if view_type == 'Vice President' %} <a href={% url 'dashboard:committee_delete' committee.id %}>Delete? {% endif %}</a></div>
+                    <div><b>{{ committee.get_committee_display }} Committee</b></div>
                     <div style="justify-self: end;"><b>Meeting Time:</b> {{ committee.get_meeting_interval_display }} on {{ committee.get_meeting_day_display }} - {{ committee.meeting_time }}</div>
                     <div></div>
                     <div class="committeegrayline"></div>
@@ -46,7 +46,7 @@
             {% if committee.in_operational %}
                 <div class="committeelist">
                     <div></div>
-                    <div><b>{{ committee.get_committee_display }} Committee</b> - {% if view_type == 'Vice President' %} <a href={% url 'dashboard:committee_delete' committee.id %}>Delete? {% endif %}</a></div>
+                    <div><b>{{ committee.get_committee_display }} Committee</b></div>
                     <div style="justify-self: end;"><b>Meeting Time:</b> {{ committee.get_meeting_interval_display }} on {{ committee.get_meeting_day_display }} - {{ committee.meeting_time }}</div>
                     <div></div>
                     <div class="committeegrayline"></div>
@@ -81,9 +81,27 @@
         {% endif %}
         <div class="panel-body">
             <form action="" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <input type="submit" value="Add Photo"/>
+                <table class="table table-condensed">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    {% if forloop.counter == 1 %}
+                    <thead>
+                        <tr>
+                            <td>{{ field.label_tag }}</td>
+                            <td>{{ field }}</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% else %}
+                        <tr>
+                            <td>{{ field.label_tag }}</td>
+                            <td>{{ field }}</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                    {% endfor %}
+                </table>
+                <input type="submit" value="Add Committee"/>
             </form>
         </div>
     </div>

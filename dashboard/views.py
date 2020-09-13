@@ -48,7 +48,7 @@ def change_password(request):
     if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Cannot change password if you are not logged in")
         return HttpResponseRedirect(reverse('dashboard:home'))
-    brother = Brother.objects.filter(user=request.user)[0]
+    brother = request.user.brother
     form = ChangePasswordForm(request.POST or None)
 
     if request.method == 'POST':
@@ -168,7 +168,7 @@ def brother_view(request):
     if not request.user.is_authenticated:  # brother auth check
         messages.error(request, "Brother needs to be logged in before viewing brother portal")
         return HttpResponseRedirect(reverse('dashboard:home'))
-    brother = Brother.objects.filter(user=request.user)[0]
+    brother = request.user.brother
     hs_events = HealthAndSafetyEvent.objects.filter(semester=get_semester()).order_by("date")
     chapter_events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
 
@@ -182,25 +182,15 @@ def brother_view(request):
                                                   status='3').order_by("event__date")
     operational_committees = []
     standing_committees = []
-
-    for committee in Committee.objects.all():
-        if brother in committee.members.all() and committee.in_standing():
-            standing_committees.append(committee)
-
-    for committee in Committee.objects.all():
-        if brother in committee.members.all() and committee.in_operational():
-            operational_committees.append(committee)
-
     meetings = []
 
-    for committee in standing_committees:
-        for meeting in CommitteeMeetingEvent.objects.filter(committee=committee):
+    for committee in brother.committee_set.all():
+        if committee.in_standing():
+            standing_committees.append(committee)
+        elif committee.in_operational():
+            operational_committees.append(committee)
+        for meeting in committee.meetings.all():
             meetings.append(meeting)
-
-    for committee in operational_committees:
-        for meeting in CommitteeMeetingEvent.objects.filter(committee=committee):
-            meetings.append(meeting)
-
 
     # Event attendance value
     attendance = []
@@ -316,7 +306,7 @@ def brother_chapter_event(request, event_id, view):
                     'error_message': "Please write a description",
                 }
                 return render(request, "chapter-event.html", context)
-            brother = Brother.objects.filter(user=request.user)[0]
+            brother = request.user.brother
             instance.brother = brother
             instance.event = event
             instance.save()
@@ -336,7 +326,7 @@ def brother_service_event(request, event_id, view):
         messages.error(request, "Brother not logged in before viewing brother chapter events")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
-    brother = Brother.objects.filter(user=request.user)[0]
+    brother = request.user.brother
     event = ServiceEvent.objects.get(pk=event_id)
     brothers_rsvp = event.rsvp_brothers.all()
     rsvp_brother = event.rsvp_brothers.filter(id=brother.id)
@@ -365,7 +355,7 @@ def brother_philanthropy_event(request, event_id, view):
         messages.error(request, "Brother not logged in before viewing brother chapter events")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
-    brother = Brother.objects.filter(user=request.user)[0]
+    brother = request.user.brother
     event = PhilanthropyEvent.objects.get(pk=event_id)
     brothers_rsvp = event.rsvp_brothers.all()
     rsvp_brother = event.rsvp_brothers.filter(id=brother.id)
@@ -525,7 +515,7 @@ def brother_service_submission_add(request):
         if form.is_valid():
             instance = form.save(commit=False)
             semester = get_semester()
-            brother = Brother.objects.filter(user=request.user)[0]
+            brother = request.user.brother
             instance.brother = brother
             instance.semester = semester
             instance.save()
@@ -564,6 +554,46 @@ class ServiceSubmissionEdit(UpdateView):
     model = ServiceSubmission
     success_url = reverse_lazy('dashboard:brother')
     form_class = ServiceSubmissionForm
+
+
+def media_account_add(request):
+
+    form = MediaAccountForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.save(commit=False)
+            brother = request.user.brother
+            instance.brother = brother
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:brother'))
+
+    context = {
+        'brother': request.user.brother,
+        'title': 'Media Account',
+        'form': form
+    }
+
+    return render(request, 'model-add.html', context)
+
+
+def media_add(request):
+
+    form = MediaForm(request.POST or None)
+
+    if request.method == 'POST':
+        form = MediaForm(request.POST, request.FILES or None)
+        print(form.is_valid())
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('dashboard:media_account_add'))
+
+    context = {
+        'title': 'Media',
+        'form': form
+    }
+
+    return render(request, 'model-add.html', context)
 
 
 @verify_position(['President', 'Adviser'])
@@ -607,9 +637,7 @@ def vice_president_committee_assignments(request):
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
                 brother = brothers[counter]
-                for committee in Committee.objects.all():
-                    committee.members.remove(brother)
-                    committee.save()
+                brother.committee_set.clear()
                 for standing_committee in instance['standing_committees']:
                     Committee.objects.get(committee=standing_committee).members.add(brother)
                     Committee.objects.get(committee=standing_committee).save()
@@ -627,43 +655,20 @@ def vice_president_committee_assignments(request):
 def committee_list(request):
     committees = Committee.objects.all()
     brothers = Brother.objects.order_by('last_name')
-    current_brother = Brother.objects.filter(user=request.user)[0]
+    current_brother = request.user.brother
 
     form = CommitteeCreateForm(request.POST or None)
 
-    if current_brother in Position.objects.get(title='Vice President').brothers.all():
+    if current_brother.position_set.filter(title='Vice President'):
         view_type = 'Vice President'
     else:
         view_type = 'brother'
 
     if request.method == 'POST':
         if form.is_valid():
-            date = datetime.datetime.now()
-            instance = form.save()
-            try:
-                semester = Semester.objects.filter(season=get_season_from(date.month),
-                                                   year=date.year)[0]
-            except IndexError:
-                semester = Semester(season=get_season_from(date.month),
-                                    year=date.year)
-                semester.save()
+            form.save()
             instance = form.cleaned_data
-            if date.weekday() >= instance['meeting_day']:
-                date_offset = 7 + instance['meeting_day'] - date.weekday()
-            elif date.weekday() < instance['meeting_day']:
-                date_offset = instance['meeting_day'] - date.weekday()
-            date = date + datetime.timedelta(days=date_offset)
-            start_date = date
-            end_date = date
-            if semester.season == '2':
-                end_date = datetime.datetime(date.year, 12, 31)
-            elif semester.season == '0':
-                end_date = datetime.datetime(date.year, 5, 31)
-            day_count = int((end_date - start_date).days/instance['meeting_interval']) + 1
-            for date in (start_date + datetime.timedelta(instance['meeting_interval'])*n for n in range(day_count)):
-                event = CommitteeMeetingEvent(date=date, start_time=instance['meeting_time'], semester=semester,
-                                              committee=Committee.objects.get(committee=instance['committee']))
-                event.save()
+            create_recurring_meetings(instance, instance['committee'])
             return HttpResponseRedirect(reverse('dashboard:committee_list'))
 
     context = {
@@ -700,6 +705,14 @@ class CommitteeEdit(UpdateView):
         context['next'] = self.request.GET.get('committee')
         return context
 
+    def form_valid(self, form):
+        self.object.meetings.filter(recurring=True).delete()
+        committee = self.object.committee
+        form.save()
+        instance = form.cleaned_data
+        create_recurring_meetings(instance, committee)
+        return super().form_valid(form)
+
     model = Committee
     fields = ['meeting_day', 'meeting_time', 'meeting_interval']
 
@@ -709,7 +722,7 @@ def committee_event(request, event_id):
 
     brothers = event.committee.members.order_by('last_name')
     brother_form_list = []
-    current_brother = Brother.objects.filter(user=request.user)[0]
+    current_brother = request.user.brother
 
     if current_brother in event.committee.chair.brothers.all():
         view_type = 'chairman'
@@ -760,8 +773,7 @@ def committee_event_add(request, position):
                 semester = Semester(season=get_season_from(instance.date.month),
                                     year=instance.date.year)
                 semester.save()
-            instance.committee = Committee.objects.get(chair=Position.objects.get(title=position))
-            instance.committee_chair = position
+            instance.committee = Position.objects.get(title=position).committee
             instance.semester = semester
             instance.save()
             next = request.GET.get('next')
@@ -803,7 +815,7 @@ class CommitteeEventEdit(UpdateView):
 def vphs(request):
     """ Renders the VPHS and the events they can create """
     events = HealthAndSafetyEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
-    committee_meetings, context = committee_meeting_panel('HS')
+    committee_meetings, context = committee_meeting_panel('Vice President of Health and Safety')
 
     context.update({
         'position': 'Vice President of Health and Safety',
@@ -1443,7 +1455,7 @@ def scholarship_c(request):
 
     brother_plans = zip(brothers, plans)
 
-    committee_meetings, context = committee_meeting_panel('SC')
+    committee_meetings, context = committee_meeting_panel('Scholarship Chair')
 
     context.update({
         'position': 'Scholarship Chair',
@@ -1608,7 +1620,7 @@ def recruitment_c(request):
 
     potential_new_members = PotentialNewMember.objects.all()
 
-    committee_meetings, context = committee_meeting_panel('RE')
+    committee_meetings, context = committee_meeting_panel('Recruitment Chair')
 
     context.update({
         'position': 'Recruitment Chair',
@@ -1990,7 +2002,7 @@ def service_c_hours(request):
 def philanthropy_c(request):
     """ Renders the philanthropy chair's RSVP page for different events """
     events = PhilanthropyEvent.objects.filter(semester=get_semester())
-    committee_meetings, context = committee_meeting_panel('PH')
+    committee_meetings, context = committee_meeting_panel('Philanthropy Chair')
 
     context.update({
         'position': 'Philanthropy Chair',
@@ -2534,7 +2546,7 @@ def detail_fine_helper(request, brother):
 
 @verify_position(['Public Relations Chair', 'Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def public_relations_c(request):
-    committee_meetings, context = committee_meeting_panel('PR')
+    committee_meetings, context = committee_meeting_panel('Public Relations Chair')
     context.update({
         'form': photo_form(PhotoForm, request),
     })
@@ -2543,22 +2555,19 @@ def public_relations_c(request):
 
 
 def social_c(request):
-    committee_meetings, context = committee_meeting_panel('SO')
-    context.update({
-        'position': 'Social Chair',
-    })
+    committee_meetings, context = committee_meeting_panel('Social Chair')
 
     return render(request, 'social-chair.html', context)
 
 
 def memdev_c(request):
-    committee_meetings, context = committee_meeting_panel('MD')
+    committee_meetings, context = committee_meeting_panel('Membership Development Chair')
 
     return render(request, 'memdev-chair.html', context)
 
 
 def alumni_relations_c(request):
-    committee_meetings, context = committee_meeting_panel('AR')
+    committee_meetings, context = committee_meeting_panel('Alumni Relations Chair')
 
     return render(request, 'alumni-relations-chair.html', context)
 

@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db.models import Q
 from django.urls import reverse
-from django import forms
+from django.utils.translation import gettext_lazy as _
 
 
 class Semester(models.Model):
@@ -51,9 +51,19 @@ class Brother(models.Model):
     # General profile information
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45)
+
+    class PronounChoices(models.TextChoices):
+        FEMININE = "FEM", _("she/her/hers")
+        MASCULINE = "MASC", _("he/him/his")
+        NONBINARY = "NON", _("they/them/theirs")
+
+    pronouns = models.CharField(max_length=30, choices=PronounChoices.choices, blank=True)
     roster_number = models.IntegerField(blank=True, null=True)
     semester_joined = models.ForeignKey(
         Semester, on_delete=models.CASCADE, blank=True, null=True
+    )
+    semester_graduating = models.ForeignKey(
+        Semester, on_delete=models.CASCADE, blank=True, null=True, related_name='brother_graduating'
     )
     date_pledged = models.DateField(blank=True, null=True)
 
@@ -142,6 +152,21 @@ class Brother(models.Model):
         return self.first_name + " " + self.last_name
 
 
+class OnlineMedia(models.Model):
+    name = models.CharField(max_length=45, unique=True)
+    icon = models.ImageField(upload_to='media_icons')
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+class MediaAccount(models.Model):
+    brother = models.ForeignKey(Brother, on_delete=models.CASCADE, related_name='media_accounts')
+    media = models.ForeignKey(OnlineMedia, on_delete=models.CASCADE, related_name='media')
+    username = models.CharField(max_length=45)
+    profile_link = models.URLField(blank=True, null=True)
+
+
 def get_positions_with_committee():
     choices = Q()
     for position in (
@@ -162,7 +187,7 @@ class Position(models.Model):
     class PositionChoices(models.TextChoices):
         PRESIDENT = 'President'
         VICE_PRESIDENT = 'Vice President'
-        VPHS = 'Vice President of Health and Safety'
+        VICE_PRESIDENT_OF_HEALTH_AND_SAFETY = 'Vice President of Health and Safety'
         SECRETARY = 'Secretary'
         TREASURER = 'Treasurer'
         MARSHAL = 'Marshal'
@@ -191,7 +216,7 @@ class Position(models.Model):
             'Scholarship Chair',
         )
 
-    brothers = models.ManyToManyField(Brother, related_name='brothers')
+    brothers = models.ManyToManyField(Brother)
 
     def get_brothers(self):
         return ", ".join([str(e) for e in self.brothers.all()])
@@ -365,26 +390,18 @@ class StudyTableEvent(Event):
         return "Study Tables - %s" % self.date
 
 
-def get_committees(brother):
-    committees = []
-    for committee in Committee.objects.all():
-        if brother in committee.members.all():
-            committees.append(committee.committee)
-    return committees
-
-
 def get_standing_committees(brother):
     committees = []
-    for committee in Committee.objects.all():
-        if brother in committee.members.all() and committee.in_standing():
+    for committee in brother.committee_set.all():
+        if committee.in_standing():
             committees.append(committee.committee)
     return committees
 
 
 def get_operational_committees(brother):
     committees = []
-    for committee in Committee.objects.all():
-        if brother in committee.members.all() and committee.in_operational():
+    for committee in brother.committee_set.all():
+        if committee.in_operational():
             committees.append(committee.committee)
     return committees
 
@@ -480,7 +497,8 @@ class Committee(models.Model):
 
 
 class CommitteeMeetingEvent(Event):
-    committee = models.ForeignKey(Committee, on_delete=models.PROTECT)
+    committee = models.ForeignKey(Committee, on_delete=models.PROTECT, related_name='meetings')
+    recurring = models.BooleanField(default=False)
 
 
 class Excuse(models.Model):

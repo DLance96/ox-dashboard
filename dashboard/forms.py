@@ -18,7 +18,7 @@ class BrotherForm(forms.ModelForm):
     class Meta:
         model = Brother
         fields = [
-            'first_name', 'last_name', 'roster_number', 'semester_joined',
+            'first_name', 'last_name', 'roster_number', 'semester_joined', 'semester_graduating',
             'school_status', 'brother_status', 'case_ID', 'major', 'minor',
             'birthday', 'hometown', 't_shirt_size', 'phone_number',
             'room_number', 'address', 'emergency_contact',
@@ -27,21 +27,47 @@ class BrotherForm(forms.ModelForm):
         widgets = {
             'birthday': SelectDateWidget(years={1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020}),
         }
+
+
+class PronounSelectorWidget(forms.MultiWidget):
+    def decompress(self, value):
+        if value:
+            if value in [x[0] for x in self.widgets[0].choices]:
+                return [value, ""]  # make it set the pulldown to choice
+            else:
+                return ["", value]  # keep pulldown to blank, set freetext
+        return ["", ""]  # default for new object
 
 
 class BrotherEditForm(forms.ModelForm):
     class Meta:
         model = Brother
         fields = [
-            'first_name', 'last_name', 'roster_number', 'semester_joined',
-            'school_status', 'brother_status', 'case_ID', 'major', 'minor',
+            'first_name', 'last_name', 'pronouns', 'roster_number', 'semester_joined',
+            'semester_graduating', 'school_status', 'brother_status', 'case_ID', 'major', 'minor',
             'birthday', 'hometown', 't_shirt_size', 'phone_number',
             'room_number', 'address', 'emergency_contact',
             'emergency_contact_phone_number',
         ]
         widgets = {
             'birthday': SelectDateWidget(years={1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020}),
+ #           'pronouns': PronounSelectorWidget(widgets={forms.Select(choices=Brother.PronounChoices.choices), forms.TextInput})
         }
+
+class MediaAccountForm(forms.ModelForm):
+    class Meta:
+        model = MediaAccount
+        fields = ['media', 'username', 'profile_link']
+
+    def __init__(self, *args, **kwargs):
+        super(MediaAccountForm, self).__init__(*args, **kwargs)
+        self.fields['media'].widget.attrs.update({'class': 'field'})
+
+
+class MediaForm(forms.ModelForm):
+    class Meta:
+        model = OnlineMedia
+        fields = ['name', 'icon']
 
 
 class PositionForm(forms.ModelForm):

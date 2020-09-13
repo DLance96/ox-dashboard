@@ -12,11 +12,15 @@
         <div class="panel-body">
             {% block model_info %}
             {% endblock %}
-            <form method="post">
+            {% if form.is_multipart %}
+                <form method="post" enctype="multipart/form-data">
+            {% else %}
+                <form method="post">
+            {% endif %}
                 {% csrf_token %}
                 <table class="table table-condensed">
                     {% for field in form %}
-                    {% if forloop.counter == 1 %}
+                    {% if forloop.first %}
                     <thead>
                         <tr>
                             <td>{{ field.label_tag }}</td>
@@ -30,8 +34,8 @@
                             <td>{{ field }}</td>
                         </tr>
                     {% endif %}
-                    </tbody>
                     {% endfor %}
+                    </tbody>
                 </table>
                 <input type="submit" value="Update"/>
             </form>

@@ -25,6 +25,14 @@
                             <td>{{ brother.birthday }}</td>
                         </tr>
                         <tr>
+                            <td>Pronouns:</td>
+                            {% if brother.get_pronouns %}
+                                <td>{{ brother.get_pronouns_display }}</td>
+                            {% else %}
+                                <td>Chose Not to Say</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
                             <td>Hometown:</td>
                             <td>{{ brother.hometown }}</td>
                         </tr>
@@ -35,6 +43,10 @@
                         <tr>
                             <td>Semester Joined:</td>
                             <td>{{ brother.semester_joined }}</td>
+                        </tr>
+                        <tr>
+                            <td>Semester Graduating:</td>
+                            <td>{{ brother.semester_graduating }}</td>
                         </tr>
                         <tr>
                             <td>School Status:</td>
@@ -98,6 +110,20 @@
                                 <td>{{ brother.address }}</td>
                             {% endif %}
                         </tr>
+                        <tr>
+                            <td>Media Accounts:</td>
+                            <td>
+                                <div class="mediaaccounts">
+                                {% for account in brother.media_accounts.all %}
+                                    <div><img src="/media/{{ account.media.icon }}" alt="" style="max-height: 20px;"></div>
+                                    <div>{{ account.media.name }}:</div>
+                                    <div>{{ account.username }}</div>
+                                {% endfor %}
+                                <a class="btn btn-default" style="grid-column: 1/4;" href={% url 'dashboard:media_account_add'%} role="button">Add Media Account</a>
+                                </div>
+                            </td>
+                        </tr>
+
                         </tbody>
                     </table>
                     <a class="btn btn-default" href={% url 'dashboard:brother_edit' brother.id %} role="button">Edit

@@ -130,11 +130,11 @@ def verify_position(positions):
     return verify_decorator
 
 
-def committee_meeting_panel(committee_name):
-    committee_meetings = CommitteeMeetingEvent.objects.filter(semester=get_semester()) \
-        .filter(committee=Committee.objects.get(committee=committee_name)).order_by("start_time").order_by("date")
-    position = Committee.objects.get(committee=committee_name).chair.title
-    committee = Committee.objects.get(committee=committee_name)
+def committee_meeting_panel(position_name):
+    position = Position.objects.get(title=position_name)
+    committee = position.committee
+    committee_meetings = committee.meetings.all().filter(semester=get_semester()).order_by("start_time")\
+                                                 .order_by("date")
     context = {
         'committee_meetings': committee_meetings,
         'position': position,
@@ -285,3 +285,31 @@ def attendance_list(request, event):
         brother_form_list.append(new_form)
 
     return brothers, brother_form_list
+
+
+def create_recurring_meetings(instance, committee):
+    date = datetime.datetime.now()
+    try:
+        semester = Semester.objects.filter(season=get_season_from(date.month),
+                                           year=date.year)[0]
+    except IndexError:
+        semester = Semester(season=get_season_from(date.month),
+                            year=date.year)
+        semester.save()
+
+    if date.weekday() >= instance['meeting_day']:
+        date_offset = 7 + instance['meeting_day'] - date.weekday()
+    elif date.weekday() < instance['meeting_day']:
+        date_offset = instance['meeting_day'] - date.weekday()
+    date = date + datetime.timedelta(days=date_offset)
+    start_date = date
+    end_date = date
+    if semester.season == '2':
+        end_date = datetime.datetime(date.year, 12, 31)
+    elif semester.season == '0':
+        end_date = datetime.datetime(date.year, 5, 31)
+    day_count = int((end_date - start_date).days / instance['meeting_interval']) + 1
+    for date in (start_date + datetime.timedelta(instance['meeting_interval']) * n for n in range(day_count)):
+        event = CommitteeMeetingEvent(date=date, start_time=instance['meeting_time'], semester=semester,
+                                      committee=Committee.objects.get(committee=committee), recurring=True)
+        event.save()
