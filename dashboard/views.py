@@ -577,6 +577,15 @@ def media_account_add(request):
     return render(request, 'model-add.html', context)
 
 
+class MediaAccountDelete(DeleteView):
+    def get(self, request, *args, **kwargs):
+        return super(MediaAccountDelete, self).get(request, *args, **kwargs)
+
+    model = MediaAccount
+    template_name = 'dashboard/base_confirm_delete.html'
+    success_url = reverse_lazy('dashboard:brother')
+
+
 def media_add(request):
 
     form = MediaForm(request.POST or None)
@@ -706,7 +715,7 @@ class CommitteeEdit(UpdateView):
         return context
 
     def form_valid(self, form):
-        self.object.meetings.filter(recurring=True).delete()
+        self.object.meetings.filter(recurring=True, ).delete()
         committee = self.object.committee
         form.save()
         instance = form.cleaned_data
@@ -2127,17 +2136,19 @@ def supplies_finish(request):
 @transaction.atomic
 def in_house(request):
     """Allows the VP to select who's living in the house"""
-    form = InHouseForm(request.POST or None)
+
+    form = InHouseForm(request.POST or None, initial={'in_house': Brother.objects.filter(brother_status='1', in_house=True)})
 
     if request.method == 'POST':
         if form.is_valid():
             brothers = Brother.objects.filter(brother_status='1')
             brothers.update(in_house=False)
-            for c in ['in_house_part', 'not_in_house_part']:
+            for c in ['in_house']:
                 brothers = form.cleaned_data[c]
                 for b in brothers:
                     b.in_house = True
                     b.save()
+        return HttpResponseRedirect(reverse('dashboard:vice_president_in_house'))
 
     context = {'form': form}
     return render(request, 'in_house.html', context)
@@ -2561,7 +2572,7 @@ def social_c(request):
     return render(request, 'social-chair.html', context)
 
 
-@verify_position(['Membership Development Chair Chair', 'Vice President', 'President', 'Adviser'])
+@verify_position(['Membership Development Chair', 'Vice President', 'President', 'Adviser'])
 def memdev_c(request):
     committee_meetings, context = committee_meeting_panel('Membership Development Chair')
 

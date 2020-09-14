@@ -8,7 +8,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">Brother List</div>
         <div class="panel-body">
-            <a class="btn btn-default" href={% url 'dashboard:secretary_brother_add' %} role="button">Add New Brother
+            <a class="btn btn-success" href={% url 'dashboard:secretary_brother_add' %} role="button">Add New Brother
             </a><br><br>
             {% for brother in brothers %}
                 <a href={% url 'dashboard:secretary_brother_view' brother.id %}>{{ brother }}</a> <br>

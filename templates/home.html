@@ -95,7 +95,7 @@
                 {% for event in recruitment_events %}
                 <div class="homeevent2">
                     <div>Name:</div>
-                    <div><a href={% url 'dashboard:general_recruitment_event' event.id %}>{{ event.name }}</a></div>
+                    <div><a href={% url 'dashboard:brother_recruitment_event' 'general' event.id %}>{{ event.name }}</a></div>
                     <div class="grayline"></div>
                     <div>Date:</div>
                     <div>{{ event.date }}</div>

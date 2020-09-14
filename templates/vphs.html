@@ -97,13 +97,13 @@
                         {% endif %}
                         <td><a class="btn btn-default"
                               href={% url 'dashboard:committee_event_edit' meeting.id %}?id={{ meeting.id }}>+</a></td>
-                        <td><a class="btn btn-default"
+                        <td><a class="btn btn-danger"
                                href={% url 'dashboard:committee_event_delete' meeting.id %}?next={{ request.path }}>X</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <a class="btn btn-default" href={% url 'dashboard:committee_event_add' position %}?next={{ request.path }}
+            <a class="btn btn-success" href={% url 'dashboard:committee_event_add' position %}?next={{ request.path }}
                     role="button">Add Meeting</a>
         </div>
     </div>

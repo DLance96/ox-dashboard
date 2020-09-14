@@ -113,13 +113,18 @@
                         <tr>
                             <td>Media Accounts:</td>
                             <td>
-                                <div class="mediaaccounts">
+                                <div class="mediaaccounts" style="max-width: 80%">
                                 {% for account in brother.media_accounts.all %}
                                     <div><img src="/media/{{ account.media.icon }}" alt="" style="max-height: 20px;"></div>
                                     <div>{{ account.media.name }}:</div>
-                                    <div>{{ account.username }}</div>
+                                    {% if account.profile_link %}
+                                        <div><a href={{ account.profile_link }}>{{ account.username }}</a></div>
+                                    {% else %}
+                                        <div>{{ account.username }}</div>
+                                    {% endif %}
+                                    <div style="text-align: right;"><a class="btn btn-danger btn-xs" href={% url 'dashboard:media_account_delete' account.pk %} role="button">x</a></div>
                                 {% endfor %}
-                                <a class="btn btn-default" style="grid-column: 1/4;" href={% url 'dashboard:media_account_add'%} role="button">Add Media Account</a>
+                                <a class="btn btn-success" style="grid-column: 1/5;" href={% url 'dashboard:media_account_add'%} role="button">Add Media Account</a>
                                 </div>
                             </td>
                         </tr>
@@ -354,7 +359,7 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
-                    <a class="btn btn-default"
+                    <a class="btn btn-success"
                        href={% url 'dashboard:brother_service_submission_add' %} role="button">Submit Service</a>
                     <br><br>
                 </div>
@@ -369,7 +374,7 @@
                         <div class="panel-heading">Pending</div>
                         <div class="panel-body">
                             {% for submission in submissions_pending %}
-                                <a class="btn btn-default"
+                                <a class="btn btn-danger"
                                    href={% url 'dashboard:brother_service_submission_delete' submission.id %} role="button">X</a>
                                 <a href={% url 'dashboard:brother_service_submission' submission.id %}>{{ submission.name }}
                                     -
@@ -454,7 +459,7 @@
                     {% endfor %}
                     </tbody>
                 </table>
-            <a class="btn btn-default" href={% url 'dashboard:all_pnm_csv' %} role="button">
+            <a class="btn btn-primary" href={% url 'dashboard:all_pnm_csv' %} role="button">
                 Download full list as csv</a>
             </div>
         </div>

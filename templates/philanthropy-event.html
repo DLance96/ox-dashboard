@@ -60,9 +60,9 @@
                 <form method="post" action="">
                     {% csrf_token %}
                     {% if rsvpd %}
-                        <input type="submit" value="Cancel RSVP"/><br><br>
+                        <input class="btn btn-danger" type="submit" value="Cancel RSVP"/><br><br>
                     {% else %}
-                        <input type="submit" value="RSVP"/><br><br>
+                        <input class="btn btn-success" type="submit" value="RSVP"/><br><br>
                     {% endif %}
                 </form>
             {% endif %}

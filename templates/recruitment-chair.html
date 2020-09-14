@@ -34,13 +34,13 @@
                         <td>{{ event.date }}</td>
                         <td><a class="btn btn-default"
                             href={% url 'dashboard:recruitment_c_event_edit' event.id %}>+</a></td>
-                        <td><a class="btn btn-default"
+                        <td><a class="btn btn-danger"
                                href={% url 'dashboard:recruitment_c_event_delete' event.id %}>X</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <a class="btn btn-default" href={% url 'dashboard:recruitment_c_event_add' %} role="button">Add Event</a>
+            <a class="btn btn-success" href={% url 'dashboard:recruitment_c_event_add' %} role="button">Add Event</a>
         </div>
     </div>
     <div class="panel panel-default">
@@ -61,19 +61,19 @@
                         <td>{{ event.date }}</td>
                         <td><a class="btn btn-default"
                             href={% url 'dashboard:recruitment_c_event_edit' event.id %}>+</a></td>
-                        <td><a class="btn btn-default"
+                        <td><a class="btn btn-danger"
                                href={% url 'dashboard:recruitment_c_event_delete' event.id %}>X</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <a class="btn btn-default" href={% url 'dashboard:recruitment_c_event_add' %} role="button">Add Event</a>
+            <a class="btn btn-success" href={% url 'dashboard:recruitment_c_event_add' %} role="button">Add Event</a>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Names List</div>
         <div class="panel-body">
-            <a class="btn btn-default" href={% url 'dashboard:recruitment_c_pnm_add' %} role="button">Add Potential New
+            <a class="btn btn-success" href={% url 'dashboard:recruitment_c_pnm_add' %} role="button">Add Potential New
                 Member</a>
             <table class="table table-condensed">
                 <thead style="font-weight:bold;">
@@ -98,13 +98,13 @@
                         <td>{{ pnm.primary_contact }}</td>
                         <td>{{ pnm.secondary_contact }}</td>
                         <td>{{ pnm.tertiary_contact }}</td>
-                        <td><a class="btn btn-default" href={% url 'dashboard:recruitment_c_pnm_delete' pnm.id %}>X</a>
+                        <td><a class="btn btn-danger" href={% url 'dashboard:recruitment_c_pnm_delete' pnm.id %}>X</a>
                         </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <a class="btn btn-default" href={% url 'dashboard:all_pnm_csv' %} role="button">Download list as csv</a>
+            <a class="btn btn-primary" href={% url 'dashboard:all_pnm_csv' %} role="button">Download list as csv</a>
         </div>
     </div>
 
@@ -161,13 +161,13 @@
                         {% endif %}
                         <td><a class="btn btn-default"
                               href={% url 'dashboard:committee_event_edit' meeting.id %}?id={{ meeting.id }}>+</a></td>
-                        <td><a class="btn btn-default"
+                        <td><a class="btn btn-danger"
                                href={% url 'dashboard:committee_event_delete' meeting.id %}?next={{ request.path }}>X</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <a class="btn btn-default" href={% url 'dashboard:committee_event_add' position %}?next={{ request.path }}
+            <a class="btn btn-success" href={% url 'dashboard:committee_event_add' position %}?next={{ request.path }}
                     role="button">Add Meeting</a>
         </div>
     </div>

@@ -288,22 +288,13 @@ class SuppliesFinishForm(forms.Form):
 
 class InHouseForm(forms.Form):
     """Selects brothers living in house"""
-    in_house = Brother.objects.filter(
-        brother_status='1', in_house=True
-    ).order_by('user__last_name', 'user__first_name')
-    not_in_house = Brother.objects.filter(
-        brother_status='1', in_house=False
+    brothers = Brother.objects.filter(
+        brother_status='1'
     ).order_by('user__last_name', 'user__first_name')
 
-    in_house_part = forms.ModelMultipleChoiceField(
-        queryset=in_house,
-        widget=forms.CheckboxSelectMultiple(attrs={"checked": "checked"}),
-        label="",
-        required=False,
-    )
-    not_in_house_part = forms.ModelMultipleChoiceField(
-        queryset=not_in_house,
-        widget=forms.CheckboxSelectMultiple,
+    in_house = forms.ModelMultipleChoiceField(
+        queryset=brothers,
+        widget=forms.CheckboxSelectMultiple(),
         label="",
         required=False,
     )

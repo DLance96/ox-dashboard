@@ -25,13 +25,13 @@
                         <td><a href={% url 'dashboard:marshal_candidate' candidate.id %}>{{ candidate }}</a></td>
                         <td><a class="btn btn-default"
                                href={% url 'dashboard:marshal_candidate_edit' candidate.id %}>+</a></td>
-                        <td><a class="btn btn-default"
+                        <td><a class="btn btn-danger"
                                href={% url 'dashboard:marshal_candidate_delete' candidate.id %}>X</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <a class="btn btn-default" href={% url 'dashboard:marshal_candidate_add' %} role="button">Add Candidate</a>
+            <a class="btn btn-success" href={% url 'dashboard:marshal_candidate_add' %} role="button">Add Candidate</a>
         </div>
     </div>
     <div class="panel panel-default">
