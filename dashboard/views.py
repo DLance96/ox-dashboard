@@ -788,7 +788,7 @@ def committee_event_add(request, position):
 
 
 class CommitteeEventDelete(DeleteView):
-#    @verify_position(['Vice President', 'President', 'Adviser'])
+    @verify_position(['Recruitment Chair', 'Vice President of Health and Safety', 'Scholarship Chair', 'Philanthropy Chair', 'Alumni Relations Chair', 'Public Relations Chair', 'Membership Development Chair', 'Social Chair', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(CommitteeEventDelete, self).get(request, *args, **kwargs)
 
@@ -800,7 +800,7 @@ class CommitteeEventDelete(DeleteView):
 
 
 class CommitteeEventEdit(UpdateView):
-#    @verify_position(['Vice President', 'President', 'Adviser'])
+    @verify_position(['Recruitment Chair', 'Vice President of Health and Safety', 'Scholarship Chair', 'Philanthropy Chair', 'Alumni Relations Chair', 'Public Relations Chair', 'Membership Development Chair', 'Social Chair', 'Vice President', 'President', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(CommitteeEventEdit, self).get(request, *args, **kwargs)
 
@@ -1284,7 +1284,7 @@ def secretary_all_events(request):
     return render(request, "chapter-event-all.html", context)
 
 
-#@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
+@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_positions(request):
     """ Renders all of the positions currently in the chapter """
     # Checking to make sure all of the EC and dashboard required positions are setup
@@ -2554,18 +2554,21 @@ def public_relations_c(request):
     return render(request, 'public-relations-chair.html', context)
 
 
+@verify_position(['Social Chair', 'Vice President', 'President', 'Adviser'])
 def social_c(request):
     committee_meetings, context = committee_meeting_panel('Social Chair')
 
     return render(request, 'social-chair.html', context)
 
 
+@verify_position(['Membership Development Chair Chair', 'Vice President', 'President', 'Adviser'])
 def memdev_c(request):
     committee_meetings, context = committee_meeting_panel('Membership Development Chair')
 
     return render(request, 'memdev-chair.html', context)
 
 
+@verify_position(['Alumni Relations Chair', 'Vice President', 'President', 'Adviser'])
 def alumni_relations_c(request):
     committee_meetings, context = committee_meeting_panel('Alumni Relations Chair')
 
