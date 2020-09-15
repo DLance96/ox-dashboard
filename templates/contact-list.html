@@ -9,7 +9,7 @@
         <h1>Brother Contact Info</h1>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">Academic Info</div>
+        <div class="panel-heading">Contact Info</div>
         <div class="panel-body">
             <table class="table table-condensed">
                 <thead style="font-weight:bold;">
@@ -29,6 +29,40 @@
                         <td>{{ brother.case_ID }}@case.edu</td>
                         <td>{{ brother.room_number }}</td>
                         <td>{{ brother.address }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+        <div class="panel panel-default">
+        <div class="panel-heading">Media Account Info</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Brother:</td>
+                    <td>Media Accounts:</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for brother in brothers %}
+                    <tr>
+                        <td>{{ brother }}</td>
+                        <td>
+                            <div class="mediaaccounts" style="max-width: 80%">
+                                {% for account in brother.media_accounts.all %}
+                                    <div><img src="/media/{{ account.media.icon }}" alt="" style="max-height: 20px;"></div>
+                                    <div>{{ account.media.name }}:</div>
+                                    {% if account.profile_link %}
+                                        <div><a href={{ account.profile_link }}>{{ account.username }}</a></div>
+                                    {% else %}
+                                        <div>{{ account.username }}</div>
+                                    {% endif %}
+                                    <div></div>
+                                {% endfor %}
+                            </div>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
