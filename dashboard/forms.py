@@ -4,6 +4,9 @@ from .models import *
 from django import forms
 
 
+YEAR_RANGE = range(1970, datetime.datetime.today().year+6)
+
+
 class LoginForm(forms.Form):
     username = forms.CharField(label="User")
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
@@ -25,7 +28,7 @@ class BrotherForm(forms.ModelForm):
             'emergency_contact_phone_number',
         ]
         widgets = {
-            'birthday': SelectDateWidget(years={1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020}),
+            'birthday': SelectDateWidget(years=YEAR_RANGE),
         }
 
 
@@ -50,7 +53,7 @@ class BrotherEditForm(forms.ModelForm):
             'emergency_contact_phone_number',
         ]
         widgets = {
-            'birthday': SelectDateWidget(years={1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020}),
+            'birthday': SelectDateWidget(years=YEAR_RANGE),
  #           'pronouns': PronounSelectorWidget(widgets={forms.Select(choices=Brother.PronounChoices.choices), forms.TextInput})
         }
 
@@ -146,7 +149,7 @@ class CandidateEditForm(forms.ModelForm):
                   'address'
         ]
         widgets = {
-            'birthday': SelectDateWidget(years={1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020}),
+            'birthday': SelectDateWidget(years=YEAR_RANGE),
         }
 
 
