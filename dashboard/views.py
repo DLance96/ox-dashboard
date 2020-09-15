@@ -105,7 +105,7 @@ def brother_info_list(request):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     """ Renders brother info page """
-    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+    brothers = Brother.objects.order_by("brother_status", "last_name", "first_name")
 
     context = {
         'brothers': brothers,
@@ -120,7 +120,7 @@ def contact_list(request):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     """ Renders contact info page """
-    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name", "first_name")
 
     context = {
         'brothers': brothers,
@@ -135,7 +135,7 @@ def emergency_contact_list(request):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     """ Renders emergency contact info page """
-    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name", "first_name")
 
     context = {
         'brothers': brothers,
@@ -232,7 +232,7 @@ def brother_view(request):
             .order_by("date")
     pnms = PotentialNewMember.objects.filter(Q(primary_contact=brother) |
                                              Q(secondary_contact=brother) |
-                                             Q(tertiary_contact=brother)).order_by("last_name")
+                                             Q(tertiary_contact=brother)).order_by("last_name", "first_name")
     service_events = ServiceEvent.objects.filter(semester=get_semester()).order_by("date")
     # Service submissions
     submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
@@ -715,7 +715,7 @@ class CommitteeEdit(UpdateView):
         return context
 
     def form_valid(self, form):
-        self.object.meetings.filter(recurring=True, ).delete()
+        self.object.meetings.filter(recurring=True).exclude(date__lt=datetime.date.today()+datetime.timedelta(days=1)).delete()
         committee = self.object.committee
         form.save()
         instance = form.cleaned_data
@@ -1134,7 +1134,7 @@ def secretary_all_excuses(request):
 def secretary_event_view(request, event_id):
     """ Renders the Secretary way of viewing old events """
     event = ChapterEvent.objects.get(pk=event_id)
-    attendees = event.attendees_brothers.all().order_by("last_name")
+    attendees = event.attendees_brothers.all().order_by("last_name", "first_name")
 
     context = {
         'type': 'ec-view',
@@ -1349,7 +1349,7 @@ class PositionDelete(DeleteView):
 @verify_position(['Marshal', 'Vice President', 'President', 'Adviser'])
 def marshal(request):
     """ Renders the marshal page listing all the candidates and relevant information to them """
-    candidates = Brother.objects.filter(brother_status='0').order_by("last_name")
+    candidates = Brother.objects.filter(brother_status='0').order_by("last_name", "first_name")
     events = ChapterEvent.objects.filter(semester=get_semester()).exclude(date__gt=datetime.date.today())
     excuses = Excuse.objects.filter(event__semester=get_semester(), status='1')
     events_excused_list = []
@@ -1450,7 +1450,7 @@ def scholarship_c(request):
     """ Renders the Scholarship page listing all brother gpas and study table attendance """
     events = StudyTableEvent.objects.filter(semester=get_semester()).order_by("date")
 
-    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name", "first_name")
     plans = []
 
     for brother in brothers:
@@ -1661,7 +1661,7 @@ def all_pnm_csv(request):
 @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def recruitment_c_rush_attendance(request):
     """ Renders Scholarship chair page with rush attendance """
-    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name", "first_name")
     events = RecruitmentEvent.objects.filter(semester=get_semester(), rush=True) \
         .exclude(date__gt=datetime.date.today())
     events_attended_list = []
@@ -1978,7 +1978,7 @@ def service_c_event_add(request):
 @verify_position(['Service Chair', 'ec', 'Adviser'])
 def service_c_hours(request):
     """ Renders the service chair way of viewing total service hours by brothers """
-    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name")
+    brothers = Brother.objects.exclude(brother_status='2').order_by("last_name", "first_name")
     approved_submissions = ServiceSubmission.objects.filter(status='2')
     pending_submissions = ServiceSubmission.objects.exclude(status='2').exclude(status='3')
 
