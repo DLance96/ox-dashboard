@@ -100,7 +100,7 @@ textarea {
 
 .mediaaccounts {
     display: grid;
-    grid-template-columns: minmax(10px, 20px) 4fr 9`xfr 1fr;
+    grid-template-columns: minmax(10px, 20px) 4fr 9fr 1fr;
     gap: 5px 5px;
     align-items: center;
 }
