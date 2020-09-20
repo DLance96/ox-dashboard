@@ -464,4 +464,32 @@
             </div>
         </div>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Phone Tree</div>
+        <div class="panel-body">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table class="table table-condensed">
+                    <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Brother to Notify:</td>
+                        <td>Case ID:</td>
+                        <td>Phone Number:</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for bro in notifies %}
+                        <tr>
+                            <td>
+                                {{ bro.first_name }} {{ bro.last_name }}
+                            </td>
+                            <td>{{ bro.case_ID }}</td>
+                            <td>{{ bro.phone_number }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

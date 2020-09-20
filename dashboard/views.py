@@ -281,7 +281,9 @@ def brother_view(request):
         'philanthropy_events': philanthropy_events,
         'hours_approved': hours_approved,
         'hours_pending': hours_pending,
-        'type': 'brother-view'
+        'type': 'brother-view',
+        'notifies': notifies(brother),
+        'notified_by': notified_by(brother)
     }
     return render(request, "brother.html", context)
 
