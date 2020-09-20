@@ -1,4 +1,5 @@
 import datetime
+import os
 from urllib.parse import quote_plus
 
 import django.utils.timezone
@@ -166,6 +167,9 @@ class MediaAccount(models.Model):
     username = models.CharField(max_length=45)
     profile_link = models.URLField(blank=True, null=True)
 
+    def __str__(self):
+        return str(self.brother) + "'s " + str(self.media) + " Account"
+
 
 def get_positions_with_committee():
     choices = Q()
@@ -254,7 +258,7 @@ class PotentialNewMember(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return (self.first_name + " " + self.last_name)
+        return self.first_name + " " + self.last_name
 
 
 class ServiceSubmission(models.Model):
@@ -350,12 +354,12 @@ class Event(models.Model):
     class Meta:
         abstract = True
 
-    def __str__(self):
-        return self.name
-
 
 class ChapterEvent(Event):
     mandatory = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "Chapter Event - " + str(self.date)
 
 
 class PhilanthropyEvent(Event):
@@ -363,11 +367,17 @@ class PhilanthropyEvent(Event):
         Brother, blank=True, related_name="rsvp_philanthropy"
     )
 
+    def __str__(self):
+        return "Philanthropy Event - " + str(self.date)
+
 
 class ServiceEvent(Event):
     rsvp_brothers = models.ManyToManyField(
         Brother, blank=True, related_name="rsvp_service"
     )
+
+    def __str__(self):
+        return "Service Event - " + str(self.date)
 
 
 class RecruitmentEvent(Event):
@@ -376,13 +386,18 @@ class RecruitmentEvent(Event):
     picture = models.ImageField(upload_to='recruitment', null=True)
     location = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return "Recruitment Event - " + str(self.date)
+
 
 class HealthAndSafetyEvent(Event):
-    pass
+    def __str__(self):
+        return "Health and Safety Event - " + str(self.date)
 
 
 class ScholarshipEvent(Event):
-    pass
+    def __str__(self):
+        return "Scholarship Event - " + str(self.date)
 
 
 class StudyTableEvent(Event):
@@ -495,10 +510,19 @@ class Committee(models.Model):
 
     meeting_time = models.TimeField(choices=MeetingTime.choices, blank=True)
 
+    def __str__(self):
+        for x, y in self.COMMITTEE_CHOICES:
+            if x == self.committee:
+                return y + " Committee"
+        return self.committee
+
 
 class CommitteeMeetingEvent(Event):
     committee = models.ForeignKey(Committee, on_delete=models.PROTECT, related_name='meetings')
     recurring = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.committee) + " - " + str(self.date)
 
 
 class Excuse(models.Model):
@@ -525,7 +549,7 @@ class Excuse(models.Model):
 
     def __str__(self):
         return self.brother.first_name \
-            + " " + self.brother.last_name + " - " + self.event.name
+            + " " + self.brother.last_name + " - " + str(self.event)
 
 
 class Supplies(models.Model):
@@ -591,6 +615,10 @@ class SundayDetail(Detail):
     """A single Sunday detail.  Keeps track of who marks it done"""
     finished_by = models.ForeignKey(Brother, on_delete=models.CASCADE, null=True)
 
+    def __str__(self):
+        return str(self.due_date) + ": " +\
+            super(SundayDetail, self).__str__()
+
 
 class SundayGroupDetail(models.Model):
     """A group detail.  Contains a group and a number of SundayDetails"""
@@ -614,8 +642,16 @@ class SundayGroupDetail(models.Model):
             self.due_date, ", ".join([str(d) for d in self.details.all()])
         )
 
+
 class Photo(models.Model):
     photo = models.ImageField(upload_to='photos')
 
+    def __str__(self):
+        return os.path.basename(str(self.photo))
+
+
 class MinecraftPhoto(models.Model):
     photo = models.ImageField(upload_to='minecraft')
+
+    def __str__(self):
+        return os.path.basename(str(self.photo))

@@ -11,14 +11,52 @@
     <div class="panel panel-default">
         <div class="panel-heading">Service Submission</div>
         <div class="panel-body">
-            Name: {{ submission.name}}<br>
-            Date: {{ submission.date }}<br>
-            Hours: {{ submission.hours }}<br>
-            Date Submitted: {{ submission.date_applied }}<br>
-            Description: {{ submission.description }}
-            {% if type == "review" %}
-                <br><br><a class="btn btn-default" href={% url 'dashboard:brother_service_submission_edit' submission.id %}>Edit Service Submission</a>
+             {% if type == "review" %}
+                <a class="btn btn-default" href={% url 'dashboard:brother_service_submission_edit' submission.id %}>Edit Service Submission</a>
             {% endif %}
+            <table class="table table-event-information">
+                <tbody>
+                    <tr>
+                        <td>
+                            Name:
+                        </td>
+                        <td>
+                            {{ submission.name }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Date:
+                        </td>
+                        <td>
+                            {{ submission.date }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Hours:
+                        </td>
+                        <td>
+                            {{ submission.hours }}
+                        </td>
+                    </tr><tr>
+                        <td>
+                            Date Submitted:
+                        </td>
+                        <td>
+                            {{ submission.date_applied }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Description:
+                        </td>
+                        <td>
+                            {{ submission.description }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     {% if type == "response" %}
