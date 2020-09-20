@@ -18,25 +18,12 @@
                 <form method="post">
             {% endif %}
                 {% csrf_token %}
-                <table class="table table-condensed">
-                    {% for field in form %}
-                    {% if forloop.first %}
-                    <thead>
-                        <tr>
-                            <td>{{ field.label_tag }}</td>
-                            <td>{{ field }}</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% else %}
-                        <tr>
-                            <td>{{ field.label_tag }}</td>
-                            <td>{{ field }}</td>
-                        </tr>
-                    {% endif %}
-                    {% endfor %}
-                    </tbody>
-                </table>
+                <div class="modeladd">
+                {% for field in form %}
+                    <div class="modellabel">{{ field.label_tag }}</div>
+                    <div>{{ field }}</div>
+                <div class="grayline"></div>
+                {% endfor %}
                 <input class="btn btn-success" type="submit" value="Update"/>
             </form>
         </div>
