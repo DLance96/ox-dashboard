@@ -18,7 +18,7 @@ class Semester(models.Model):
         ('2', 'Fall'),
     )
     YEAR_CHOICES = []
-    for r in range(2010, (datetime.datetime.now().year + 2)):
+    for r in range(2010, (datetime.datetime.now().year + 6)):
         YEAR_CHOICES.append((r, r))
 
     season = models.CharField(
