@@ -314,65 +314,15 @@ def create_recurring_meetings(instance, committee):
                                       committee=Committee.objects.get(committee=committee), recurring=True)
         event.save()
 
+def create_node_with_children(node_brother, notified_by, brothers_notified):
+    PhoneTreeNode(brother=node_brother, notified_by=notified_by).save()
 
-def create_phone_tree():
-
-    # delete the exiting phone tree
-    PhoneTreeNode.objects.all().delete()
-
-    # Should only ever have 1 president
-    president = Position.objects.filter(title='President')[0].brother
-    marshal = Position.objects.filter(title='Marshal')[0].brother
-
-    standard_ec_positions = Position.objects.filter(in_ec=True).exclude(title='President').exclude(title='Marshal')
-    standard_ec_brothers = map(lambda pos : pos[0].brother, standard_ec_positions)
-
-    actives = Brother.objects.filter(brother_status='1') \
-                             .exclude(user__in=map(lambda bro : bro.user, standard_ec_brothers)) \
-                             .exclude(user=president.user) \
-                             .exclude(user=marshal.user)
-
-    candidates = Brother.objects.filter(brother_status='0')
-
-    num_non_ec = len(actives)
-    num_standard_ec = len(standard_ec_brothers)
-    actives_per_ec_member = int(num_non_ec / num_standard_ec)
-    remainder_actives = num_non_ec - (actives_per_ec_member * num_standard_ec) #could probably use modulo
-
-    root = PhoneTreeNode()
-    root.brother = president
-    root.save()
-
-    marshal_node = PhoneTreeNode()
-    marshal_node.brother = marshal
-    marshal_node.notified_by = president
-    marshal_node.save()
-
-    actives_index = 0
-    for ec_member in standard_ec_brothers:
-        if remainder_actives > 0:
-            actives_to_assign = num_standard_ec + 1
-            remainder_actives = remainder_actives - 1
-        else:
-            actives_to_assign = num_standard_ec
-
-        assigned_actives = actives[actives_index:actives_index + actives_to_assign]
-        actives_index = actives_index + actives_to_assign
-
-        ec_node = PhoneTreeNode()
-        ec_node.brother = ec_member
-        ec_node.notified_by = president
-        ec_node.save()
-
-        for active in assigned_actives:
-            active_node = PhoneTreeNode()
-            active_node.brother = active
-            active.notified_by = ec_member
-            active.save()
+    for brother in brothers_notified:
+        PhoneTreeNode(brother=brother, notified_by=node_brother).save()
 
 
 def notifies(brother):
-    return PhoneTreeNode.objects.filter(notified_by=brother)
+    return list(map(lambda node : node.brother, PhoneTreeNode.objects.filter(notified_by=brother)))
 
 def notified_by(brother):
     node = PhoneTreeNode.objects.filter(brother=brother)

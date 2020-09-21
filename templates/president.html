@@ -8,4 +8,12 @@
     <div class="jumbotron">
         <h1>President</h1>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Create Emergency Phone Tree</div>
+        <div class="panel-body">
+            <a class="btn btn-danger" href={% url 'dashboard:create_phone_tree' %} role="button">
+                Recreate Phone Tree
+            </a>
+        </div>
+    </div>
 {% endblock %}

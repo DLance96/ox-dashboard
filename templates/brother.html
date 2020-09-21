@@ -464,8 +464,37 @@
             </div>
         </div>
     </div>
+    {% if notified_by %}
     <div class="panel panel-default">
-        <div class="panel-heading">Phone Tree</div>
+        <div class="panel-heading">Notified by Brother in Case of Emergency</div>
+        <div class="panel-body">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table class="table table-condensed">
+                    <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Brother that will notify you</td>
+                        <td>Case ID:</td>
+                        <td>Phone Number:</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                {{ notified_by.first_name }} {{ notified_by.last_name }}
+                            </td>
+                            <td>{{ notified_by.case_ID }}</td>
+                            <td>{{ notified_by.phone_number }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if notifies %}
+    <div class="panel panel-default">
+        <div class="panel-heading">Brothers to Notify in Case of Emergency</div>
         <div class="panel-body">
             <div class="col-lg-2"></div>
             <div class="col-lg-8">
@@ -492,4 +521,5 @@
             </div>
         </div>
     </div>
+    {% endif %}
 {% endblock %}
