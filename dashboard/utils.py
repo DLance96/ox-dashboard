@@ -313,3 +313,17 @@ def create_recurring_meetings(instance, committee):
         event = CommitteeMeetingEvent(date=date, start_time=instance['meeting_time'], semester=semester,
                                       committee=Committee.objects.get(committee=committee), recurring=True)
         event.save()
+
+def create_node_with_children(node_brother, notified_by, brothers_notified):
+    PhoneTreeNode(brother=node_brother, notified_by=notified_by).save()
+
+    for brother in brothers_notified:
+        PhoneTreeNode(brother=brother, notified_by=node_brother).save()
+
+
+def notifies(brother):
+    return list(map(lambda node : node.brother, PhoneTreeNode.objects.filter(notified_by=brother)))
+
+def notified_by(brother):
+    node = PhoneTreeNode.objects.filter(brother=brother)
+    return node[0].notified_by if len(node) > 0 else None
