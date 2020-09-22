@@ -556,14 +556,63 @@ class ServiceSubmissionEdit(UpdateView):
     form_class = ServiceSubmissionForm
 
 
-def media_account_add(request):
+def self_groups_add(request):
 
-    form = MediaAccountForm(request.POST or None)
+    brother = request.user.brother
+
+    form = SelfGroupForm(request.POST or None)
+    form.fields["choose_groups"].queryset = SelfGroupForm.groups.exclude(brothers=brother)
 
     if request.method == 'POST':
         if form.is_valid():
+            instance = form.cleaned_data
+            instance['choose_groups'].brothers.add(brother)
+            return HttpResponseRedirect(reverse('dashboard:brother'))
+
+    context = {
+        'brother': brother,
+        'title': 'Add Your Campus Groups',
+        'form': form,
+        'list': brother.groups.all()
+    }
+
+    return render(request, 'brother-info-add.html', context)
+
+
+def self_groups_delete(request, pk):
+    brother = request.user.brother
+    CampusGroup.objects.get(pk=pk).brothers.remove(brother)
+
+    return HttpResponseRedirect(reverse('dashboard:brother'))
+
+
+def campus_groups_add(request):
+
+    form = CampusGroupForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('dashboard:self_groups_add'))
+
+    context = {
+        'title': 'Add Campus Group',
+        'form': form
+    }
+
+    return render(request, 'model-add.html', context)
+
+
+def media_account_add(request):
+
+    brother = request.user.brother
+    form = MediaAccountForm(request.POST or None)
+
+    form.fields["media"].queryset = OnlineMedia.objects.exclude(name__in=[e.media.name for e in brother.media_accounts.all()])
+    #list(map(lambda account: account.media.name, brother.media_accounts.all()))
+    if request.method == 'POST':
+        if form.is_valid():
             instance = form.save(commit=False)
-            brother = request.user.brother
             instance.brother = brother
             instance.save()
             return HttpResponseRedirect(reverse('dashboard:brother'))
@@ -571,10 +620,11 @@ def media_account_add(request):
     context = {
         'brother': request.user.brother,
         'title': 'Media Account',
-        'form': form
+        'form': form,
+        'list': brother.media_accounts.all()
     }
 
-    return render(request, 'model-add.html', context)
+    return render(request, 'brother-info-add.html', context)
 
 
 class MediaAccountDelete(DeleteView):
@@ -592,7 +642,6 @@ def media_add(request):
 
     if request.method == 'POST':
         form = MediaForm(request.POST, request.FILES or None)
-        print(form.is_valid())
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('dashboard:media_account_add'))
@@ -665,8 +714,9 @@ def committee_list(request):
     committees = Committee.objects.all()
     brothers = Brother.objects.order_by('last_name')
     current_brother = request.user.brother
-
     form = CommitteeCreateForm(request.POST or None)
+    form.fields["committee"].choices = [e for e in form.fields["committee"].choices if not Committee.objects.filter(committee=e[0]).exists()]
+    form.fields["chair"].choices = [e for e in form.fields["chair"].choices if e[0] not in Committee.objects.values_list('chair', flat=True)]
 
     if current_brother.position_set.filter(title='Vice President'):
         view_type = 'Vice President'
@@ -1297,10 +1347,12 @@ def secretary_all_events(request):
 def secretary_positions(request):
     """ Renders all of the positions currently in the chapter """
     # Checking to make sure all of the EC and dashboard required positions are setup
-    for position in all_positions:
-        if not Position.objects.filter(title=position).exists():
-            new_position = Position(title=position)
-            new_position.save()
+    if request.method == 'POST':
+        for position in all_positions:
+            if not Position.objects.filter(title=position).exists():
+                new_position = Position(title=position)
+                new_position.save()
+        return HttpResponseRedirect(reverse('dashboard:secretary_positions'))
 
     positions = Position.objects.order_by("title")
     context = {
@@ -1313,6 +1365,7 @@ def secretary_positions(request):
 def secretary_position_add(request):
     """ Renders the Secretary way of viewing a brother """
     form = PositionForm(request.POST or None)
+    form.fields["title"].choices = [e for e in form.fields["title"].choices if not Position.objects.filter(title=e[0]).exists()]
 
     if request.method == 'POST':
         if form.is_valid():
@@ -2137,12 +2190,11 @@ def supplies_finish(request):
 def in_house(request):
     """Allows the VP to select who's living in the house"""
 
-    form = InHouseForm(request.POST or None, initial={'in_house': Brother.objects.filter(brother_status='1', in_house=True)})
+    form = InHouseForm(request.POST or None)
 
     if request.method == 'POST':
         if form.is_valid():
-            brothers = Brother.objects.filter(brother_status='1')
-            brothers.update(in_house=False)
+            InHouseForm.brothers.update(in_house=False)
             for c in ['in_house']:
                 brothers = form.cleaned_data[c]
                 for b in brothers:

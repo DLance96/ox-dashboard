@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>{{ title }}</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ title }}</div>
+        {% if error_message %}
+            <div class="alert alert-danger" role="alert">
+                {{ error_message }}
+            </div>
+        {% endif %}
+        <div class="panel-body">
+            <div class="brotherinfoadd">
+            {% for item in list %}
+                {% if title == 'Media Account' %}
+                    <div></div>
+                    <div><img src="/media/{{ item.media.icon }}" alt="" style="max-height: 20px;"></div>
+                    <div>{{ item.media.name }}:</div>
+                    <div>{{ item.username }}</div>
+                {% elif title == 'Add Your Campus Groups' %}
+                    <div style="grid-column: 2/3;">•</div>
+                    <div>{{ item.name }}</div>
+                    <div></div>
+                {% endif %}
+            {% endfor %}
+            <div class="grayline"></div>
+            </div>
+            {% if form.is_multipart %}
+                <form method="post" enctype="multipart/form-data">
+            {% else %}
+                <form method="post">
+            {% endif %}
+                {% csrf_token %}
+                <div class="modeladd">
+                    {% for field in form %}
+                        <div class="modellabel">{{ field.label_tag }}</div>
+                        <div>{{ field }}</div>
+                        {% if title == 'Media Account' %}
+                            {% if field.label == 'Media' %}
+                                <a class="btn btn-success" href={% url 'dashboard:media_add' %} role="button">Add Media</a>
+                            {% endif %}
+                        {% endif %}
+                        {% if title == 'Add Your Campus Groups' %}
+                            <div><a class="btn btn-success" href={% url 'dashboard:campus_groups_add' %} role="button">Add Campus Group To List</a></div>
+                        {% endif %}
+                    <div class="grayline"></div>
+                    {% endfor %}
+                <input class="btn btn-success" type="submit" style="grid-column: 1/2;" value="Submit"/>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

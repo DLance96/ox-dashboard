@@ -35,17 +35,6 @@ class Semester(models.Model):
         return "%s - %s" % (self.year, self.get_season_display())
 
 
-ALUMNI_RELATIONS = 'AR'
-MEMBERSHIP_DEVELOPMENT = 'MD'
-PHILANTHROPY = 'PH'
-PUBLIC_RELATIONS = 'PR'
-RECRUITMENT = 'RE'
-SCHOLARSHIP = 'SC'
-SOCIAL = 'SO'
-HEALTH_AND_SAFETY = 'HS'
-UNASSIGNED = 'NA'
-
-
 class Brother(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
 
@@ -58,7 +47,7 @@ class Brother(models.Model):
         MASCULINE = "MASC", _("he/him/his")
         NONBINARY = "NON", _("they/them/theirs")
 
-    pronouns = models.CharField(max_length=30, choices=PronounChoices.choices, blank=True)
+    pronouns = models.CharField(max_length=4, choices=PronounChoices.choices, blank=True)
     roster_number = models.IntegerField(blank=True, null=True)
     semester_joined = models.ForeignKey(
         Semester, on_delete=models.CASCADE, blank=True, null=True
@@ -169,9 +158,25 @@ class MediaAccount(models.Model):
 
     def __str__(self):
         return str(self.brother) + "'s " + str(self.media) + " Account"
+    
+
+class CampusGroup(models.Model):
+    name = models.CharField(max_length=45, unique=True)
+    brothers = models.ManyToManyField(Brother, related_name='groups')
+
+    def __str__(self):
+        return "%s" % self.name
 
 
-def get_positions_with_committee():
+class Classes(models.Model):
+    name = models.CharField(max_length=45, unique=True)
+    brothers = models.ManyToManyField(Brother, related_name='classes')
+
+    def __str__(self):
+        return "%s" % self.name
+
+
+def query_positions_with_committee():
     choices = Q()
     for position in (
         'Vice President of Health and Safety',
@@ -206,7 +211,7 @@ class Position(models.Model):
         SOCIAL_CHAIR = 'Social Chair'
         ADVISER = 'Adviser'
 
-    title = models.CharField(max_length=45, choices=PositionChoices.choices, unique=True)
+    title = models.CharField(max_length=45, choices=PositionChoices.choices, unique=True, blank=False)
 
     def in_ec(self):
         return self.title in (
@@ -422,32 +427,31 @@ def get_operational_committees(brother):
 
 
 class Committee(models.Model):
-    COMMITTEE_CHOICES = [
-        (ALUMNI_RELATIONS, 'Alumni Relations'),
-        (MEMBERSHIP_DEVELOPMENT, 'Membership Development'),
-        (PHILANTHROPY, 'Philanthropy'),
-        (PUBLIC_RELATIONS, 'Public Relations'),
-        (RECRUITMENT, 'Recruitment'),
-        (SCHOLARSHIP, 'Scholarship'),
-        (SOCIAL, 'Social'),
-        (HEALTH_AND_SAFETY, 'Health and Safety'),
-    ]
+    class CommitteeChoices(models.TextChoices):
+        ALUMNI_RELATIONS = 'AR'
+        MEMBERSHIP_DEVELOPMENT = 'MD'
+        PHILANTHROPY = 'PH'
+        PUBLIC_RELATIONS = 'PR'
+        RECRUITMENT = 'RE'
+        SCHOLARSHIP = 'SC'
+        SOCIAL = 'SO'
+        HEALTH_AND_SAFETY = 'HS'
 
     STANDING_COMMITTEE_CHOICES = [
-        (PUBLIC_RELATIONS, 'Public Relations'),
-        (RECRUITMENT, 'Recruitment'),
-        (SOCIAL, 'Social'),
-        (HEALTH_AND_SAFETY, 'Health and Safety'),
+        ('PR', 'Public Relations'),
+        ('RE', 'Recruitment'),
+        ('SO', 'Social'),
+        ('HS', 'Health and Safety'),
     ]
 
     OPERATIONAL_COMMITTEE_CHOICES = [
-        (ALUMNI_RELATIONS, 'Alumni Relations'),
-        (MEMBERSHIP_DEVELOPMENT, 'Membership Development'),
-        (PHILANTHROPY, 'Philanthropy'),
-        (SCHOLARSHIP, 'Scholarship'),
+        ('AR', 'Alumni Relations'),
+        ('MD', 'Membership Development'),
+        ('PH', 'Philanthropy'),
+        ('SC', 'Scholarship'),
     ]
 
-    committee = models.CharField(max_length=2, choices=COMMITTEE_CHOICES, unique=True)
+    committee = models.CharField(max_length=2, choices=CommitteeChoices.choices, unique=True, blank=False)
 
     def url_name(self):
         committee_names = dict(self.COMMITTEE_CHOICES)
@@ -461,7 +465,7 @@ class Committee(models.Model):
 
     members = models.ManyToManyField(Brother, blank=True)
 
-    chair = models.OneToOneField(Position, on_delete=models.PROTECT, limit_choices_to=get_positions_with_committee())
+    chair = models.OneToOneField(Position, on_delete=models.PROTECT, limit_choices_to=query_positions_with_committee())
 
     class MeetingIntervals(models.IntegerChoices):
         WEEKLY = 7, 'Weekly'

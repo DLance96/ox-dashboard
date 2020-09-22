@@ -59,6 +59,9 @@ urlpatterns = [
     url(r'^brother/media-account/add/$', views.media_account_add, name="media_account_add"),
     url(r'^brother/media-account/(?P<pk>\d+)/delete/$', views.MediaAccountDelete.as_view(), name="media_account_delete"),
     url(r'^brother/media/add/$', views.media_add, name="media_add"),
+    url(r'^brother/campus-groups/add/$', views.campus_groups_add, name="campus_groups_add"),
+    url(r'^brother/self-groups/add/$', views.self_groups_add, name="self_groups_add"),
+    url(r'^brother/self-groups/(?P<pk>\d+)/delete/$', views.self_groups_delete, name="self_groups_delete"),
 
     url(r'^president/$', views.president, name="president"),
 

@@ -26,12 +26,7 @@
                     {% for field in form %}
                         <div class="modellabel">{{ field.label_tag }}</div>
                         <div>{{ field }}</div>
-                        {% if title == 'Media Account' %}
-                            {% if field.label == 'Media' %}
-                                <a class="btn btn-default" href={% url 'dashboard:media_add' %} role="button">Add Media</a>
-                            {% endif %}
-                        {% endif %}
-                    <div class="grayline"></div>
+                        <div class="grayline"></div>
                     {% endfor %}
                 <input class="btn btn-success" type="submit" style="grid-column: 1/2;" value="Submit"/>
                 </div>

@@ -32,16 +32,6 @@ class BrotherForm(forms.ModelForm):
         }
 
 
-class PronounSelectorWidget(forms.MultiWidget):
-    def decompress(self, value):
-        if value:
-            if value in [x[0] for x in self.widgets[0].choices]:
-                return [value, ""]  # make it set the pulldown to choice
-            else:
-                return ["", value]  # keep pulldown to blank, set freetext
-        return ["", ""]  # default for new object
-
-
 class BrotherEditForm(forms.ModelForm):
     class Meta:
         model = Brother
@@ -54,8 +44,8 @@ class BrotherEditForm(forms.ModelForm):
         ]
         widgets = {
             'birthday': SelectDateWidget(years=YEAR_RANGE),
- #           'pronouns': PronounSelectorWidget(widgets={forms.Select(choices=Brother.PronounChoices.choices), forms.TextInput})
         }
+
 
 class MediaAccountForm(forms.ModelForm):
     class Meta:
@@ -65,6 +55,21 @@ class MediaAccountForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(MediaAccountForm, self).__init__(*args, **kwargs)
         self.fields['media'].widget.attrs.update({'class': 'field'})
+
+
+class SelfGroupForm(forms.Form):
+    groups = CampusGroup.objects.order_by('name')
+
+    choose_groups = forms.ModelChoiceField(
+        queryset=groups,
+        label="Campus Groups:",
+    )
+
+
+class CampusGroupForm(forms.ModelForm):
+    class Meta:
+        model = CampusGroup
+        fields = ['name']
 
 
 class MediaForm(forms.ModelForm):
@@ -300,6 +305,7 @@ class InHouseForm(forms.Form):
         widget=forms.CheckboxSelectMultiple(),
         label="",
         required=False,
+        initial=brothers.filter(in_house=True),
     )
 
 
