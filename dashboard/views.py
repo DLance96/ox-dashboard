@@ -1841,7 +1841,7 @@ class RecruitmentEventEdit(UpdateView):
     success_url = reverse_lazy('dashboard:recruitment_c')
 
 
-@verify_position(['Service Chair', 'ec', 'Adviser'])
+@verify_position(['Service Chair', 'Adviser'])
 def service_c(request):
     """ Renders the service chair page with service submissions """
     events = ServiceEvent.objects.filter(semester=get_semester())
@@ -1871,7 +1871,7 @@ def service_c(request):
     return render(request, 'service-chair.html', context)
 
 
-@verify_position(['Service Chair', 'ec', 'Adviser'])
+@verify_position(['Service Chair', 'Adviser'])
 def service_c_event(request, event_id):
     """ Renders the service chair way of adding ServiceEvent """
     event = ServiceEvent.objects.get(pk=event_id)
@@ -1901,7 +1901,7 @@ def service_c_event(request, event_id):
 
 
 class ServiceEventDelete(DeleteView):
-    @verify_position(['Service Chair', 'ec', 'Adviser'])
+    @verify_position(['Service Chair', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(ServiceEventDelete, self).get(request, *args, **kwargs)
 
@@ -1911,7 +1911,7 @@ class ServiceEventDelete(DeleteView):
 
 
 class ServiceEventEdit(UpdateView):
-    @verify_position(['Service Chair', 'ec', 'Adviser'])
+    @verify_position(['Service Chair', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(ServiceEventEdit, self).get(request, *args, **kwargs)
 
@@ -1920,7 +1920,7 @@ class ServiceEventEdit(UpdateView):
     form_class = ServiceEventForm
 
 
-@verify_position(['Service Chair', 'ec', 'Adviser'])
+@verify_position(['Service Chair', 'Adviser'])
 def service_c_submission_response(request, submission_id):
     """ Renders the service chair way of responding to submissions """
     submission = ServiceSubmission.objects.get(pk=submission_id)
@@ -1942,7 +1942,7 @@ def service_c_submission_response(request, submission_id):
     return render(request, 'service-submission.html', context)
 
 
-@verify_position(['Service Chair', 'ec', 'Adviser'])
+@verify_position(['Service Chair', 'Adviser'])
 def service_c_event_add(request):
     """ Renders the service chair way of adding ServiceEvent """
     form = ServiceEventForm(request.POST or None)
@@ -1977,7 +1977,7 @@ def service_c_event_add(request):
     return render(request, 'event-add.html', context)
 
 
-@verify_position(['Service Chair', 'ec', 'Adviser'])
+@verify_position(['Service Chair', 'Adviser'])
 def service_c_hours(request):
     """ Renders the service chair way of viewing total service hours by brothers """
     brothers = Brother.objects.exclude(brother_status='2').order_by("last_name", "first_name")
@@ -2009,7 +2009,7 @@ def service_c_hours(request):
     return render(request, "service-hours-list.html", context)
 
 
-@verify_position(['Philanthropy Chair', 'ec', 'Adviser'])
+@verify_position(['Philanthropy Chair', 'Adviser'])
 def philanthropy_c(request):
     """ Renders the philanthropy chair's RSVP page for different events """
     events = PhilanthropyEvent.objects.filter(semester=get_semester())
@@ -2023,7 +2023,7 @@ def philanthropy_c(request):
     return render(request, 'philanthropy-chair.html', context)
 
 
-@verify_position(['Philanthropy Chair', 'ec', 'Adviser'])
+@verify_position(['Philanthropy Chair', 'Adviser'])
 def philanthropy_c_event(request, event_id):
     """ Renders the philanthropy event view """
     event = PhilanthropyEvent.objects.get(pk=event_id)
@@ -2038,7 +2038,7 @@ def philanthropy_c_event(request, event_id):
     return render(request, 'philanthropy-event.html', context)
 
 
-@verify_position(['Philanthropy Chair', 'ec', 'Adviser'])
+@verify_position(['Philanthropy Chair', 'Adviser'])
 def philanthropy_c_event_add(request):
     """ Renders the philanthropy chair way of adding PhilanthropyEvent """
     form = PhilanthropyEventForm(request.POST or None)
@@ -2063,7 +2063,7 @@ def philanthropy_c_event_add(request):
                 return render(request, "event-add.html", context)
             instance.semester = semester
             instance.save()
-            return HttpResponseRedirect(reverse('dashboard:service_c'))
+            return HttpResponseRedirect(reverse('dashboard:philanthropy_c'))
 
     context = {
         'position': 'Philanthropy Chair',
@@ -2073,7 +2073,7 @@ def philanthropy_c_event_add(request):
 
 
 class PhilanthropyEventDelete(DeleteView):
-    @verify_position(['Philanthropy Chair', 'ec', 'Adviser'])
+    @verify_position(['Philanthropy Chair', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(PhilanthropyEventDelete, self).get(request, *args, **kwargs)
 
@@ -2083,7 +2083,7 @@ class PhilanthropyEventDelete(DeleteView):
 
 
 class PhilanthropyEventEdit(UpdateView):
-    @verify_position(['Philanthropy Chair', 'ec', 'Adviser'])
+    @verify_position(['Philanthropy Chair', 'Adviser'])
     def get(self, request, *args, **kwargs):
         return super(PhilanthropyEventEdit, self).get(request, *args, **kwargs)
 
