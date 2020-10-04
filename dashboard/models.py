@@ -169,11 +169,36 @@ class CampusGroup(models.Model):
 
 
 class Classes(models.Model):
-    name = models.CharField(max_length=45, unique=True)
+    department = models.CharField(max_length=4)
+    number = models.IntegerField()
     brothers = models.ManyToManyField(Brother, related_name='classes')
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(check=Q(number__gte=101) & Q(number__lte=600), name='number_constraint'),
+        ]
+
     def __str__(self):
-        return "%s" % self.name
+        return "%s" % self.department + " " + str(self.number)
+
+
+class Grade(models.Model):
+    class GradeChoices(models.TextChoices):
+        A = 'A'
+        B = 'B'
+        C = 'C'
+        D = 'D'
+        F = 'F'
+
+    grade = models.CharField(max_length=1, choices=GradeChoices.choices)
+    class_taken = models.ForeignKey(Classes, on_delete=models.CASCADE)
+    brother = models.ForeignKey(Brother, related_name='grades', on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['class_taken', 'brother'], name='unique_grade')
+        ]
+
 
 
 def query_positions_with_committee():
@@ -454,7 +479,7 @@ class Committee(models.Model):
     committee = models.CharField(max_length=2, choices=CommitteeChoices.choices, unique=True, blank=False)
 
     def url_name(self):
-        committee_names = dict(self.COMMITTEE_CHOICES)
+        committee_names = dict(self.CommitteeChoices.choices)
         return quote_plus(committee_names[self.committee])
 
     def in_standing(self):

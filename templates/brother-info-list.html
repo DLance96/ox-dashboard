@@ -60,5 +60,33 @@
             </table>
         </div>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Media Account Info</div>
+        <div class="panel-body">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                <tr>
+                    <td>Brother:</td>
+                    <td>Campus Groups:</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for brother in brothers %}
+                    <tr>
+                        <td>{{ brother }}</td>
+                        <td>
+                            <div class="mediaaccounts" style="max-width: 80%">
+                                {% for group in brother.groups.all %}
+                                    <div>{{ group.name }}:</div>
+                                    <div></div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 {% endblock %}

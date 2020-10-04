@@ -137,9 +137,13 @@
                                     <div>{{ group.name }}</div>
                                     <div style="text-align: right;"><a class="btn btn-danger btn-xs" href={% url 'dashboard:self_groups_delete' group.pk %} role="button">x</a></div>
                                 {% endfor %}
-                                <a class="btn btn-success" style="grid-column: 1/5;" href={% url 'dashboard:self_groups_add'%} role="button">Add Campus Groups You're a Part Of</a>
+                                <a class="btn btn-success" style="grid-column: 1/5;" href={% url 'dashboard:self_groups_add' %} role="button">Add Campus Groups You're a Part Of</a>
                                 </div>
                             </td>
+                        </tr>
+                        <tr>
+                            <td>Classes:</td>
+                            <td><a class="btn btn-default" href={% url 'dashboard:classes' brother=brother.pk %}>Classes Taken</a></td>
                         </tr>
                         </tbody>
                     </table>

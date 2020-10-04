@@ -25,6 +25,16 @@ urlpatterns = [
     url(r'^general/committee-list/$', views.committee_list,
         name="committee_list"),
 
+    url(r'^classes/$', views.classes, name="classes"),
+    url(r'^classes/add/$', views.classes_add, name="classes_add"),
+    url(r'^classes/brother=(?P<brother>\d+)/$', views.classes, name="classes"),
+    url(r'^classes/department=(?P<department>\D+)/$', views.classes, name="classes"),
+    url(r'^classes/class=(?P<number>\d+)/$', views.classes, name="classes"),
+    url(r'^classes/department=(?P<department>\D+)/brother=(?P<brother>\d+)/$', views.classes, name="classes"),
+    url(r'^classes/number=(?P<number>\d+)/brother-(?P<brother>\d+)/$', views.classes, name="classes"),
+    url(r'^classes/department=(?P<department>\D+)/number=(?P<number>\d+)/$', views.classes, name="classes"),
+    url(r'^classes/department=(?P<department>\D+)/number=(?P<number>\d+)/brother=(?P<brother>\d+)/$', views.classes, name="classes"),
+
     url(r'^committee/(?P<pk>\d+)/edit/$', views.CommitteeEdit.as_view(), name='committee_edit'),
     url(r'^committee/(?P<pk>\d+)/delete/$', views.CommitteeDelete.as_view(), name='committee_delete'),
     url(r'^committee/event/(?P<event_id>[0-9]+)/$', views.committee_event, name='committee_event'),

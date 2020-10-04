@@ -45,6 +45,12 @@ textarea {
     margin-top:20px;
 }
 
+.classestaken {
+    display: grid;
+    grid-template-columns: 1fr 5fr 5fr 5fr 1fr;
+    gap: 10px 10px;
+}
+
 .committeelist {
     display: grid;
     grid-template-columns: 1fr 10fr 5fr 1fr;

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Classes</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Classes</div>
+        <div class="panel-body">
+            <div class="col-lg-2">
+                <b>Filters:</b>
+                <div class="blackline"></div><br>
+                <form method="POST">
+                    {% csrf_token %}
+                    <label for="department">Department:</label>
+                    <p>
+                        <select id="department" name="department">
+                        <option value="">-------</option>
+                        {% for department in departments %}
+                            {% for name in department %}
+                                <option value={{ name }} {% if name == filter_department %} selected {% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        {% endfor %}
+                        </select>
+                    </p>
+                    <label for="number">Class Number:</label>
+                    <p><input type="number" id="number" name="class_number" min="101" max="600" value={{ filter_number }}></p>
+                    <label for="brother">Brother:</label>
+                    <p>
+                        <select id="brother" name="brother">
+                        <option value="">----------------</option>
+                        {% for brother in brothers %}
+                            <option value={{ brother.pk }} {% if brother.pk == filter_brother %} selected {% endif %}>{{ brother }}</option>
+                        {% endfor %}
+                        </select>
+                    </p>
+                    <br><p><input type="submit" value="Submit"></p>
+                </form>
+            </div>
+            <div class="col-lg-10">
+                <div class="classestaken">
+                    <div style="font-weight: bold; grid-column: 2/3;">Class:</div>
+                    <div style="font-weight: bold;">Brothers Taken:</div>
+                    <div style="font-weight: bold;">Grade:</div>
+                    <div class="blackline"></div>
+                    {% for class in classes_taken %}
+                        <div style="grid-column: 2/3;">{{ class }}</div>
+                        {% for brother in class.brothers.all %}
+                            <div style="grid-column: 3/4;">{{ brother }}</div>
+                            {% for class_grade in brother.grades.all %}
+                                {% if class_grade.class_taken == class %}
+                                    <div>{{ class_grade.grade }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                        <div class="brothergrayline"></div>
+                    {% endfor %}
+                    <a class="btn btn-success" style="grid-column: 2/3; width: fit-content;" href={% url 'dashboard:classes_add' %}>Add a class You've Taken!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -7,6 +7,23 @@ from django import forms
 YEAR_RANGE = range(1970, datetime.datetime.today().year+6)
 
 
+class ListTextWidget(forms.TextInput):
+    def __init__(self, data_list, name, *args, **kwargs):
+        super(ListTextWidget, self).__init__(*args, **kwargs)
+        self._name = name
+        self._list = data_list
+        self.attrs.update({'list':'list__%s' % self._name})
+
+    def render(self, name, value, attrs=None, renderer=None):
+        text_html = super(ListTextWidget, self).render(name, value, attrs=attrs)
+        data_list = '<datalist id="list__%s" class="select">' % self._name
+        for item in self._list:
+            data_list += '<option value="%s">' % item
+        data_list += '</datalist>'
+
+        return text_html + data_list
+
+
 class LoginForm(forms.Form):
     username = forms.CharField(label="User")
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
@@ -45,6 +62,19 @@ class BrotherEditForm(forms.ModelForm):
         widgets = {
             'birthday': SelectDateWidget(years=YEAR_RANGE),
         }
+
+
+class ClassTakenForm(forms.ModelForm):
+    class Meta:
+        model = Classes
+        fields = [
+            'department', 'number'
+        ]
+    grade = forms.CharField(label="Grade :", widget=forms.Select(choices=Grade.GradeChoices.choices))
+
+    def __init__(self, *args, **kwargs):
+        super(ClassTakenForm, self).__init__(*args, **kwargs)
+        self.fields['department'].widget = ListTextWidget(data_list=Classes.objects.all().values_list('department').distinct(), name='department')
 
 
 class MediaAccountForm(forms.ModelForm):
