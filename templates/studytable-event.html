@@ -60,10 +60,12 @@
             <div class="panel-heading">Attendance</div>
             <div class="panel-body">
                 <form action="" method="post">
+                    {{ form.non_field.errors }}
                     {% csrf_token %}
                     {% for form in brother_form_list %}
                         {% for field in form %}
                             {{ field }}{{ field.label_tag }}
+                            {{ field.errors }}
                         {% endfor %}
                         <br>
                     {% endfor %}

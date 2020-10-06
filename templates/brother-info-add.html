@@ -37,6 +37,7 @@
                 <form method="post">
             {% endif %}
                 {% csrf_token %}
+                {{ form.non_field.errors }}
                 <div class="modeladd">
                     {% for field in form %}
                         <div class="modellabel">{{ field.label_tag }}</div>
@@ -49,6 +50,7 @@
                         {% if title == 'Add Your Campus Groups' %}
                             <div><a class="btn btn-success" href={% url 'dashboard:campus_groups_add' %} role="button">Add Campus Group To List</a></div>
                         {% endif %}
+                        <div style="grid-column: 5/6;">{{ field.errors }}</div>
                     <div class="grayline"></div>
                     {% endfor %}
                 <input class="btn btn-success" type="submit" style="grid-column: 1/2;" value="Submit"/>

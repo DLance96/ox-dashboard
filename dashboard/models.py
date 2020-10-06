@@ -178,6 +178,9 @@ class Classes(models.Model):
             models.CheckConstraint(check=Q(number__gte=101) & Q(number__lte=600), name='number_constraint'),
         ]
 
+    def ordered_brother_set(self):
+        return self.brothers.order_by('last_name', 'first_name')
+
     def __str__(self):
         return "%s" % self.department + " " + str(self.number)
 

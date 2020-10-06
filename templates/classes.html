@@ -38,7 +38,7 @@
                         {% endfor %}
                         </select>
                     </p>
-                    <br><p><input type="submit" value="Submit"></p>
+                    <br><p><input class="btn btn-success" type="submit" name="filter" value="Filter"></p>
                 </form>
             </div>
             <div class="col-lg-10">
@@ -49,13 +49,20 @@
                     <div class="blackline"></div>
                     {% for class in classes_taken %}
                         <div style="grid-column: 2/3;">{{ class }}</div>
-                        {% for brother in class.brothers.all %}
+                        {% for brother in class.ordered_brother_set %}
                             <div style="grid-column: 3/4;">{{ brother }}</div>
                             {% for class_grade in brother.grades.all %}
                                 {% if class_grade.class_taken == class %}
                                     <div>{{ class_grade.grade }}</div>
                                 {% endif %}
                             {% endfor %}
+                            {% if forloop.first %}
+                                {% if view == 'brother' %}
+                                    <div style="grid-column: 5/6;"><form method="POST">{% csrf_token %}<input type="hidden" name="class" value={{ class.pk }}><input class="btn btn-danger" type="submit" name="unadd_self" value="Unadd Self"></form></div>
+                                {% elif view == 'scholarship' %}
+                                    <a class="btn btn-danger" style="grid-column: 5/6; width: fit-content" href={% url 'dashboard:classes_delete' class.pk %}>Delete Class</a>
+                                {% endif %}
+                            {% endif %}
                         {% endfor %}
                         <div class="brothergrayline"></div>
                     {% endfor %}

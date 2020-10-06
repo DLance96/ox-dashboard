@@ -10,6 +10,7 @@
         <div class="panel-body">
             <form action="" method="post">
                 {% csrf_token %}
+                {{ form.non_field.errors }}
                 <table class="table table-condensed">
                     <thead style="font-weight:bold;">
                     <tr>
@@ -26,6 +27,7 @@
                             </td>
                             {% for field in form %}
                                 <td>{{ field }}</td>
+                                <td>{{ field.errors }}</td>
                             {% endfor %}
                         </tr>
                     {% endfor %}

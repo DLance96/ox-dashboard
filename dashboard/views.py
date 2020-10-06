@@ -164,25 +164,38 @@ def event_list(request):
 
 
 def classes(request, department=None, number=None, brother=None):
-    classes_taken = Classes.objects.all()
+    if request.user.brother in Position.objects.get(title='Scholarship Chair').brothers.all():
+        view = "scholarship"
+    else:
+        view = ""
+    classes_taken = Classes.objects.all().order_by('department', 'number')
     if department is not None:
         classes_taken = classes_taken.filter(department=department)
     if brother is not None:
         classes_taken = classes_taken.filter(brothers=brother)
         if isinstance(brother, str):
             brother = int(brother)
+        if request.user.brother.pk == brother:
+            view = "brother"
     if number is not None:
         classes_taken = classes_taken.filter(number=number)
 
     if request.method == 'POST':
-        form = request.POST
-        department = ('department', form.get('department'))
-        brother = ('brother', form.get('brother'))
-        number = ('number', form.get('class_number'))
-        print(dict((arg for arg in [department, number, brother] if arg[1] is not "")))
-        kwargs = dict((arg for arg in [department, number, brother] if arg[1] is not ""))
+        if 'filter' in request.POST:
+            form = request.POST
+            department = ('department', form.get('department'))
+            brother = ('brother', form.get('brother'))
+            number = ('number', form.get('class_number'))
+            kwargs = dict((arg for arg in [department, number, brother] if arg[1] is not ""))
 
-        return HttpResponseRedirect(reverse('dashboard:classes', kwargs=kwargs))
+            return HttpResponseRedirect(reverse('dashboard:classes', kwargs=kwargs))
+        elif 'unadd_self' in request.POST:
+            form = request.POST
+            class_taken = Classes.objects.get(pk=form.get('class'))
+            class_taken.brothers.remove(request.user.brother)
+            if not class_taken.brothers.exists():
+                class_taken.delete()
+
 
     context = {
         'classes_taken': classes_taken,
@@ -191,6 +204,7 @@ def classes(request, department=None, number=None, brother=None):
         'filter_department': department,
         'filter_number': number,
         'filter_brother': brother,
+        'view': view,
     }
 
     return render(request, "classes.html", context)
@@ -218,6 +232,16 @@ def classes_add(request):
     }
 
     return render(request, "model-add.html", context)
+
+
+class ClassesDelete(DeleteView):
+    @verify_position(['Scholarship Chair', 'President', 'Adviser'])
+    def get(self, request, *args, **kwargs):
+        return super(ClassesDelete, self).get(request, *args, **kwargs)
+
+    model = Classes
+    template_name = 'dashboard/base_confirm_delete.html'
+    success_url = reverse_lazy('dashboard:classes')
 
 
 def brother_view(request):
@@ -1928,7 +1952,7 @@ def recruitment_c_event_add(request):
         'position': 'Recruitment Chair',
         'form': form,
     }
-    return render(request, "recruitment-event-add.html", context)
+    return render(request, "event-add.html", context)
 
 
 class RecruitmentEventDelete(DeleteView):

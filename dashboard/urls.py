@@ -28,6 +28,7 @@ urlpatterns = [
 
     url(r'^classes/$', views.classes, name="classes"),
     url(r'^classes/add/$', views.classes_add, name="classes_add"),
+    url(r'^classes/(?P<pk>\d+)/delete/$', views.ClassesDelete.as_view(), name="classes_delete"),
     url(r'^classes/brother=(?P<brother>\d+)/$', views.classes, name="classes"),
     url(r'^classes/department=(?P<department>\D+)/$', views.classes, name="classes"),
     url(r'^classes/class=(?P<number>\d+)/$', views.classes, name="classes"),
@@ -36,11 +37,11 @@ urlpatterns = [
     url(r'^classes/department=(?P<department>\D+)/number=(?P<number>\d+)/$', views.classes, name="classes"),
     url(r'^classes/department=(?P<department>\D+)/number=(?P<number>\d+)/brother=(?P<brother>\d+)/$', views.classes, name="classes"),
 
-    url(r'^committee/(?P<pk>\d+)/edit/$', views.CommitteeEdit.as_view(), name='committee_edit'),
-    url(r'^committee/(?P<pk>\d+)/delete/$', views.CommitteeDelete.as_view(), name='committee_delete'),
-    url(r'^committee/event/(?P<event_id>[0-9]+)/$', views.committee_event, name='committee_event'),
+    url(r'^committee/(?P<pk>\d+)/edit/$', views.CommitteeEdit.as_view(), name="committee_edit"),
+    url(r'^committee/(?P<pk>\d+)/delete/$', views.CommitteeDelete.as_view(), name="committee_delete"),
+    url(r'^committee/event/(?P<event_id>[0-9]+)/$', views.committee_event, name="committee_event"),
     url(r'^committee/event/(?P<pk>\d+)/edit/$', views.CommitteeEventEdit.as_view(),
-        name='committee_event_edit'),
+        name="committee_event_edit"),
     url(r'^(?P<position>\D+)/committee/event/add/$',
         views.committee_event_add, name="committee_event_add"),
     url(r'^committee/event/(?P<pk>\d+)/delete/$', views.CommitteeEventDelete.as_view(),

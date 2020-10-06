@@ -47,15 +47,16 @@ textarea {
 
 .classestaken {
     display: grid;
-    grid-template-columns: 1fr 5fr 5fr 5fr 1fr;
+    grid-template-columns: 1fr 5fr 5fr 2fr 5fr 1fr;
     gap: 10px 10px;
+    align-items: center;
 }
 
 .committeelist {
     display: grid;
     grid-template-columns: 1fr 10fr 5fr 1fr;
     gap: 5px 0px;
-    align-items: top;
+    align-items: start;
 }
 
 .committeegrayline {
@@ -68,7 +69,7 @@ textarea {
     display: grid;
     grid-template-columns: 1fr 20fr 2fr 1fr;
     gap: 5px 0px;
-    align-items: top;
+    align-items: start;
 }
 
 .homeevent1 {

@@ -17,11 +17,13 @@
             {% else %}
                 <form method="post">
             {% endif %}
+                {{ form.non_field.errors }}
                 {% csrf_token %}
                 <div class="modeladd">
                 {% for field in form %}
                     <div class="modellabel">{{ field.label_tag }}</div>
                     <div>{{ field }}</div>
+                    <div style="grid-column: 5/6;">{{ field.errors }}</div>
                 <div class="grayline"></div>
                 {% endfor %}
                 <input class="btn btn-success" type="submit" value="Update"/>

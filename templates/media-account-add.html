@@ -19,19 +19,22 @@
             <form action="" method="post">
                 {% csrf_token %}
                 <table class="table table-condensed">
+                    {{ form.non_field.errors }}
                     {% for field in form %}
                         {% if forloop.counter == 1 %}
                             <thead>
-                            <tr>
-                                <td>{{ field.label_tag }}</td>
-                                <td>{{ field }}</td>
-                            </tr>
+                                <tr>
+                                    <td>{{ field.label_tag }}</td>
+                                    <td>{{ field }}</td>
+                                    <td>{{ field.errors }}</td>
+                                </tr>
                             </thead>
                         <tbody>
                         {% else %}
                             <tr>
                                 <td>{{ field.label_tag }}</td>
                                 <td>{{ field }}</td>
+                                <td>{{ field.errors }}</td>
                             </tr>
                         {% endif %}
                         </tbody>
