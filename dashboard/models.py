@@ -18,7 +18,7 @@ class Semester(models.Model):
         ('2', 'Fall'),
     )
     YEAR_CHOICES = []
-    for r in range(2010, (datetime.datetime.now().year + 2)):
+    for r in range(2010, (datetime.datetime.now().year + 6)):
         YEAR_CHOICES.append((r, r))
 
     season = models.CharField(
@@ -684,3 +684,8 @@ class MinecraftPhoto(models.Model):
 
     def __str__(self):
         return os.path.basename(str(self.photo))
+
+
+class PhoneTreeNode(models.Model):
+    brother = models.ForeignKey(Brother, on_delete=models.PROTECT, related_name='phone_tree_brother')
+    notified_by = models.ForeignKey(Brother, on_delete=models.PROTECT, null=True, related_name='phone_tree_notified_by') # null is the root (ie president)

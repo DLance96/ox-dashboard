@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^general/event-list/$', views.event_list, name="event_list"),
     url(r'^general/committee-list/$', views.committee_list,
         name="committee_list"),
+    url(r'^general/emergency_phone_tree/$', views.emergency_phone_tree_view, name="emergency_phone_tree_view"),
 
     url(r'^classes/$', views.classes, name="classes"),
     url(r'^classes/add/$', views.classes_add, name="classes_add"),
@@ -74,6 +75,7 @@ urlpatterns = [
     url(r'^brother/self-groups/(?P<pk>\d+)/delete/$', views.self_groups_delete, name="self_groups_delete"),
 
     url(r'^president/$', views.president, name="president"),
+    url(r'^president/recreate-phone-tree/$', views.create_phone_tree, name="create_phone_tree"),
 
     # Vice President URL Section
     url(r'^vice-president/$', views.vice_president, name="vice_president"),

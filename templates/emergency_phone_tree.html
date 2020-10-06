@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Emergency Phone Tree</h1>
+    </div>
+    {% for position in phone_tree %}
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ position.position }} ({{ position.brother.first_name }} {{ position.brother.last_name }})</div>
+        <div class="panel-body">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+                <table class="table table-condensed">
+                    <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Brother to Notify:</td>
+                        <td>Case ID:</td>
+                        <td>Phone Number:</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for bro in position.notifies %}
+                        <tr>
+                            <td>
+                                {{ bro.first_name }} {{ bro.last_name }}
+                            </td>
+                            <td>{{ bro.case_ID }}</td>
+                            <td>{{ bro.phone_number }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
