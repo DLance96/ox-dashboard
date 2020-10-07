@@ -199,7 +199,7 @@ def classes(request, department=None, number=None, brother=None):
 
     context = {
         'classes_taken': classes_taken,
-        'departments': Classes.objects.all().values_list('department').distinct,
+        'departments': Classes.objects.all().values_list('department', flat=True).distinct,
         'brothers': Brother.objects.all(),
         'filter_department': department,
         'filter_number': number,
@@ -639,51 +639,34 @@ class ServiceSubmissionEdit(UpdateView):
     form_class = ServiceSubmissionForm
 
 
-def self_groups_add(request):
+def campus_groups_add(request):
 
     brother = request.user.brother
 
-    form = SelfGroupForm(request.POST or None)
-    form.fields["choose_groups"].queryset = SelfGroupForm.groups.exclude(brothers=brother)
+    form = CampusGroupForm(request.POST or None)
 
     if request.method == 'POST':
         if form.is_valid():
-            instance = form.cleaned_data
-            instance['choose_groups'].brothers.add(brother)
+            instance = form.save(commit=False)
+            group, created = CampusGroup.objects.get_or_create(name=instance.name)
+            group.brothers.add(brother)
+            group.save()
             return HttpResponseRedirect(reverse('dashboard:brother'))
 
     context = {
         'brother': brother,
         'title': 'Add Your Campus Groups',
         'form': form,
-        'list': brother.groups.all()
     }
 
-    return render(request, 'brother-info-add.html', context)
+    return render(request, 'model-add.html', context)
 
 
-def self_groups_delete(request, pk):
+def campus_groups_delete(request, pk):
     brother = request.user.brother
     CampusGroup.objects.get(pk=pk).brothers.remove(brother)
 
     return HttpResponseRedirect(reverse('dashboard:brother'))
-
-
-def campus_groups_add(request):
-
-    form = CampusGroupForm(request.POST or None)
-
-    if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('dashboard:self_groups_add'))
-
-    context = {
-        'title': 'Add Campus Group',
-        'form': form
-    }
-
-    return render(request, 'model-add.html', context)
 
 
 def media_account_add(request):
@@ -1490,6 +1473,23 @@ def marshal(request):
     excuses = Excuse.objects.filter(event__semester=get_semester(), status='1')
     events_excused_list = []
     events_unexcused_list = []
+    randomized_list = request.session.pop('randomized_list', None)
+
+    mab_form_list = []
+
+    for counter, candidate in enumerate(candidates):
+        assigned_mab = MeetABrother.objects.filter(candidate=candidate).values_list('brother', flat=True)
+        eligible_brothers = Brother.objects.filter(brother_status=1).exclude(pk__in=assigned_mab).order_by('last_name', 'first_name')
+        form = MeetABrotherForm(request.POST or None, prefix=counter+1, candidate=candidate.first_name + ' ' + candidate.last_name)
+        mab_form_list.append(form)
+        if randomized_list is not None or []:
+            form.fields['assigned_brother1'].initial = randomized_list[counter][0]
+            form.fields['assigned_brother2'].initial = randomized_list[counter][1]
+            form.fields['randomize'].initial = randomized_list[counter][2]
+        else:
+            form.fields['randomize'].initial = True
+        form.fields['assigned_brother1'].queryset = eligible_brothers
+        form.fields['assigned_brother2'].queryset = eligible_brothers
 
     for candidate in candidates:
         events_excused = 0
@@ -1509,11 +1509,67 @@ def marshal(request):
 
     candidate_attendance = zip(candidates, events_excused_list, events_unexcused_list)
 
+    if request.method == 'POST':
+        if 'submit' in request.POST:
+            if forms_is_valid(mab_form_list):
+                for counter, form in enumerate(mab_form_list):
+                    instance = form.cleaned_data
+                    if instance['assigned_brother1']:
+                        mab1 = MeetABrother(candidate=candidates[counter], brother=instance['assigned_brother1'])
+                        mab1.save()
+                    if instance['assigned_brother2']:
+                        mab2 = MeetABrother(candidate=candidates[counter], brother=instance['assigned_brother2'])
+                        mab2.save()
+                return HttpResponseRedirect(reverse('dashboard:meet_a_brother'))
+        if 'randomize' in request.POST:
+            if forms_is_valid(mab_form_list):
+                randomized_list = []
+                random1 = []
+                random2 = []
+                for form in mab_form_list:
+                    instance = form.cleaned_data
+                    print(instance['randomize'])
+                    if instance['randomize']:
+                        queryset1 = form.fields['assigned_brother1'].queryset
+                        queryset2 = queryset1
+                        if queryset1.exists():
+                            random1 = random.choices(queryset1, k=1)[0].pk
+                            queryset2 = queryset1.exclude(pk=random1)
+                        if queryset2.exists():
+                            random2 = random.choices(queryset2, k=1)[0].pk
+                        randomized_list.append((random1, random2, True))
+                    else:
+                        if instance['assigned_brother1']:
+                            random1 = instance['assigned_brother1'].pk
+                        else:
+                            random1 = []
+                        if instance['assigned_brother2']:
+                            random2 = instance['assigned_brother2'].pk
+                        else:
+                            random2 = []
+                        randomized_list.append((random1, random2, instance['randomize']))
+                request.session['randomized_list'] = randomized_list
+                print(randomized_list)
+                return HttpResponseRedirect(reverse('dashboard:marshal'))
+
     context = {
         'candidates': candidates,
         'candidate_attendance': candidate_attendance,
+        'mab_form_list': mab_form_list,
     }
     return render(request, 'marshal.html', context)
+
+
+def meet_a_brother(request):
+    candidates = Brother.objects.filter(brother_status=0)
+    weeks = MeetABrother.objects.all().order_by('week').values_list('week', flat=True).distinct
+
+    context = {
+        'candidates': candidates,
+        'weeks': weeks
+    }
+
+    return render(request, 'meet-a-brother.html', context)
 
 
 @verify_position(['Marshal', 'Vice President', 'President', 'Adviser'])

@@ -57,4 +57,35 @@
             </table>
         </div>
     </div>
+   <div class="panel panel-default">
+       <div class="panel-heading">Meet A Brother</div>
+       <div class="panel-body">
+           <form method="post">
+               <input class="btn btn-default" name="randomize" type="submit" value="Randomize"/>
+               {% csrf_token %}
+               <div class="meetabrother">
+                   <div></div>
+                   <div>Randomize?</div>
+                   <div>Candidate</div>
+                   <div>Assigned Brothers</div>
+                   <div></div>
+                   <div class="blackline"></div>
+                   {% for form in mab_form_list %}
+                        {% for field in form %}
+                            {% if forloop.first %}
+                                <div style="grid-column: 2/3; justify-self: center;">{{ field }}</div>
+                                <div>{{ field.label_tag }}</div>
+                            {% elif forloop.last %}
+                                <div style="grid-column: 4/5;">{{ field }}</div>
+                            {% else %}
+                                <div>{{ field }}</div>
+                            {% endif %}
+                        {% endfor %}
+                        <div class="mabgrayline"></div>
+                   {% endfor %}
+               </div>
+               <input class="btn btn-success" name="submit" type="submit" value="Submit"/>
+           </form>
+       </div>
+    </div>
 {% endblock %}

@@ -135,9 +135,9 @@
                                 {% for group in brother.groups.all %}
                                     <div style="grid-column: 1/2;">•</div>
                                     <div>{{ group.name }}</div>
-                                    <div style="text-align: right;"><a class="btn btn-danger btn-xs" href={% url 'dashboard:self_groups_delete' group.pk %} role="button">x</a></div>
+                                    <div style="text-align: right;"><a class="btn btn-danger btn-xs" href={% url 'dashboard:campus_groups_delete' group.pk %} role="button">x</a></div>
                                 {% endfor %}
-                                <a class="btn btn-success" style="grid-column: 1/5;" href={% url 'dashboard:self_groups_add' %} role="button">Add Campus Groups You're a Part Of</a>
+                                <a class="btn btn-success" style="grid-column: 1/5;" href={% url 'dashboard:campus_groups_add' %} role="button">Add Campus Groups You're a Part Of</a>
                                 </div>
                             </td>
                         </tr>

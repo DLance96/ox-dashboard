@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^general/committee-list/$', views.committee_list,
         name="committee_list"),
     url(r'^general/emergency_phone_tree/$', views.emergency_phone_tree_view, name="emergency_phone_tree_view"),
+    url(r'^general/meet-a-brother/$', views.meet_a_brother, name="meet_a_brother"),
 
     url(r'^classes/$', views.classes, name="classes"),
     url(r'^classes/add/$', views.classes_add, name="classes_add"),
@@ -72,8 +73,7 @@ urlpatterns = [
     url(r'^brother/media-account/(?P<pk>\d+)/delete/$', views.MediaAccountDelete.as_view(), name="media_account_delete"),
     url(r'^brother/media/add/$', views.media_add, name="media_add"),
     url(r'^brother/campus-groups/add/$', views.campus_groups_add, name="campus_groups_add"),
-    url(r'^brother/self-groups/add/$', views.self_groups_add, name="self_groups_add"),
-    url(r'^brother/self-groups/(?P<pk>\d+)/delete/$', views.self_groups_delete, name="self_groups_delete"),
+    url(r'^brother/campus-groups/(?P<pk>\d+)/delete/$', views.campus_groups_delete, name="campus_groups_delete"),
 
     url(r'^president/$', views.president, name="president"),
     url(r'^president/recreate-phone-tree/$', views.create_phone_tree, name="create_phone_tree"),

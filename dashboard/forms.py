@@ -87,19 +87,14 @@ class MediaAccountForm(forms.ModelForm):
         self.fields['media'].widget.attrs.update({'class': 'field'})
 
 
-class SelfGroupForm(forms.Form):
-    groups = CampusGroup.objects.order_by('name')
-
-    choose_groups = forms.ModelChoiceField(
-        queryset=groups,
-        label="Campus Groups:",
-    )
-
-
 class CampusGroupForm(forms.ModelForm):
     class Meta:
         model = CampusGroup
         fields = ['name']
+
+    def __init__(self, *args, **kwargs):
+        super(CampusGroupForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget = ListTextWidget(data_list=CampusGroup.objects.all().distinct(), name='campus_groups')
 
 
 class MediaForm(forms.ModelForm):
@@ -243,6 +238,19 @@ class SuppliesForm(forms.ModelForm):
     class Meta:
         model = Supplies
         fields = ['what']
+
+
+class MeetABrotherForm(forms.Form):
+    randomize = forms.BooleanField(label="", required=False)
+    assigned_brother1 = forms.ModelChoiceField(queryset=Brother.objects.all(), required=False, empty_label="No Brother")
+    assigned_brother2 = forms.ModelChoiceField(queryset=Brother.objects.all(), required=False, empty_label="No Brother")
+
+    def __init__(self, *args, **kwargs):
+        candidate = kwargs.pop('candidate', "")
+        super(MeetABrotherForm, self).__init__(*args, **kwargs)
+
+        if candidate:
+            self.fields['randomize'].label = candidate
 
 
 class BrotherAttendanceForm(forms.Form):
@@ -445,6 +453,7 @@ class FinishSundayDetail(forms.Form):
 
 class CalcFinesForm(forms.Form):
     max_fine = forms.IntegerField()
+
 
 class BrotherMassEntryForm(forms.Form):
     brothers = forms.CharField(widget=forms.Textarea)

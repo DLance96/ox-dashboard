@@ -88,6 +88,13 @@ textarea {
     margin: 10px;
 }
 
+.meetabrother {
+    display: grid;
+    grid-template-columns: 3fr 1fr 2fr 2fr 3fr;
+    gap: 10px 5px;
+    align-items:center;
+}
+
 .modellabel {
     grid-column: 2/3;
     text-align: right;
@@ -169,6 +176,12 @@ textarea {
     grid-column: 1 / -1;
     height: 1px;
     background: black;
+}
+
+.mabgrayline {
+    grid-column: 2/5;
+    height: 1px;
+    background: rgb(221,221,221);
 }
 
 @media (max-width : 480px) {

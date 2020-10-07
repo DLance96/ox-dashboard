@@ -21,9 +21,7 @@
                         <select id="department" name="department">
                         <option value="">-------</option>
                         {% for department in departments %}
-                            {% for name in department %}
-                                <option value={{ name }} {% if name == filter_department %} selected {% endif %}>{{ name }}</option>
-                            {% endfor %}
+                                <option value={{ department }} {% if department == filter_department %} selected {% endif %}>{{ department }}</option>
                         {% endfor %}
                         </select>
                     </p>
@@ -66,7 +64,7 @@
                         {% endfor %}
                         <div class="brothergrayline"></div>
                     {% endfor %}
-                    <a class="btn btn-success" style="grid-column: 2/3; width: fit-content;" href={% url 'dashboard:classes_add' %}>Add a class You've Taken!</a>
+                    <a class="btn btn-success" style="grid-column: 2/3; width: fit-content;" href={% url 'dashboard:classes_add' %}>Add a Class You've Taken!</a>
                 </div>
             </div>
         </div>

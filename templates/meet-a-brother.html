@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block dropdown %}
+{% endblock %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>Meet A Brothers</h1>
+    </div>
+    {% for week in weeks %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Week {{ forloop.revcounter }}</div>
+            <div class="panel-body">
+                <div class="brotherevent">
+                    <div style="grid-column:2/3"><b>Candidate:</b></div>
+                    <div><b>Brother:</b></div>
+                    <div><b>Completed?</b></div>
+                    {% for candidate in candidates %}
+                        <div class="brothergrayline"></div>
+                        <div style="grid-column:2/3">{{ candidate }}</div>
+                        {% for meeting in candidate.candidate_mab.all %}
+                            {% if meeting.week == week %}
+                                <div style="grid-column: 3/4;">{{ meeting.brother }}</div>
+                                <div>{{ meeting.completed }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

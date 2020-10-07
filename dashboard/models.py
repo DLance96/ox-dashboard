@@ -142,6 +142,21 @@ class Brother(models.Model):
         return self.first_name + " " + self.last_name
 
 
+class MeetABrother(models.Model):
+    brother = models.ForeignKey(Brother, on_delete=models.CASCADE, related_name='brother_mab')
+    candidate = models.ForeignKey(Brother, on_delete=models.CASCADE, related_name='candidate_mab')
+    completed = models.BooleanField(default=False)
+    week = models.DateField(default=django.utils.timezone.now)
+
+    def __str__(self):
+        return self.candidate.first_name + " " + self.candidate.last_name + " meeting with " + self.brother.first_name + " " + self.brother.last_name
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['brother', 'candidate'], name='unique_meet_a_brother')
+        ]
+
+
 class OnlineMedia(models.Model):
     name = models.CharField(max_length=45, unique=True)
     icon = models.ImageField(upload_to='media_icons')
@@ -161,7 +176,7 @@ class MediaAccount(models.Model):
     
 
 class CampusGroup(models.Model):
-    name = models.CharField(max_length=45, unique=True)
+    name = models.CharField(max_length=45)
     brothers = models.ManyToManyField(Brother, related_name='groups')
 
     def __str__(self):
