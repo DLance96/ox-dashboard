@@ -12,17 +12,41 @@
         <div class="panel panel-default">
             <div class="panel-heading">Week {{ forloop.revcounter }}</div>
             <div class="panel-body">
-                <div class="brotherevent">
+                <div class="meetabrother">
                     <div style="grid-column:2/3"><b>Candidate:</b></div>
+                    <div><b>Candidate #</b></div>
+                    <div><b>Candidate Discord</b></div>
                     <div><b>Brother:</b></div>
-                    <div><b>Completed?</b></div>
+                    <div><b>Brother #</b></div>
+                    <div><b>Brother Discord</b></div>
+                    <div style="justify-self:center"><b>Completed?</b></div>
                     {% for candidate in candidates %}
-                        <div class="brothergrayline"></div>
+                        <div class="mabgrayline"></div>
                         <div style="grid-column:2/3">{{ candidate }}</div>
+                        <div>{{ candidate.phone_number }}</div>
+                        <div>
+                            {% if discord != None %}
+                                {% for account in candidate.media_accounts.all %}
+                                    {% if account.media == discord %}
+                                        <img src="/media/{{ account.media.icon }}" alt="" style="max-height: 20px; max-width: 100%;"> {{ account.username }}
+                                    {% endif %}
+                                {% endfor %}
+                              {% endif %}
+                        </div>
                         {% for meeting in candidate.candidate_mab.all %}
                             {% if meeting.week == week %}
-                                <div style="grid-column: 3/4;">{{ meeting.brother }}</div>
-                                <div>{{ meeting.completed }}</div>
+                                <div style="grid-column: 5/6;">{{ meeting.brother }}</div>
+                                <div>{{ meeting.brother.phone_number }}</div>
+                                <div>
+                                    {% if discord != None %}
+                                        {% for account in meeting.brother.media_accounts.all %}
+                                            {% if account.media == discord %}
+                                                <img src="/media/{{ account.media.icon }}" alt="" style="max-height: 20px; max-width: 100%;"> {{ account.username }}
+                                            {% endif %}
+                                        {% endfor %}
+                                      {% endif %}
+                                </div>
+                                <div style="justify-self:center">{% if meeting.completed %}&check;{% else %}&#10006{% endif %}</div>
                             {% endif %}
                         {% endfor %}
                     {% endfor %}

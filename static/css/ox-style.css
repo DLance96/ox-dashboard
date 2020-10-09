@@ -88,11 +88,30 @@ textarea {
     margin: 10px;
 }
 
-.meetabrother {
+.marshalmeetabrother {
     display: grid;
     grid-template-columns: 3fr 1fr 2fr 2fr 3fr;
+    gap: 5px 5px;
+    align-items:center;
+}
+
+.meetabrother {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 3fr 2fr 2fr 3fr 2fr 1fr;
     gap: 10px 5px;
     align-items:center;
+}
+
+.marshalmabgrayline{
+    grid-column: 2 / 6;
+    height: 1px;
+    background: rgb(221,221,221);
+}
+
+.mabgrayline{
+    grid-column: 2 / 9;
+    height: 1px;
+    background: rgb(221,221,221);
 }
 
 .modellabel {
@@ -155,7 +174,7 @@ textarea {
 
 .brotherevent {
     display: grid;
-    grid-template-columns: 4fr 8fr 5fr 2fr 4fr;
+    grid-template-columns: 4fr 6fr 5fr 4fr 5fr;
     align-items: center;
     gap: 5px 5px;
 }
@@ -176,12 +195,6 @@ textarea {
     grid-column: 1 / -1;
     height: 1px;
     background: black;
-}
-
-.mabgrayline {
-    grid-column: 2/5;
-    height: 1px;
-    background: rgb(221,221,221);
 }
 
 @media (max-width : 480px) {

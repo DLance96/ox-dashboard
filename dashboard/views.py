@@ -12,6 +12,7 @@ from django.db import transaction
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.core.exceptions import ObjectDoesNotExist
 
 
 from .utils import *
@@ -324,7 +325,6 @@ def brother_view(request):
                                                             status='2').order_by("date")
     submissions_denied = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
                                                           status='3').order_by("date")
-
     hours_pending = 0
     for submission in submissions_pending:
         hours_pending += submission.hours
@@ -337,6 +337,31 @@ def brother_view(request):
 
     philanthropy_events = PhilanthropyEvent.objects.filter(semester=get_semester()) \
         .order_by("start_time").order_by("date")
+
+    mab = None
+
+    if brother.brother_status == '0':
+        mab = [x.brother for x in brother.candidate_mab.filter(completed=False)]
+    elif brother.brother_status == '1':
+        mab = [x.candidate for x in brother.brother_mab.filter(completed=False)]
+
+    try:
+        discord = OnlineMedia.objects.get(name='Discord')
+    except ObjectDoesNotExist:
+        discord = None
+
+    if request.method == 'POST':
+        pk = request.POST.get('id')
+        if brother.brother_status == '0':
+            mabro = brother.candidate_mab.get(brother=pk)
+            mabro.completed = True
+            mabro.save()
+        elif brother.brother_status == '1':
+            mabro = brother.brother_mab.get(candidate=pk)
+            mabro.completed = True
+            mabro.save()
+        return HttpResponseRedirect(reverse('dashboard:brother'))
+
 
     context = {
         'brother': brother,
@@ -364,7 +389,9 @@ def brother_view(request):
         'hours_pending': hours_pending,
         'type': 'brother-view',
         'notifies': notifies(brother),
-        'notified_by': notified_by(brother)
+        'notified_by': notified_by(brother),
+        'mab': mab,
+        'discord': discord,
     }
     return render(request, "brother.html", context)
 
@@ -1562,11 +1589,16 @@ def marshal(request):
 
 def meet_a_brother(request):
     candidates = Brother.objects.filter(brother_status=0)
-    weeks = MeetABrother.objects.all().order_by('week').values_list('week', flat=True).distinct
+    weeks = MeetABrother.objects.all().order_by('-week').values_list('week', flat=True).distinct
+    try:
+        discord = OnlineMedia.objects.get(name='Discord')
+    except ObjectDoesNotExist:
+        discord = None
 
     context = {
         'candidates': candidates,
-        'weeks': weeks
+        'weeks': weeks,
+        'discord': discord,
     }
 
     return render(request, 'meet-a-brother.html', context)

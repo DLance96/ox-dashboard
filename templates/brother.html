@@ -115,7 +115,7 @@
                             <td>
                                 <div class="mediaaccounts" style="max-width: 80%">
                                 {% for account in brother.media_accounts.all %}
-                                    <div><img src="/media/{{ account.media.icon }}" alt="" style="max-height: 20px;"></div>
+                                    <div><img src="/media/{{ account.media.icon }}" alt="" style="max-height: 20px; max-width: 100%;"></div>
                                     <div>{{ account.media.name }}:</div>
                                     {% if account.profile_link %}
                                         <div><a href={{ account.profile_link }}>{{ account.username }}</a></div>
@@ -153,6 +153,45 @@
                         Password</a>
                 </div>
                 <div class="col-lg-2"></div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Meet a Brother</div>
+        <div class="panel-body">
+            <div class="brotherevent">
+                {% if mab %}
+                <div style="grid-column: 2/3;"><b>Meet A Brother</b></div>
+                <div><b>Phone</b></div>
+                <div><b>Discord</b></div>
+                <div><b>Completed?</b></div>
+                <div class="blackline"></div>
+                {% endif %}
+                {% for person in mab %}
+                    <div style="grid-column:2/3;">{{ person }}</div>
+                    <div>{{ person.phone_number }}</div>
+                    <div>
+                        {% if discord != None %}
+                            {% for account in person.media_accounts.all %}
+                                {% if account.media == discord %}
+                                    <img src="/media/{{ account.media.icon }}" alt="" style="max-height: 20px; max-width: 100%;"> {{ account.username }}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" value={{ person.pk }} name="id">
+                            <input class="btn btn-success" type="submit" name={{ person.pk }} value="Mark Complete"/>
+                        </form>
+                    </div>
+                    {% if not forloop.last %}
+                    <div class="mabgrayline"></div>
+                    {% endif %}
+                {% empty %}
+                    <div style="grid-column:3/5;">You have no uncompleted Meet a Brothers!</div>
+                {% endfor %}
             </div>
         </div>
     </div>
