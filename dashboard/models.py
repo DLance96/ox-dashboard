@@ -185,13 +185,8 @@ class CampusGroup(models.Model):
 
 class Classes(models.Model):
     department = models.CharField(max_length=4)
-    number = models.IntegerField()
+    number = models.CharField(max_length=4)
     brothers = models.ManyToManyField(Brother, related_name='classes')
-
-    class Meta:
-        constraints = [
-            models.CheckConstraint(check=Q(number__gte=101) & Q(number__lte=600), name='number_constraint'),
-        ]
 
     def ordered_brother_set(self):
         return self.brothers.order_by('last_name', 'first_name')
@@ -207,6 +202,7 @@ class Grade(models.Model):
         C = 'C'
         D = 'D'
         F = 'F'
+        AP = 'P', "AP"
 
     grade = models.CharField(max_length=1, choices=GradeChoices.choices)
     class_taken = models.ForeignKey(Classes, on_delete=models.CASCADE)

@@ -51,7 +51,7 @@
                             <div style="grid-column: 3/4;">{{ brother }}</div>
                             {% for class_grade in brother.grades.all %}
                                 {% if class_grade.class_taken == class %}
-                                    <div>{{ class_grade.grade }}</div>
+                                    <div>{{ class_grade.get_grade_display }}</div>
                                 {% endif %}
                             {% endfor %}
                             {% if forloop.first %}
