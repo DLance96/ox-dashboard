@@ -2120,7 +2120,7 @@ def supplies_list(request):
     return render(request, 'list-supplies.html', context)
 
 
-@verify_position(['Detail Manager'])
+@verify_position(['Detail Manager', 'Adviser'])
 def supplies_finish(request):
     form = SuppliesFinishForm(request.POST or None)
 
@@ -2134,7 +2134,7 @@ def supplies_finish(request):
     return render(request, 'finish-supplies.html', context)
 
 
-@verify_position(['Vice President', 'President'])
+@verify_position(['Vice President', 'President', 'Adviser'])
 @transaction.atomic
 def in_house(request):
     """Allows the VP to select who's living in the house"""
