@@ -1076,7 +1076,6 @@ def can_brother_be_added(first_name, last_name, caseid):
 def create_brother_if_possible(semester, brother_status, first_name, last_name, caseid):
     if User.objects.filter(username=caseid).exists():
         user = User.objects.get(username=caseid)
-        print("user exists")
     elif caseid != "":
         user = User()
         user.username = caseid
@@ -1555,7 +1554,6 @@ def marshal(request):
                 random2 = []
                 for form in mab_form_list:
                     instance = form.cleaned_data
-                    print(instance['randomize'])
                     if instance['randomize']:
                         queryset1 = form.fields['assigned_brother1'].queryset
                         queryset2 = queryset1
@@ -1576,7 +1574,6 @@ def marshal(request):
                             random2 = []
                         randomized_list.append((random1, random2, instance['randomize']))
                 request.session['randomized_list'] = randomized_list
-                print(randomized_list)
                 return HttpResponseRedirect(reverse('dashboard:marshal'))
 
     context = {
