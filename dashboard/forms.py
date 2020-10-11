@@ -70,6 +70,7 @@ class ClassTakenForm(forms.ModelForm):
         fields = [
             'department', 'number'
         ]
+        help_texts = {'department': "Please only include classes you would feel comfortable tutoring others in."}
     grade = forms.CharField(label="Grade :", widget=forms.Select(choices=Grade.GradeChoices.choices))
 
     def __init__(self, *args, **kwargs):
