@@ -554,7 +554,7 @@ class Committee(models.Model):
     meeting_time = models.TimeField(choices=MeetingTime.choices, blank=True)
 
     def __str__(self):
-        for x, y in self.COMMITTEE_CHOICES:
+        for x, y in self.CommitteeChoices.choices:
             if x == self.committee:
                 return y + " Committee"
         return self.committee
