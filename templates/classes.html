@@ -11,8 +11,9 @@
     <div class="panel panel-default">
         <div class="panel-heading">Classes</div>
         <div class="panel-body">
+            <a class="btn btn-success" style="grid-column: 2/3; width: fit-content;" href={% url 'dashboard:classes_add' %}>Add a Class You've Taken</a><br><br>
             <div class="col-lg-2">
-                <b>Filters:</b>
+                <b>Filters:</b><br>
                 <div class="blackline"></div><br>
                 <form method="POST">
                     {% csrf_token %}
@@ -64,7 +65,6 @@
                         {% endfor %}
                         <div class="brothergrayline"></div>
                     {% endfor %}
-                    <a class="btn btn-success" style="grid-column: 2/3; width: fit-content;" href={% url 'dashboard:classes_add' %}>Add a Class You've Taken!</a>
                 </div>
             </div>
         </div>

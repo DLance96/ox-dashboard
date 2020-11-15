@@ -26,6 +26,9 @@ urlpatterns = [
         name="committee_list"),
     url(r'^general/emergency_phone_tree/$', views.emergency_phone_tree_view, name="emergency_phone_tree_view"),
     url(r'^general/meet-a-brother/$', views.meet_a_brother, name="meet_a_brother"),
+    url(r'^general/create-report/$', views.create_report, name="create_report"),
+    url(r'^general/report/(?P<pk>\d+)/edit/$', views.EditReport.as_view(), name="edit_report"),
+    url(r'^general/report/(?P<pk>\d+)/delete/$', views.DeleteReport.as_view(), name="delete_report"),
 
     url(r'^classes/$', views.classes, name="classes"),
     url(r'^classes/add/$', views.classes_add, name="classes_add"),
@@ -117,6 +120,7 @@ urlpatterns = [
     url(r'^secretary/event/(?P<event_id>[0-9]+)/$', views.secretary_event, name="secretary_event"),
     url(r'^secretary/excuse/(?P<excuse_id>[0-9]+)/$', views.secretary_excuse, name="secretary_excuse"),
     url(r'^secretary/excuses', views.secretary_all_excuses, name="secretary_excuses"),
+    url(r'^secretary/agenda/$', views.secretary_agenda, name="secretary_agenda"),
 
     # Marshal URL section
     url(r'^marshal/$', views.marshal, name="marshal"),
