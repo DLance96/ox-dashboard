@@ -2,6 +2,7 @@ from django.forms import SelectDateWidget
 
 from .models import *
 from django import forms
+from django.core.validators import EMPTY_VALUES
 
 
 YEAR_RANGE = range(1970, datetime.datetime.today().year+6)
@@ -108,6 +109,38 @@ class PositionForm(forms.ModelForm):
     class Meta:
         model = Position
         fields = ['title', 'brothers']
+
+
+class ReportForm(forms.ModelForm):
+    class Meta:
+        model = Report
+        fields = ['position', 'information', 'is_officer']
+
+    def clean(self):
+        is_officer = self.cleaned_data.get('is_officer', False)
+        if is_officer:
+            position = self.cleaned_data.get('position', None)
+            if position in EMPTY_VALUES:
+                self._errors['position'] = self.error_class(['Position required for officer report'])
+        return self.cleaned_data
+
+    def __init__(self, *args, **kwargs):
+        super(ReportForm, self).__init__(*args, **kwargs)
+        self.fields['is_officer'].label = "Is officer report:"
+
+
+class ReportEditForm(forms.ModelForm):
+    class Meta:
+        model = Report
+        fields = ['position', 'information', 'is_officer']
+
+    def clean(self):
+        is_officer = self.cleaned_data.get('is_officer', False)
+        if is_officer:
+            position = self.cleaned_data.get('position', None)
+            if position in EMPTY_VALUES:
+                self._errors['position'] = self.error_class(['Position required for officer report'])
+        return self.cleaned_data
 
 
 class ExcuseForm(forms.ModelForm):

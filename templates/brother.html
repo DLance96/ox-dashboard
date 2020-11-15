@@ -577,4 +577,38 @@
         </div>
     </div>
     {% endif %}
+    <div class="panel panel-default">
+        <div class="panel-heading">Submitted Communications and Reports</div>
+        <div class="panel-body">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+            <table class="table table-condensed">
+                <thead style="font-weight:bold;">
+                    <tr>
+                        <td>Officer:</td>
+                        <td>Information:</td>
+                        <td>Edit?</td>
+                        <td>Delete?</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in brother.reports.all %}
+                        <tr>
+                            {% if report.is_officer %}
+                                <td>{{ report.position }}</td>
+                            {% else %}
+                                <td>Communication</td>
+                            {% endif %}
+                            <td>{{ report.information }}</td>
+                            <td><a class="btn btn-default" href={% url 'dashboard:edit_report' report.id %}>X</a></td>
+                            <td><a class="btn btn-danger" href={% url 'dashboard:delete_report' report.id %}?next={{ request.path }}>X</a></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td>You haven't submitted any reports this week!</td><td></td><td></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

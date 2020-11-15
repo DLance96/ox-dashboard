@@ -45,6 +45,19 @@ textarea {
     margin-top:20px;
 }
 
+.agenda {
+    display: grid;
+    grid-template-columns: 1fr 4fr 10fr minmax(10px, 40px) 1fr;
+    gap: 10px 10px;
+    align-items: center;
+}
+
+.agendagrayline {
+    grid-column: 2/5;
+    height: 1px;
+    background: rgb(221,221,221);
+}
+
 .classestaken {
     display: grid;
     grid-template-columns: 1fr 5fr 5fr 2fr 5fr 1fr;
