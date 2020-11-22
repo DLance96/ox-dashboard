@@ -726,3 +726,6 @@ class MinecraftPhoto(models.Model):
 class PhoneTreeNode(models.Model):
     brother = models.ForeignKey(Brother, on_delete=models.PROTECT, related_name='phone_tree_brother')
     notified_by = models.ForeignKey(Brother, on_delete=models.PROTECT, null=True, related_name='phone_tree_notified_by') # null is the root (ie president)
+
+     def __str__(self):
+         return self.brother.first_name + " " + self.brother.last_name + " notified by " + self.notified_by.first_name + " " + self.notified_by.last_name
