@@ -1,5 +1,7 @@
 /* background base */
+
 body {
+    background-image: url(/static/img/ox_wallpaper.png);
     background-repeat: no-repeat;
     background-position: right top;
     background-attachment: fixed;
@@ -7,6 +9,13 @@ body {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+}
+
+@media (max-width : 1400px) {
+    body {
+        background-position: center center;
+        background-image: url(/static/img/ox_wallpaper_smallscreen.png);
+    }
 }
 
 /*Making google calendar responsive*/
