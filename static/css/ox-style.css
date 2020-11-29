@@ -1,7 +1,7 @@
 /* background base */
 
 body {
-    background-image: url(/static/img/ox_wallpaper.png);
+    background-image: url(/static-root/img/ox_wallpaper.png);
     background-repeat: no-repeat;
     background-position: right top;
     background-attachment: fixed;
@@ -14,7 +14,7 @@ body {
 @media (max-width : 1400px) {
     body {
         background-position: center center;
-        background-image: url(/static/img/ox_wallpaper_smallscreen.png);
+        background-image: url(/static-root/img/ox_wallpaper_smallscreen.png);
     }
 }
 
