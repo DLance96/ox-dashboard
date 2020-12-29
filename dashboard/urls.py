@@ -128,6 +128,8 @@ urlpatterns = [
     url(r'^marshal/candidate/(?P<brother_id>[0-9]+)/$', views.marshal_candidate, name="marshal_candidate"),
     url(r'^marshal/candidate/(?P<pk>\d+)/edit/$', views.CandidateEdit.as_view(), name="marshal_candidate_edit"),
     url(r'^marshal/candidate/(?P<pk>\d+)/delete/$', views.CandidateDelete.as_view(), name="marshal_candidate_delete"),
+    url(r'^marshal/mab/edit/$', views.marshal_mab_edit, name="marshal_mab_edit"),
+    url(r'^marshal/mab/edit/candidate$', views.marshal_mab_edit_candidate, name="marshal_mab_edit_candidate"),
 
     # Recruitment Chair URL section
     url(r'^recruitment-chair/$', views.recruitment_c, name="recruitment_c"),

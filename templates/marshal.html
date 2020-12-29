@@ -62,6 +62,8 @@
        <div class="panel-body">
            <form method="post">
                <input class="btn btn-default" name="randomize" type="submit" value="Randomize"/>
+               <a class="btn btn-default" href={% url 'dashboard:marshal_mab_edit_candidate' %} role="button">Manually Update Meet a Brothers</a>
+               <br><br>
                {% csrf_token %}
                <div class="marshalmeetabrother">
                    <div></div>

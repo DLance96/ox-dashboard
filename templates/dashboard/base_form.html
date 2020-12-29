@@ -10,8 +10,6 @@
     <div class="panel panel-default">
         <div class="panel-heading">Edit</div>
         <div class="panel-body">
-            {% block model_info %}
-            {% endblock %}
             {% if form.is_multipart %}
                 <form method="post" enctype="multipart/form-data">
             {% else %}
@@ -19,15 +17,21 @@
             {% endif %}
                 {{ form.non_field.errors }}
                 {% csrf_token %}
+                {% block model_info %}{% endblock %}
                 <div class="modeladd">
-                {% for field in form %}
-                    <div class="modellabel">{{ field.label_tag }}</div>
-                    <div>{{ field }}</div>
-                    <div style="grid-column: 5/6;">{{ field.errors }}</div>
-                <div class="grayline"></div>
-                {% endfor %}
-                <input class="btn btn-success" type="submit" value="Update"/>
+                    {% for field in form %}
+                        {% if not forloop.first %}
+                            <div class="grayline"></div>
+                        {% endif %}
+                        <div class="modellabel">{{ field.label_tag }}</div>
+                        <div>{{ field }}</div>
+                        <div style="grid-column: 6/7;">{{ field.errors }}</div>
+                    {% endfor %}
+                    <input class="btn btn-success" type="submit" value="Update"/>
+                    {% block goback %}{% endblock%}
+                </div>
             </form>
         </div>
     </div>
 {% endblock %}
+

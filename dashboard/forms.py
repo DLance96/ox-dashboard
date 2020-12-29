@@ -274,6 +274,24 @@ class SuppliesForm(forms.ModelForm):
         fields = ['what']
 
 
+class MABEditCandidateForm(forms.Form):
+    candidate = forms.ModelChoiceField(queryset=Brother.objects.filter(brother_status='0'), required=True)
+
+
+class MeetABrotherEditForm(forms.Form):
+    update = forms.BooleanField(label="", required=False)
+
+    def __init__(self, *args, **kwargs):
+        brother = Brother.objects.get(pk=kwargs.pop('brother', ""))
+        exists = kwargs.pop('mab_exists', "")
+        super(MeetABrotherEditForm, self).__init__(*args, **kwargs)
+
+        #sets the label for each form as the brother the form relates to and sets the initial for the checkbox to whether or not the meet a brother exists
+        if brother:
+            self.fields['update'].label = brother.first_name + ' ' + brother.last_name
+            self.fields['update'].initial = exists
+
+
 class MeetABrotherForm(forms.Form):
     randomize = forms.BooleanField(label="", required=False)
     assigned_brother1 = forms.ModelChoiceField(queryset=Brother.objects.all(), required=False, empty_label="No Brother")

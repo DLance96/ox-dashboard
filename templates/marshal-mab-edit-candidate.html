@@ -1,0 +1,10 @@
+{% extends "dashboard/base_form.html" %}
+
+{% block model %}Meet a Brothers Manually{% endblock %}
+
+{% block model_info %}
+    Choose the candidate whose Meet a Brothers you would like to update!<br><br>
+    <div class="blackline"></div>
+{% endblock %}
+
+{% block goback %}<a class="btn btn-default" href={% url 'dashboard:marshal' %} role="button">Go back</a><br><br>{% endblock %}
