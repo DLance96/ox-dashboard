@@ -327,7 +327,7 @@ def current_semester(current_date):
 
     return semester
 
-def create_recurring_events(begin_date, day, interval, event_constructor):
+def create_recurring_events(begin_date, day, interval, event_creator):
     date = begin_date
     semester = current_semester(date)
 
@@ -344,8 +344,7 @@ def create_recurring_events(begin_date, day, interval, event_constructor):
 
     day_count = int((end_date - start_date).days / interval) + 1
     for date in (start_date + datetime.timedelta(interval) * n for n in range(day_count)):
-        event = event_constructor(date, semester)
-        event.save()
+        event_creator(date, semester)
 
 def create_recurring_meetings(instance, committee):
     create_recurring_events(
@@ -358,7 +357,7 @@ def create_recurring_meetings(instance, committee):
             semester=semester,
             committee=Committee.objects.get(committee=committee),
             recurring=True
-        ))
+        ).save())
 
 def create_node_with_children(node_brother, notified_by, brothers_notified):
     PhoneTreeNode(brother=node_brother, notified_by=notified_by).save()
@@ -406,4 +405,4 @@ def create_chapter_events(semester):
             start_time=Event.TimeChoices.T_18_30,  # 6:30 PM
             end_time=Event.TimeChoices.T_20_30,  # 8:30 PM
             semester=semester,
-        ))
+        ).save())
