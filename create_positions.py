@@ -10,7 +10,7 @@ then in that shell import this file and run build_superuser(<your case ID>)
 
 from django.contrib.auth.models import User
 from dashboard.views import Position, Brother
-from dashboard.models import Semester
+from dashboard.models import Semester, query_positions_with_committee
 import datetime
 
 EC_POSITIONS = [
@@ -56,7 +56,7 @@ def create_superbrother(user):
     new_brother.save()
 
 def create_positions():
-    for title in ALL_POSITIONS:
+    for title, _ in Position.PositionChoices.choices:
         new_position = Position()
         new_position.title = title
         new_position.save()

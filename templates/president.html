@@ -16,4 +16,14 @@
             </a>
         </div>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Cleanup For Next Semester</div>
+        <div class="panel-body">
+            <form action={% url 'dashboard:cleanup_semester' %} method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ semester_picker.as_p }}
+                <input class="btn btn-danger" type="submit" value="Setup for the next Semester" />
+            </form>
+        </div>
+    </div>
 {% endblock %}

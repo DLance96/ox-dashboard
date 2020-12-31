@@ -821,7 +821,7 @@ def media_add(request):
 @verify_position(['President', 'Adviser'])
 def president(request):
     """ Renders the President page and all relevant information """
-    return render(request, 'president.html', {})
+    return render(request, 'president.html', {'semester_picker': SelectSemester()})
 
 
 @verify_position(['Vice President', 'President', 'Adviser'])
@@ -3065,3 +3065,22 @@ def create_phone_tree(request):
         create_node_with_children(ec_member, president, assigned_actives)
 
     return HttpResponseRedirect(reverse('dashboard:emergency_phone_tree_view'))
+
+
+@verify_position(['President', 'Adviser'])
+def cleanup_semester(request):
+
+    if request.method == 'POST':
+        form = SelectSemester(request.POST)
+
+        if form.is_valid():
+            semester = form.cleaned_data['semester']
+
+            delete_all_meet_a_brothers()
+            delete_old_events(semester)
+            create_unmade_valid_semesters()
+            create_chapter_events(semester)
+
+    # TODO: add error handling for false cases?
+
+    return HttpResponseRedirect(reverse('dashboard:home'))

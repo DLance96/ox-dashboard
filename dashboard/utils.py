@@ -287,32 +287,78 @@ def attendance_list(request, event):
     return brothers, brother_form_list
 
 
-def create_recurring_meetings(instance, committee):
-    date = datetime.datetime.now()
+def semester_end_date(season, year, treat_summer_fall_as_same=True):
+    # if spring semester, use may as the end month
+    if season == '0':
+        end_month = 5
+    elif season == '1' and not treat_summer_fall_as_same:
+        end_month = 7
+    # otherwise, we are in the summer or fall semester, so use december as end month
+    else:
+        end_month = 12
+
+    # last day of both May, July, and December is the 31st.
+    last_day_of_month = 31
+
+    return datetime.datetime(year, end_month, last_day_of_month)
+
+
+def semester_start_date(season, year):
+    # Find the start month for the semester season
+    start_month = {
+        '0': 1,
+        '1': 6,
+        '2': 8
+    }.get(season)
+
+    start_day_of_month = 1
+
+    return datetime.datetime(year, start_month, start_day_of_month)
+
+# TODO: this is already accomplished by get_semester
+def current_semester(current_date):
     try:
-        semester = Semester.objects.filter(season=get_season_from(date.month),
-                                           year=date.year)[0]
+        semester = Semester.objects.filter(season=get_season_from(current_date.month),
+                                           year=current_date.year)[0]
     except IndexError:
-        semester = Semester(season=get_season_from(date.month),
-                            year=date.year)
+        semester = Semester(season=get_season_from(current_date.month),
+                            year=current_date.year)
         semester.save()
 
-    if date.weekday() >= instance['meeting_day']:
-        date_offset = 7 + instance['meeting_day'] - date.weekday()
-    elif date.weekday() < instance['meeting_day']:
-        date_offset = instance['meeting_day'] - date.weekday()
+    return semester
+
+def create_recurring_events(begin_date, day, interval, event_constructor):
+    date = begin_date
+    semester = current_semester(date)
+
+    # offset to the next week
+    if date.weekday() >= day:
+        date_offset = 7 + day - date.weekday()
+    # otherwise use this week
+    elif date.weekday() < day:
+        date_offset = day - date.weekday()
+
     date = date + datetime.timedelta(days=date_offset)
     start_date = date
-    end_date = date
-    if semester.season == '2':
-        end_date = datetime.datetime(date.year, 12, 31)
-    elif semester.season == '0':
-        end_date = datetime.datetime(date.year, 5, 31)
-    day_count = int((end_date - start_date).days / instance['meeting_interval']) + 1
-    for date in (start_date + datetime.timedelta(instance['meeting_interval']) * n for n in range(day_count)):
-        event = CommitteeMeetingEvent(date=date, start_time=instance['meeting_time'], semester=semester,
-                                      committee=Committee.objects.get(committee=committee), recurring=True)
+    end_date = semester_end_date(semester.season, date.year)
+
+    day_count = int((end_date - start_date).days / interval) + 1
+    for date in (start_date + datetime.timedelta(interval) * n for n in range(day_count)):
+        event = event_constructor(date, semester)
         event.save()
+
+def create_recurring_meetings(instance, committee):
+    create_recurring_events(
+        datetime.datetime.now(),
+        instance['meeting_day'],
+        instance['meeting_interval'],
+        lambda date, semester: CommitteeMeetingEvent(
+            date=date,
+            start_time=instance['meeting_time'],
+            semester=semester,
+            committee=Committee.objects.get(committee=committee),
+            recurring=True
+        ))
 
 def create_node_with_children(node_brother, notified_by, brothers_notified):
     PhoneTreeNode(brother=node_brother, notified_by=notified_by).save()
@@ -327,3 +373,36 @@ def notifies(brother):
 def notified_by(brother):
     node = PhoneTreeNode.objects.filter(brother=brother)
     return node[0].notified_by if len(node) > 0 else None
+
+def delete_all_meet_a_brothers():
+    MeetABrother.objects.all().delete()
+
+def delete_old_events(semester):
+    current_date = datetime.datetime.now()
+    start_date = semester_start_date(semester.season, semester.year)
+    old_events = Event.objects.filter(date__lt=start_date)
+
+    old_events.delete()
+
+def create_unmade_valid_semesters():
+    for year, _ in Semester.YEAR_CHOICES:
+        for season, _ in Semester.SEASON_CHOICES:
+            if not Semester.objects.filter(season=season, year=year).exists():
+                sem = Semester()
+                sem.year = year
+                sem.season = season
+                sem.save()
+
+def create_chapter_events(semester):
+    sunday = 6
+
+    create_recurring_events(
+        semester_start_date(semester.season, semester.year),
+        sunday,
+        Committee.MeetingIntervals.WEEKLY,
+        lambda date, semester: ChapterEvent(
+            date=date,
+            start_time=Event.TimeChoices.T_18_30,  # 6:30 PM
+            end_time=Event.TimeChoices.T_20_30,  # 8:30 PM
+            semester=semester,
+        ))

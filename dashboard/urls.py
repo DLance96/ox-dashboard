@@ -80,6 +80,7 @@ urlpatterns = [
 
     url(r'^president/$', views.president, name="president"),
     url(r'^president/recreate-phone-tree/$', views.create_phone_tree, name="create_phone_tree"),
+    url(r'^president/cleanup_semester/$', views.cleanup_semester, name="cleanup_semester"),
 
     # Vice President URL Section
     url(r'^vice-president/$', views.vice_president, name="vice_president"),
