@@ -1722,6 +1722,7 @@ def marshal_mab_edit(request):
 
     brothers = Brother.objects.filter(brother_status='1')
 
+
     arbitrary_date_before_time = datetime.datetime(1000, 1, 1)
 
     for counter, brother in enumerate(brothers):
@@ -1764,6 +1765,7 @@ def marshal_mab_edit(request):
 def meet_a_brother(request):
     start_date = datetime.datetime(2000, 1, 1)
     candidates = Brother.objects.filter(brother_status=0)
+
     weeks = MeetABrother.objects.filter(week__range=(start_date, datetime.datetime.now())).order_by('-week').values_list('week', flat=True).distinct
     try:
         discord = OnlineMedia.objects.get(name='Discord')

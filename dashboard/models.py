@@ -418,9 +418,6 @@ class Event(models.Model):
     description = models.TextField(blank=True, null=True)
     minutes = models.URLField(blank=True, null=True)
 
-    class Meta:
-        abstract = True
-
 
 class ChapterEvent(Event):
     mandatory = models.BooleanField(default=True)
