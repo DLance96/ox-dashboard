@@ -401,6 +401,7 @@ def create_chapter_events(semester):
         sunday,
         Committee.MeetingIntervals.WEEKLY,
         lambda date, semester: ChapterEvent(
+            name="Chapter {}".format(date.date()),
             date=date,
             start_time=Event.TimeChoices.T_18_30,  # 6:30 PM
             end_time=Event.TimeChoices.T_20_30,  # 8:30 PM
