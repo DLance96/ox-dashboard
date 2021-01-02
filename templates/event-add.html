@@ -22,29 +22,17 @@
                 <form method="post">
             {% endif %}
                 {% csrf_token %}
-                <table class="table table-condensed">
-                    {{ form.non_field.errors }}
+                <div class="modeladd">
+                    <div class="modellabel">{{ form.non_field.errors }}</div>
                     {% for field in form %}
-                        {% if forloop.counter == 1 %}
-                            <thead>
-                            <tr>
-                                <td>{{ field.label_tag }}</td>
-                                <td>{{ field }}</td>
-                                <td>{{ field.errors }}</td>
-                            </tr>
-                            </thead>
-                        <tbody>
-                        {% else %}
-                            <tr>
-                                <td>{{ field.label_tag }}</td>
-                                <td>{{ field }}</td>
-                                <td>{{ field.errors }}</td>
-                            </tr>
+                        {% if not forloop.first %}
+                            <div class="grayline"></div>
                         {% endif %}
-                        </tbody>
+                        <div class="modellabel">{{ field.label_tag }}</div>
+                        <div>{{ field }}</div>
+                        <div style="grid-column: 6/7;">{{ field.errors }}</div>
                     {% endfor %}
-                </table>
-                <input class="btn btn-default" type="submit" value="Add Event"/>
+                    <div class="modellabel"><input class="btn btn-default" type="submit" value="Add Event"/></div>
             </form>
         </div>
     </div>

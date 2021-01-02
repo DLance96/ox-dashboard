@@ -42,6 +42,12 @@
                                 <td>{{ event.description }}</td>
                             </tr>
                         {% endif %}
+                        {% if type == 'brother' %}
+                        <tr>
+                            <td>Attended?</td>
+                            <td>{{ attended }}</td>
+                        </tr>
+                        {% endif %}
                         </tbody>
                     </table>
                     {% if type == 'attendance' or type == 'ec-view' %}
@@ -60,25 +66,70 @@
                 <form method="post" action="">
                     {% csrf_token %}
                     {% if rsvpd %}
-                        <input type="submit" value="Cancel RSVP"/><br><br>
+                        <input type="submit" name='cancel_rsvp' value="Cancel RSVP"/><br><br>
                     {% else %}
-                        <input type="submit" value="RSVP"/><br><br>
+                        <input type="submit" name='rsvp' value="RSVP"/><br><br>
                     {% endif %}
                 </form>
             {% endif %}
-            {% for brother in brothers_rsvp %}
+                {% for brother in event.rsvp_brothers.all %}
                 {{ brother }}<br>
             {% endfor %}
         </div>
     </div>
+    {% if not attended %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Event Excuse</div>
+            <div class="panel-body">
+            {% if not excuse_exists %}
+                    {% if error_message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error_message }}
+                        </div>
+                    {% endif %}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="submit" name="excuse" value="Submit Excuse"/>
+                    </form>
+            {% else %}
+                <a class="btn btn-success" href={% url 'dashboard:brother_excuse' excuse.pk %} role="button">Review Submitted Excuse</a>
+            {% endif %}
+            </div>
+        </div>
+    {% endif %}
 {% endif %}
     {% if type == 'attendance' %}
         <div class="panel panel-default">
             <div class="panel-heading">Attendance</div>
             <div class="panel-body">
                 <form action="" method="post">
-                    {{ form.non_field.errors }}
+                    <input class="btn btn-success" type="submit" name="edit" value="Update Eligible Brothers Attendance List"><br><br>
                     {% csrf_token %}
+                    {{ form.non_field.errors }}
+                    <div class="row justify-content-start">
+                        <div class="col col-sm-8">
+                            <table class="table table-responsive">
+                                <tr>
+                                    {% for field in form %}
+                                        <td>
+                                            {{ field.label_tag }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    {% for field in form %}
+                                        <td>
+                                            {{ field }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <hr>
+                    <h3>Brother Attendance</h3>
+                    <hr>
                     {% for form in brother_form_list %}
                         {% for field in form %}
                             {{ field }}{{ field.label_tag }}
@@ -86,7 +137,7 @@
                         {% endfor %}
                         <br>
                     {% endfor %}
-                    <input type="submit" value="Update"/>
+                    <input class="btn btn-success" type="submit" name="update" value="Update"/>
                 </form>
             </div>
         </div>

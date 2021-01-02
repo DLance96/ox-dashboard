@@ -51,6 +51,12 @@
                             <td>Location:</td>
                             <td>{{ event.location }}</td>
                         </tr>
+                        {% if type == 'brother' %}
+                        <tr>
+                            <td>Attended?</td>
+                            <td>{{ attended }}</td>
+                        </tr>
+                        {% endif %}
                         </tbody>
                     </table>
                     {% if type == 'attendance' or type == 'ec-view' %}
@@ -66,16 +72,40 @@
             <div class="panel-heading">Attendance</div>
             <div class="panel-body">
                 <form action="" method="post">
+                    <input class="btn btn-success" type="submit" name="edit" value="Update Eligible Brothers Attendance List"><br><br>
                     {% csrf_token %}
+                    {{ form.non_field.errors }}
+                    <div class="row justify-content-start">
+                        <div class="col col-sm-8">
+                            <table class="table table-responsive">
+                                <tr>
+                                    {% for field in form %}
+                                        <td>
+                                            {{ field.label_tag }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                <tr>
+                                    {% for field in form %}
+                                        <td>
+                                            {{ field }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                     <hr>
                     <h3>Brother Attendance</h3>
                     <hr>
                     {% for form in brother_form_list %}
                         {% for field in form %}
                             {{ field }}{{ field.label_tag }}
+                            {{ field.errors }}
                         {% endfor %}
                         <br>
                     {% endfor %}
+                    <input class="btn btn-success" type="submit" name="updatebrother" value="Update Brother Attendance"/>
                     <hr>
                     <h3>General Attendence</h3>
                     <hr>
@@ -85,7 +115,7 @@
                         {% endfor %}
                         <br>
                     {% endfor %}
-                    <input class="btn btn-success" type="submit" value="Update"/>
+                    <input class="btn btn-success" type="submit" name="updatepnm" value="Update General Attendance"/>
                 </form>
             </div>
         </div>
@@ -107,6 +137,27 @@
                 {% for brother in attendees_brothers %}
                     {{ brother }}<br>
                 {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% if type == 'brother-view' and not attended %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Event Excuse</div>
+            <div class="panel-body">
+                {% if not excuse_exists %}
+                    {% if error_message %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error_message }}
+                        </div>
+                    {% endif %}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="submit" value="Submit Excuse"/>
+                    </form>
+                {% else %}
+                    <a class="btn btn-success" href={% url 'dashboard:brother_excuse' excuse.pk %} role="button">Review Submitted Excuse</a>
+                {% endif %}
             </div>
         </div>
     {% endif %}

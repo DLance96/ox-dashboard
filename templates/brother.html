@@ -292,7 +292,7 @@
                 <div> <b>Date:</b> </div>
                 <div> <b>Attendance:</b></div>
                 <div></div>
-                {% for event, attendance in event_attendance %}
+                {% for event, attendance in chapter_attendance %}
                 <div class="brothergrayline"></div>
                 <div></div>
                 <div></div>
@@ -304,7 +304,7 @@
             </div>
         </div>
         <div class="panel-footer text-center">
-            Attendance (to date): {{ chapter_attendance }} - Unexcused Absences (to date): {{ unexcused_events }}
+            Attendance (to date): {{ brother.get_chapter_attendance }}
         </div>
     </div>
     <div class="panel panel-default">
@@ -314,15 +314,15 @@
                 <div></div>
                 <div> <b>Events This Semester:</b> </div>
                 <div> <b>Date:</b> </div>
-                <div> <b>Rush:</b> </div>
+                <div> <b>Attendance:</b> </div>
                 <div></div>
-                {% for event in recruitment_events %}
+                {% for event, attendance in recruitment_attendance %}
                 <div class="brothergrayline"></div>
                 <div></div>
                 <div></div>
                 <div><a href={% url 'dashboard:brother_recruitment_event' type event.id %}>{{ event.name }}</a></div>
                 <div>{{ event.date }}</div>
-                <div>{{ event.rush }}</div>
+                <div>{{ attendance }}</div>
                 <div></div>
                 {% endfor %}
             </div>
@@ -346,6 +346,9 @@
                 {% endfor %}
             </div>
         </div>
+        <div class="panel-footer text-center">
+            Attendance (to date): {{ brother.get_recruitment_attendance }}
+        </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Health and Safety Events</div>
@@ -356,16 +359,19 @@
                     <div> <b>Date:</b> </div>
                     <div></div>
                     <div></div>
-                    {% for event in hs_events %}
+                    {% for event, attendance in hs_attendance %}
                     <div class="brothergrayline"></div>
                     <div></div>
                     <div></div>
                     <div><a href={% url 'dashboard:brother_hs_event' type event.id %}>{{ event.name }}</a></div>
                     <div>{{ event.date }}</div>
-                    <div></div>
+                    <div>{{ attendance }}</div>
                     <div></div>
                     {% endfor %}
                 </div>
+        </div>
+        <div class="panel-footer text-center">
+            Attendance (to date): {{ brother.get_hs_attendance }}
         </div>
     </div>
     <div class="panel panel-default">
@@ -376,16 +382,19 @@
                 <div> <b>Event:</b> </div>
                 <div> <b>Date:</b> </div>
                 <div></div>
-                {% for event in philanthropy_events %}
+                {% for event, attendance in philanthropy_attendance %}
                 <div class="brothergrayline"></div>
                 <div></div>
                 <div></div>
                 <div><a href={% url 'dashboard:brother_philanthropy_event' type event.id %}>{{ event.name }}</a></div>
                 <div>{{ event.date }}</div>
-                <div></div>
+                <div>{{ attendance }}</div>
                 <div></div>
                 {% endfor %}
             </div>
+        </div>
+        <div class="panel-footer text-center">
+            Attendance (to date): {{ brother.get_philanthropy_attendance }}
         </div>
     </div>
     <div class="panel panel-default">
@@ -397,16 +406,19 @@
                     <div> <b>Date:</b> </div>
                     <div></div>
                     <div></div>
-                    {% for event in service_events %}
+                    {% for event, attendance in service_attendance %}
                     <div class="brothergrayline"></div>
                     <div></div>
                     <div></div>
                     <div><a href={% url 'dashboard:brother_service_event' type event.id %}>{{ event.name }}</a></div>
                     <div>{{ event.date }}</div>
-                    <div></div>
+                    <div>{{ attendance }}</div>
                     <div></div>
                     {% endfor %}
                 </div>
+        </div>
+        <div class="panel-footer text-center">
+            Attendance (to date): {{ brother.get_service_attendance }}
         </div>
     </div>
     <div class="panel panel-default">

@@ -14,7 +14,7 @@ body {
 @media (max-width : 1400px) {
     body {
         background-position: center center;
-        background-image: url(/static-root/img/ox_wallpaper_smallscreen.png);
+        background-image: url(/static/img/ox_wallpaper_smallscreen.png);
     }
 }
 
@@ -94,6 +94,19 @@ textarea {
     align-items: start;
 }
 
+.excuses {
+    display: grid;
+    grid-template-columns: 1fr 4fr 6fr 4fr 4fr 6fr 1fr 1fr;
+    gap: 5px 10px;
+    align-items: center;
+}
+
+.excusesgrayline {
+    grid-column: 2 / 9;
+    height: 1px;
+    background: rgb(221,221,221);
+}
+
 .homeevent1 {
     display: grid;
     grid-template-columns: 1fr 11fr 11fr 1fr;
@@ -139,6 +152,7 @@ textarea {
 .modellabel {
     grid-column: 3/4;
     text-align: right;
+    font-weight: bold;
 }
 
 .field {

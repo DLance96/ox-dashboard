@@ -141,6 +141,27 @@ class Brother(models.Model):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
+    # returns the brother's attendance fraction for the associated event
+    def get_attendance(self, event_type):
+        return "%s / %s" % (
+        event_type.objects.filter(mandatory=True, attendees_brothers=self).count() + event_type.objects.filter(
+            mandatory=True, excuse__status=1).count(),
+        event_type.objects.filter(mandatory=True, eligible_attendees=self, date__lte=datetime.datetime.now()).count())
+
+    def get_chapter_attendance(self):
+        return self.get_attendance(ChapterEvent)
+
+    def get_recruitment_attendance(self):
+        return self.get_attendance(RecruitmentEvent)
+
+    def get_hs_attendance(self):
+        return self.get_attendance(HealthAndSafetyEvent)
+
+    def get_philanthropy_attendance(self):
+        return self.get_attendance(PhilanthropyEvent)
+
+    def get_service_attendance(self):
+        return self.get_attendance(ServiceEvent)
 
 class MeetABrother(models.Model):
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE, related_name='brother_mab')
@@ -379,32 +400,46 @@ class ScholarshipReport(models.Model):
                                   self.semester.year)
 
 
+# method used to set the default for event.eligible_brothers
+def all_actives_and_candidates():
+    return Brother.objects.filter(brother_status__in=['0', '1'])
+
+
+class TimeChoices(datetime.time, models.Choices):
+    T_9 = 9, '9:00 A.M.'
+    T_9_30 = 9,30, '9:30 A.M.'
+    T_10 = 10, '10:00 A.M.'
+    T_10_30 = 10, 30, '10:30 A.M.'
+    T_11 = 11, '11:00 A.M.'
+    T_11_30 = 11, 30, '11:30 A.M.'
+    T_12 = 12, '12:00 P.M.'
+    T_12_30 = 12, 30, '12:30 P.M.'
+    T_13 = 13, '1:00 P.M.'
+    T_13_30 = 13, 30, '1:30 P.M.'
+    T_14 = 14, '2:00 P.M.'
+    T_14_30 = 14, 30, '2:30 P.M.'
+    T_15 = 15, '3:00 P.M.'
+    T_15_30 = 15, 30, '3:30 P.M.'
+    T_16 = 16, '4:00 P.M.'
+    T_16_30 = 16, 30, '4:30 P.M.'
+    T_17 = 17, '5:00 P.M.'
+    T_17_30 = 17, 30, '5:30 P.M.'
+    T_18 = 18, '6:00 P.M.'
+    T_18_30 = 18, 30, '6:30 P.M.'
+    T_19 = 19, '7:00 P.M.'
+    T_19_30 = 19, 30, '7:30 P.M.'
+    T_20 = 20, '8:00 P.M.'
+    T_20_30 = 20, 30, '8:30 P.M.'
+    T_21 = 21, '9:00 P.M.'
+    T_21_30 = 21, 30, '9:30 P.M.'
+    T_22 = 22, '10:00 P.M.'
+    T_22_30 = 22, 30, '10:30 P.M.'
+    T_23 = 23, '11:00 P.M.'
+    T_23_30 = 23, 30, '11:30 P.M.'
+
+
 class Event(models.Model):
-    class TimeChoices(datetime.time, models.Choices):
-        T_9 = 9, '9:00 A.M.'
-        T_9_30 = 9,30, '9:30 A.M.'
-        T_10 = 10, '10:00 A.M.'
-        T_10_30 = 10, 30, '10:30 A.M.'
-        T_11 = 11, '11:00 A.M.'
-        T_11_30 = 11, 30, '11:30 A.M.'
-        T_12 = 12, '12:00 P.M.'
-        T_12_30 = 12, 30, '12:30 P.M.'
-        T_13 = 13, '1:00 P.M.'
-        T_13_30 = 13, 30, '1:30 P.M.'
-        T_14 = 14, '2:00 P.M.'
-        T_14_30 = 14, 30, '2:30 P.M.'
-        T_15 = 15, '3:00 P.M.'
-        T_15_30 = 15, 30, '3:30 P.M.'
-        T_16 = 16, '4:00 P.M.'
-        T_16_30 = 16, 30, '4:30 P.M.'
-        T_17 = 17, '5:00 P.M.'
-        T_17_30 = 17, 30, '5:30 P.M.'
-        T_18 = 18, '6:00 P.M.'
-        T_18_30 = 18, 30, '6:30 P.M.'
-        T_19 = 19, '7:00 P.M.'
-        T_19_30 = 19, 30, '7:30 P.M.'
-        T_20 = 20, '8:00 P.M.'
-        T_20_30 = 20, 30, '8:30 P.M.'
+
 
     name = models.CharField(max_length=200, default="Event")
     date = models.DateField(default=django.utils.timezone.now)
@@ -412,15 +447,16 @@ class Event(models.Model):
     start_time = models.TimeField(default=datetime.time(hour=0, minute=0), choices=TimeChoices.choices)
     end_time = models.TimeField(blank=True, null=True, choices=TimeChoices.choices)
     attendees_brothers = models.ManyToManyField(Brother, blank=True)
+    eligible_attendees = models.ManyToManyField(Brother, blank=True, related_name='+', default=all_actives_and_candidates)
     semester = models.ForeignKey(
         Semester, on_delete=models.CASCADE, blank=True, null=True
     )
     description = models.TextField(blank=True, null=True)
     minutes = models.URLField(blank=True, null=True)
+    mandatory = models.BooleanField(default=True)
 
 
 class ChapterEvent(Event):
-    mandatory = models.BooleanField(default=True)
 
     def __str__(self):
         return "Chapter Event - " + str(self.date)
@@ -545,33 +581,7 @@ class Committee(models.Model):
 
     meeting_day = models.IntegerField(choices=MEETING_DAY, blank=True, null=True)
 
-    class MeetingTime(datetime.time, models.Choices):
-        T_9 = 9, '9:00 A.M.'
-        T_9_30 = 9,30, '9:30 A.M.'
-        T_10 = 10, '10:00 A.M.'
-        T_10_30 = 10, 30, '10:30 A.M.'
-        T_11 = 11, '11:00 A.M.'
-        T_11_30 = 11, 30, '11:30 A.M.'
-        T_12 = 12, '12:00 P.M.'
-        T_12_30 = 12, 30, '12:30 P.M.'
-        T_13 = 13, '1:00 P.M.'
-        T_13_30 = 13, 30, '1:30 P.M.'
-        T_14 = 14, '2:00 P.M.'
-        T_14_30 = 14, 30, '2:30 P.M.'
-        T_15 = 15, '3:00 P.M.'
-        T_15_30 = 15, 30, '3:30 P.M.'
-        T_16 = 16, '4:00 P.M.'
-        T_16_30 = 16, 30, '4:30 P.M.'
-        T_17 = 17, '5:00 P.M.'
-        T_17_30 = 17, 30, '5:30 P.M.'
-        T_18 = 18, '6:00 P.M.'
-        T_18_30 = 18, 30, '6:30 P.M.'
-        T_19 = 19, '7:00 P.M.'
-        T_19_30 = 19, 30, '7:30 P.M.'
-        T_20 = 20, '8:00 P.M.'
-        T_20_30 = 20, 30, '8:30 P.M.'
-
-    meeting_time = models.TimeField(choices=MeetingTime.choices, blank=True)
+    meeting_time = models.TimeField(choices=TimeChoices.choices, blank=True)
 
     def __str__(self):
         for x, y in self.CommitteeChoices.choices:
@@ -589,9 +599,9 @@ class CommitteeMeetingEvent(Event):
 
 
 class Excuse(models.Model):
-    event = models.ForeignKey(ChapterEvent, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     brother = models.ForeignKey(Brother, on_delete=models.CASCADE)
-    date_submitted = models.DateTimeField(default=django.utils.timezone.now)
+    date_submitted = models.DateField(default=django.utils.timezone.now)
     description = models.TextField(
         "Reasoning", default="I will not be attending because"
     )
@@ -612,7 +622,7 @@ class Excuse(models.Model):
 
     def __str__(self):
         return self.brother.first_name \
-            + " " + self.brother.last_name + " - " + str(self.event)
+            + " " + self.brother.last_name + " - " + str(self.event.name)
 
 
 class Supplies(models.Model):

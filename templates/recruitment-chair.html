@@ -6,6 +6,7 @@
            aria-expanded="false">Recruitment Chair <span class="caret"></span></a>
         <ul class="dropdown-menu">
             <li><a href={% url 'dashboard:recruitment_c_rush_attendance' %}>Rush Attendance</a></li>
+            <li><a href={% url 'dashboard:recruitment_c_excuses' %}>Excuses Archive</a></li>
         </ul>
     </li>
 {% endblock %}
@@ -30,7 +31,7 @@
                 <tbody>
                 {% for event in events %}
                     <tr>
-                        <td><a href={% url 'dashboard:recruitment_c_event' event.id %}>{{ event }}</a></td>
+                        <td><a href={% url 'dashboard:recruitment_c_event' event.id %}>{{ event.name }}</a></td>
                         <td>{{ event.date }}</td>
                         <td><a class="btn btn-default"
                             href={% url 'dashboard:recruitment_c_event_edit' event.id %}>+</a></td>
@@ -107,7 +108,39 @@
             <a class="btn btn-primary" href={% url 'dashboard:all_pnm_csv' %} role="button">Download list as csv</a>
         </div>
     </div>
-
+    <div class="panel panel-default">
+       <div class="panel-heading">Pending Excuses</div>
+        <div class="panel-body">
+            <div class="excuses">
+                <div style="grid-column: 2/-1">Click on an excuse to learn more about it and edit its status. Click the check mark next to an excuse to "quick accept" it.</div>
+                <div style="grid-column: 1/-1"></div>
+                <div style="grid-column: 2"><b>Brother</b></div>
+                <div><b>Event:</b></div>
+                <div><b>Event Date:</b></div>
+                <div><b>Submission Date:</b></div>
+                <div><b>Description:</b></div>
+                <div></div>
+                <div></div>
+                <div class="blackline"></div>
+                {% for excuse in excuses %}
+                    {% if not forloop.first %}
+                        <div class="excusesgrayline"></div>
+                    {% endif %}
+                    <div style="grid-column: 2"> <a href={% url 'dashboard:recruitment_c_excuse' excuse.id %}?next={{ request.path }}>
+                        {{ excuse.brother }}
+                    </a> </div>
+                    <div>{{ excuse.event.name }}</div>
+                    <div>{{ excuse.event.date }}</div>
+                    <div>{{ excuse.date_submitted }}</div>
+                    <div>{{ excuse.description }}</div>
+                    <div><a class="btn btn-success btn-xs"
+                                   href={% url 'dashboard:excuse_quick_accept' excuse.id %}?next={{ request.path }}>&check;</a></div>
+                {% empty %}
+                    <div style="grid-column: 2">No pending excuses!</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
     <div class="panel panel-default">
         <div class="panel-heading">Committee Info</div>
         <div class="panel-body">

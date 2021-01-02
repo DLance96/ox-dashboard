@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1>{{ position }}</h1>
+    </div>
+    <div class="panel panel-default">
+       <div class="panel-heading">Excuses Archive</div>
+        <div class="panel-body">
+            <div class="excuses">
+                <div style="grid-column: 2"><b>Brother</b></div>
+                <div><b>Event:</b></div>
+                <div><b>Event Date:</b></div>
+                <div><b>Submission Date:</b></div>
+                <div><b>Description:</b></div>
+                <div></div>
+                <div></div>
+                <div class="blackline"></div>
+                {% for excuse in excuses %}
+                    {% if not forloop.first %}
+                        <div class="excusesgrayline"></div>
+                    {% endif %}
+                    <div style="grid-column: 2"> <a href={% url 'dashboard:secretary_excuse' excuse.id %}?next={{ request.path }}>
+                        {{ excuse.brother }}
+                    </a> </div>
+                    <div>{{ excuse.event.name }}</div>
+                    <div>{{ excuse.event.date }}</div>
+                    <div>{{ excuse.date_submitted }}</div>
+                    <div>{{ excuse.description }}</div>
+                    <div>
+                        {% if excuse.status == '1' %}
+                            &check;
+                        {% elif excuse.status == '2' %}
+                            &#10006
+                        {% elif excuse.status == '3' %}
+                            -
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <div style="grid-column: 2">No processed excuses!</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}

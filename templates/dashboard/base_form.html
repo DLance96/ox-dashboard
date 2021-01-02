@@ -19,6 +19,7 @@
                 {% csrf_token %}
                 {% block model_info %}{% endblock %}
                 <div class="modeladd">
+                    {% block model_info %}{% endblock %}
                     {% for field in form %}
                         {% if not forloop.first %}
                             <div class="grayline"></div>

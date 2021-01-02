@@ -26,8 +26,7 @@
                                 {{ brother.first_name }} {{ brother.last_name }}
                             </td>
                             {% for field in form %}
-                                <td>{{ field }}</td>
-                                <td>{{ field.errors }}</td>
+                                <td>{{ field }} - {{ field.errors }}</td>
                             {% endfor %}
                         </tr>
                     {% endfor %}
