@@ -6,7 +6,7 @@
 {% block content %}
     <!-- Main component for a primary marketing message or call to action -->
     <div class="jumbotron">
-        <h1>Chapter Excuse</h1>
+        <h1>{{ excuse.brother }}'s Excuse</h1>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">Excuse</div>
@@ -33,47 +33,38 @@
                             <td>{{ excuse.date_submitted }}</td>
                         </tr>
                         <tr>
-                            <td>Event Mandatory:</td>
-                            <td>{{ excuse.event.mandatory }}</td>
+                            <td>Event Status:</td>
+                            {% if excuse.event.mandatory == True %}
+                                <td>Mandatory</td>
+                            {% else %}
+                                <td>N/A</td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td>Excuse Reason:</td>
                             <td>{{ excuse.description }}</td>
                         </tr>
-                        {% if excuse.status == '0' %}
                         <tr>
                             <td>Excuse Status:</td>
-                            <td>Pending</td>
+                            <td>{{ excuse.get_status_display }}</td>
                         </tr>
-                        {% elif excuse.status == '1' %}
-                        <tr>
-                            <td>Excuse Status:</td>
-                            <td>Approved</td>
-                        </tr>
-                        {% elif excuse.status == '2' %}
-                        <tr>
-                            <td>Excuse Status:</td>
-                            <td>Denied</td>
-                        </tr>
-                        {% endif %}
                         {% if excuse.status == '2' or excuse.status == '3' and excuse.response_message %}
                             <tr>
                                 <td>Response:</td>
                                 <td>{{ excuse.response_message }}</td>
                             </tr>
-
-                        {% elif type == "review" %}
+                        {% elif type == "review" and excuse.status == '0' %}
                             <tr>
                                 <td>
-                                    <a class="btn btn-default" href={% url 'dashboard:brother_excuse_edit' excuse.id %}>Edit
-                                        Excuse</a>
+                                    <a class="btn btn-default" href={% url 'dashboard:brother_excuse_edit' excuse.id %}>Edit Excuse</a>
+                                    <a class="btn btn-danger" href={% url 'dashboard:brother_excuse_delete' excuse.id %}>Delete Excuse</a>
                                 </td>
+                                <td></td>
                             </tr>
                         {% endif %}
                         </tbody>
                     </table>
                 </div>
-
                 <div class=" col-lg-2 "></div>
             </div>
 
@@ -90,7 +81,15 @@
                     {% endif %}
                     <form action="" method="post">
                         {% csrf_token %}
-                        {{ form.as_p }}
+                        <table style="vertical-align:middle" class="table table-responsive">
+                            {% for field in form %}
+                                <tr>
+                                    <td>{{ field.label_tag }}</td>
+                                    <td>{{ field }}</td>
+                                    <td>{{ field.errors }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
                         <input type="submit" value="Submit"/>
                     </form>
                 </div>

@@ -31,7 +31,25 @@ NON_EC_POSITIONS = [
     "Public Relations Chair",
     "Alumni Relations Chair",
     "Social Chair",
-    "Membership Development Chair"
+    "Membership Development Chair",
+    "Community Standards Chair",
+    "OX Roast Chair",
+    "Damage Chair",
+    "Greek Games Chair",
+    "Historian",
+    "First Guard",
+    "Second Guard",
+    "Internal Change Chair",
+    "Standards Board Justice",
+    "Executive Council Member At Large",
+    "House Manager",
+    "Risk Manager",
+    "IFC Rep",
+    "Awards Chair",
+    "Food Steward",
+    "Athletics Chair",
+    "Dashboard Chair",
+    "Adviser",
 ]
 
 ALL_POSITIONS = EC_POSITIONS + NON_EC_POSITIONS

@@ -38,13 +38,9 @@ def get_semester(current_date=datetime.datetime.now()):
     season = get_season(current_date)
     year = current_date.year
 
-    semester = Semester.objects.filter(season=season, year=season)
-    if semester.exists():
-        return semester[0]
-    else:
-        semester = Semester(season=season, year=year)
-        semester.save()
-        return semester
+    semester, _ = Semester.objects.get_or_create(season=season, year=year)
+
+    return semester
 
 
 # get semester used for filtering throughout the views
@@ -52,10 +48,7 @@ def get_semester(current_date=datetime.datetime.now()):
 def get_season(current_date=datetime.datetime.now()):
     # return '0'
     month = current_date.month
-    if debug:
-        return '0'
-    else:
-        get_season_from(month)
+    return get_season_from(month)
 
 
 def get_season_from(month):
@@ -273,7 +266,12 @@ def photo_form(form_class, request):
 
 
 def attendance_list(request, event):
-    brothers = Brother.objects.exclude(brother_status='2').order_by('last_name')
+    """Creates a list of forms, 1 for each brother in eligible_attendees. Each form has 1 field, being a
+    checkbox field to determine the attendance of the brother at the event with a label set to the brother's name
+    prefix=counter ensures that in the html, the forms have different id's
+
+    """
+    brothers = event.eligible_attendees.all()
     brother_form_list = []
 
     for counter, brother in enumerate(brothers):
@@ -378,6 +376,27 @@ def create_recurring_events(begin_date, day, interval, event_creator):
     for date in (start_date + datetime.timedelta(interval) * n for n in range(day_count)):
         event_creator(date, semester)
 
+
+def create_committee_event(date, semester, meeting_time, committee_object):
+    """Create a single committee meeting event for the given committee
+
+    :param datetime date:
+        The date of the committee meeting
+    :param Semester semester:
+        The semester in which the event occurs
+    :param datetime.time meeting_time:
+        The time of the day at which the meeting will occur
+    :param Committee committee_object:
+        The committee for which the event belongs to
+
+    """
+    event = CommitteeMeetingEvent(date=date, start_time=meeting_time, semester=semester,
+                                  committee=committee_object, recurring=True)
+    event.save()
+    event.eligible_attendees.set(committee_object.members.order_by('last_name'))
+    event.save()
+
+
 def create_recurring_meetings(instance, committee):
     """Create recurring committee meetings for the given committee
 
@@ -390,17 +409,14 @@ def create_recurring_meetings(instance, committee):
         The name of the committee to create recurring meetings for
 
     """
+    committee_object = Committee.objects.get(committee=committee)
+
     create_recurring_events(
         datetime.datetime.now(),
         instance['meeting_day'],
         instance['meeting_interval'],
-        lambda date, semester: CommitteeMeetingEvent(
-            date=date,
-            start_time=instance['meeting_time'],
-            semester=semester,
-            committee=Committee.objects.get(committee=committee),
-            recurring=True
-        ).save())
+        lambda date, semester: create_committee_event(date, semester, instance['meeting_time'], committee_object))
+
 
 def create_node_with_children(node_brother, notified_by, brothers_notified):
     PhoneTreeNode(brother=node_brother, notified_by=notified_by).save()
@@ -411,6 +427,7 @@ def create_node_with_children(node_brother, notified_by, brothers_notified):
 
 def notifies(brother):
     return list(map(lambda node : node.brother, PhoneTreeNode.objects.filter(notified_by=brother)))
+
 
 def notified_by(brother):
     node = PhoneTreeNode.objects.filter(brother=brother)
@@ -463,7 +480,97 @@ def create_chapter_events(semester):
         lambda date, semester: ChapterEvent(
             name="Chapter {}".format(date.date()),
             date=date,
-            start_time=Event.TimeChoices.T_18_30,  # 6:30 PM
-            end_time=Event.TimeChoices.T_20_30,  # 8:30 PM
+            start_time=TimeChoices.T_18_30,  # 6:30 PM
+            end_time=TimeChoices.T_20_30,  # 8:30 PM
             semester=semester,
         ).save())
+
+def create_attendance_list(events, excuses_pending, excuses_approved, brother):
+    """zips together a list of tuples where the first element is each event and the second is the brother's
+    status regarding the event. If the event hasn't occurred, the status is blank, if it's not a mandatory
+    event it's 'not mandatory'
+
+    :param list[Event] events:
+        a list of events you want to create this attendance list for
+
+    :param list[Event] excuses_pending:
+        a list of events that the brother has excuses created for that are currently pending
+
+    :param list[Event] excuses_approved:
+        a list of events that the brother has excuses created for that are approved
+
+    :param Brother brother:
+        which brother the excuses are for
+
+    :returns:
+        a zipped list of events and its corresponding attendance
+    :rtype: list[Event, str]
+
+    """
+    attendance = []
+    for event in events:
+        if int(event.date.strftime("%s")) > int(datetime.datetime.now().strftime("%s")):
+            attendance.append('')
+        elif not event.mandatory:
+            attendance.append('Not Mandatory')
+        else:
+            if event.attendees_brothers.filter(id=brother.id):
+                attendance.append('Attended')
+            elif event.pk in excuses_approved:
+                attendance.append('Excused')
+            elif event.pk in excuses_pending:
+                attendance.append('Pending')
+            else:
+                attendance.append('Unexcused')
+
+    return zip(events, attendance)
+
+
+def mark_attendance_list(brother_form_list, brothers, event):
+    """Mark the attendance for the given brothers at the given event
+
+    :param list[BrotherAttendanceForm] brother_form_list:
+        a list of forms which holds the marked attendance for the brother it's associated with
+
+    :param list[Brother] brothers:
+        a list of brothers, values must correspond to the same order as it was used to create the brother_form_list
+
+    :param Event event:
+        the event that has its attendance being marked
+
+    """
+    for counter, form in enumerate(brother_form_list):
+        instance = form.cleaned_data
+        if instance['present'] is True:
+            event.attendees_brothers.add(brothers[counter])
+            event.save()
+            # if a brother is marked present, deletes any of the excuses associated with this brother and this event
+            excuses = Excuse.objects.filter(brother=brothers[counter], event=event)
+            if excuses.exists():
+                for excuse in excuses:
+                    excuse.delete()
+        if instance['present'] is False:
+            event.attendees_brothers.remove(brothers[counter])
+            event.save()
+
+
+def update_eligible_brothers(instance, event):
+    # for each brother selected in the add brothers field, add them to eligible_attendees
+    if instance['add_brothers']:
+        event.eligible_attendees.add(*instance['add_brothers'].values_list('pk', flat=True))
+    # for each brother selected in the add brothers field, remove them from eligible_attendees
+    # and the attended brothers list
+    if instance['remove_brothers']:
+        event.eligible_attendees.remove(*[o.id for o in instance['remove_brothers']])
+        event.attendees_brothers.remove(*[o.id for o in instance['remove_brothers']])
+    event.save()
+
+
+def save_event(instance, eligible_attendees):
+    semester, created = Semester.objects.get_or_create(season=get_season_from(instance.date.month),
+                                      year=instance.date.year)
+    instance.semester = semester
+    instance.save()
+    # you must save the instance into the database as a row in the table before you can set the manytomany field
+    instance.eligible_attendees.set(eligible_attendees)
+    instance.save()

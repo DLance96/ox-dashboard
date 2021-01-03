@@ -33,9 +33,9 @@
                         <td><a href={% url 'dashboard:service_c_event' event.id %}>{{ event.name }}</a></td>
                         <td>{{ event.date }}</td>
                         <td><a class="btn btn-default"
-                               href={% url 'dashboard:service_c_event_edit' event.id %}>X</a></td>
-                      <td><a class="btn btn-default"
-                               href={% url 'dashboard:service_c_event_danger' event.id %}>X</a></td>
+                               href={% url 'dashboard:service_c_event_edit' event.id %}>+</a></td>
+                      <td><a class="btn btn-danger"
+                               href={% url 'dashboard:service_c_event_delete' event.id %}>X</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>

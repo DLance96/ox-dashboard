@@ -5,7 +5,7 @@ from django.contrib import messages, auth
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import *
 from django.views.generic.edit import UpdateView, DeleteView
 from django.db import transaction
@@ -191,7 +191,7 @@ def classes(request, department=None, number=None, brother=None):
             department = ('department', form.get('department'))
             brother = ('brother', form.get('brother'))
             number = ('number', form.get('class_number'))
-            kwargs = dict((arg for arg in [department, number, brother] if arg[1] is not ""))
+            kwargs = dict((arg for arg in [department, number, brother] if arg[1] != ""))
 
             return HttpResponseRedirect(reverse('dashboard:classes', kwargs=kwargs))
         elif 'unadd_self' in request.POST:
@@ -325,14 +325,11 @@ def brother_view(request):
     hs_events = HealthAndSafetyEvent.objects.filter(semester=get_semester()).order_by("date")
     chapter_events = ChapterEvent.objects.filter(semester=get_semester()).order_by("date")
 
-    excuses_pending = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
-                                            status='0').order_by("event__date")
-    excuses_approved = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
-                                             status='1').order_by("event__date")
-    excuses_denied = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
-                                           status='2').order_by("event__date")
-    excuses_not_mandatory = Excuse.objects.filter(brother=brother, event__semester=get_semester(),
-                                                  status='3').order_by("event__date")
+    # creates lists of events that were pending and approved for the current brother
+    excuses = Excuse.objects.filter(brother=brother, event__semester=get_semester()).order_by("event__date")
+    excuses_pending = excuses.filter(status='0').values_list('event', flat=True)
+    excuses_approved = excuses.filter(status='1').values_list('event', flat=True)
+
     operational_committees = []
     standing_committees = []
     meetings = []
@@ -345,35 +342,13 @@ def brother_view(request):
         for meeting in committee.meetings.all():
             meetings.append(meeting)
 
-    # Event attendance value
-    attendance = []
-    past_chapter_event_count = 0
-    chapter_event_attendance = 0
-    unexcused_events = 0
-    for event in chapter_events:
-        if int(event.date.strftime("%s")) > int(datetime.datetime.now().strftime("%s")):
-            attendance.append('')
-        elif not event.mandatory:
-            attendance.append('Not Mandatory')
-        else:
-            past_chapter_event_count += 1
-            if event.attendees_brothers.filter(id=brother.id):
-                attendance.append('Attended')
-                chapter_event_attendance += 1
-            elif excuses_approved.filter(event=event):
-                attendance.append('Excused')
-                chapter_event_attendance += 1
-            elif excuses_pending.filter(event=event):
-                attendance.append('Pending')
-            else:
-                attendance.append('Unexcused')
-                unexcused_events += 1
+    # creates a list of tuples: (event, attendance type)
+    chapter_attendance = create_attendance_list(chapter_events, excuses_pending, excuses_approved, brother)
 
-    event_attendance = zip(chapter_events, attendance)
-    chapter_attendance = "%s / %s" % (chapter_event_attendance, past_chapter_event_count)
+    hs_attendance = create_attendance_list(hs_events, excuses_pending, excuses_approved, brother)
 
     current_season = get_season()
-    if current_season is '0':
+    if current_season == '0':
         recruitment_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year()) \
             .order_by("date")
         recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=get_year()) \
@@ -383,10 +358,15 @@ def brother_view(request):
             .order_by("date")
         recruitment_events_next = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year()) \
             .order_by("date")
+    recruitment_attendance = create_attendance_list(recruitment_events, excuses_pending, excuses_approved, brother)
+
     pnms = PotentialNewMember.objects.filter(Q(primary_contact=brother) |
                                              Q(secondary_contact=brother) |
                                              Q(tertiary_contact=brother)).order_by("last_name", "first_name")
+
     service_events = ServiceEvent.objects.filter(semester=get_semester()).order_by("date")
+    service_attendance = create_attendance_list(service_events, excuses_pending, excuses_approved, brother)
+
     # Service submissions
     submissions_pending = ServiceSubmission.objects.filter(brother=brother, semester=get_semester(),
                                                            status='0').order_by("date")
@@ -408,6 +388,8 @@ def brother_view(request):
 
     philanthropy_events = PhilanthropyEvent.objects.filter(semester=get_semester()) \
         .order_by("start_time").order_by("date")
+
+    philanthropy_attendance = create_attendance_list(philanthropy_events, excuses_pending, excuses_approved, brother)
 
     mab = None
 
@@ -436,26 +418,20 @@ def brother_view(request):
 
     context = {
         'brother': brother,
-        'event_attendance': event_attendance,
         'chapter_attendance': chapter_attendance,
-        'unexcused_events': unexcused_events,
         'operational_committees': operational_committees,
         'standing_committees': standing_committees,
         'meetings': meetings,
-        'excuses_pending': excuses_pending,
-        'excuses_approved': excuses_approved,
-        'excuses_denied': excuses_denied,
-        'excuses_not_mandatory': excuses_not_mandatory,
-        'hs_events': hs_events,
-        'recruitment_events': recruitment_events,
+        'hs_attendance': hs_attendance,
         'recruitment_events_next': recruitment_events_next,
+        'recruitment_attendance': recruitment_attendance,
         'pnms': pnms,
-        'service_events': service_events,
+        'service_attendance': service_attendance,
         'submissions_pending': submissions_pending,
         'submissions_submitted': submissions_submitted,
         'submissions_approved': submissions_approved,
         'submissions_denied': submissions_denied,
-        'philanthropy_events': philanthropy_events,
+        'philanthropy_attendance': philanthropy_attendance,
         'hours_approved': hours_approved,
         'hours_pending': hours_pending,
         'type': 'brother-view',
@@ -476,18 +452,13 @@ def brother_chapter_event(request, event_id, view):
     event = ChapterEvent.objects.get(pk=event_id)
     form = ExcuseForm(request.POST or None)
 
+    brother = request.user.brother
+    # get the excuses the brother has submitted for this event
+    excuse = Excuse.objects.filter(event=event_id, brother=brother)
+
     if request.method == 'POST':
         if form.is_valid():
             instance = form.save(commit=False)
-            if instance.description == "I will not be attending because":
-                context = {
-                    'type': 'brother-view',
-                    'form': form,
-                    'event': event,
-                    'error_message': "Please write a description",
-                }
-                return render(request, "chapter-event.html", context)
-            brother = request.user.brother
             instance.brother = brother
             instance.event = event
             instance.save()
@@ -497,7 +468,15 @@ def brother_chapter_event(request, event_id, view):
         'type': view,
         'form': form,
         'event': event,
+        'excuse_exists': excuse.exists(),
+        'brother': brother,
+        'attended': event.attendees_brothers.filter(pk=brother.pk).exists()
     }
+
+    # if an excuse has been submitted, add the excuse to the context
+    if excuse.exists():
+        context.update({ 'excuse': excuse[0], })
+
     return render(request, "chapter-event.html", context)
 
 
@@ -508,24 +487,39 @@ def brother_service_event(request, event_id, view):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     brother = request.user.brother
+    # get the excuses the brother has submitted for this event
+    excuse = Excuse.objects.filter(event=event_id, brother=brother)
     event = ServiceEvent.objects.get(pk=event_id)
-    brothers_rsvp = event.rsvp_brothers.all()
     rsvp_brother = event.rsvp_brothers.filter(id=brother.id)
+    form = ExcuseForm(request.POST or None)
 
     if request.method == 'POST':
-        if rsvp_brother.exists():
-            event.rsvp_brothers.remove(brother)
-        else:
+        if 'excuse' in request.POST:
+            if form.is_valid():
+                instance = form.save(commit=False)
+                instance.brother = brother
+                instance.event = event
+                instance.save()
+        if 'rsvp' in request.POST:
             event.rsvp_brothers.add(brother)
-        event.save()
+            event.save()
+        if 'cancel_rsvp' in request.POST:
+            event.rsvp_brothers.remove(brother)
+            event.save()
         return HttpResponseRedirect(reverse('dashboard:brother'))
 
     context = {
         'type': view,
-        'brothers_rsvp': brothers_rsvp,
         'rsvpd': rsvp_brother.exists(),
         'event': event,
+        'form': form,
+        'excuse_exists': excuse.exists(),
+        'attended': event.attendees_brothers.filter(pk=brother.pk).exists()
     }
+
+    # if an excuse has been submitted, add the excuse to the context
+    if excuse.exists():
+        context.update({ 'excuse': excuse[0], })
 
     return render(request, "service-event.html", context)
 
@@ -537,16 +531,27 @@ def brother_philanthropy_event(request, event_id, view):
         return HttpResponseRedirect(reverse('dashboard:home'))
 
     brother = request.user.brother
+    # get the excuses the brother has submitted for this event
+    excuse = Excuse.objects.filter(event=event_id, brother=brother)
     event = PhilanthropyEvent.objects.get(pk=event_id)
     brothers_rsvp = event.rsvp_brothers.all()
     rsvp_brother = event.rsvp_brothers.filter(id=brother.id)
 
+    form = ExcuseForm(request.POST or None)
+
     if request.method == 'POST':
-        if rsvp_brother.exists():
-            event.rsvp_brothers.remove(brother)
-        else:
-            event.rsvp_brothers.add(brother)
-        event.save()
+        if 'excuse' in request.POST:
+            if form.is_valid():
+                instance = form.save(commit=False)
+                instance.brother = brother
+                instance.event = event
+                instance.save()
+        if 'rsvp' in request.POST:
+            if rsvp_brother.exists():
+                event.rsvp_brothers.remove(brother)
+            else:
+                event.rsvp_brothers.add(brother)
+            event.save()
         return HttpResponseRedirect(reverse('dashboard:brother'))
 
     context = {
@@ -554,7 +559,14 @@ def brother_philanthropy_event(request, event_id, view):
         'brothers_rsvp': brothers_rsvp,
         'rsvpd': rsvp_brother.exists(),
         'event': event,
+        'form': form,
+        'excuse_exists': excuse.exists(),
+        'attended': event.attendees_brothers.filter(pk=brother.pk).exists()
     }
+
+    # if an excuse has been submitted, add the excuse to the context
+    if excuse.exists():
+        context.update({ 'excuse': excuse[0], })
 
     return render(request, "philanthropy-event.html", context)
 
@@ -565,14 +577,36 @@ def brother_recruitment_event(request, event_id, view):
         messages.error(request, "Brother not logged in before viewing brother chapter events")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
+    brother = request.user.brother
+    # get the excuses the brother has submitted for this event
+    excuse = Excuse.objects.filter(event=event_id, brother=brother)
+
     event = RecruitmentEvent.objects.get(pk=event_id)
     attendees_pnms = event.attendees_pnms.all()
 
+    form = ExcuseForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.brother = brother
+            instance.event = event
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:brother'))
+
     context = {
+        'form': form,
         'type': view,
         'attendees_pnms': attendees_pnms,
         'event': event,
+        'excuse_exists': excuse.exists(),
+        'attended': event.attendees_brothers.filter(pk=brother.pk).exists()
     }
+
+    # if an excuse has been submitted, add the excuse to the context
+    if excuse.exists():
+        context.update({ 'excuse': excuse[0], })
+
     return render(request, "recruitment-event.html", context)
 
 
@@ -582,16 +616,40 @@ def brother_hs_event(request, event_id, view):
         messages.error(request, "Brother not logged in before viewing brother Health and Safety events")
         return HttpResponseRedirect(reverse('dashboard:home'))
 
+    brother = request.user.brother
+    # get the excuses the brother has submitted for this event
+    excuse = Excuse.objects.filter(event=event_id, brother=brother)
+
     event = HealthAndSafetyEvent.objects.get(pk=event_id)
+
+    form = ExcuseForm(request.POST or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.brother = brother
+            instance.event = event
+            instance.save()
+            return HttpResponseRedirect(reverse('dashboard:brother'))
 
     context = {
         'type': view,
         'event': event,
+        'form': form,
+        'excuse_exists': excuse.exists(),
+        'brother': brother,
+        'attended': event.attendees_brothers.filter(pk=brother.pk).exists()
     }
+
+    # if an excuse has been submitted, add the excuse to the context
+    if excuse.exists():
+        context.update({ 'excuse': excuse[0], })
+
     return render(request, "hs-event.html", context)
 
 
 def brother_excuse(request, excuse_id):
+
     """ Renders the brother page for one of their excuses """
     excuse = Excuse.objects.get(pk=excuse_id)
     if not request.user == excuse.brother.user:  # brother auth check
@@ -844,7 +902,7 @@ def vice_president(request):
 def vice_president_committee_assignments(request):
     """Renders Committee assignment update page for the Vice President"""
     form_list = []
-    brothers = Brother.objects.exclude(brother_status='2')
+    brothers = Brother.objects.exclude(brother_status='2').order_by('last_name', 'first_name')
     for brother in brothers:
         new_form = CommitteeForm(request.POST or None,
                                  initial={'standing_committees': get_standing_committees(brother),
@@ -856,16 +914,57 @@ def vice_president_committee_assignments(request):
 
     if request.method == 'POST':
         if forms_is_valid(form_list):
+            meeting_map = {}
             for counter, form in enumerate(form_list):
                 instance = form.cleaned_data
+                # since the form was created in the same order that the brothers are ordered in you can just use
+                # counter to get the brother associated with the form
                 brother = brothers[counter]
+                # all the committees the brother was a part of before new committees were assigned
+                brother_committees = get_standing_committees(brother) + get_operational_committees(brother)
+                # unassigns the brother from all of their committees
                 brother.committee_set.clear()
-                for standing_committee in instance['standing_committees']:
-                    Committee.objects.get(committee=standing_committee).members.add(brother)
-                    Committee.objects.get(committee=standing_committee).save()
-                for operational_committee in instance['operational_committees']:
-                    Committee.objects.get(committee=operational_committee).members.add(brother)
-                    Committee.objects.get(committee=operational_committee).save()
+                # list of the committees the brother was now assigned to as strings representing the committees
+                chosen_committees = instance['standing_committees'] + instance['operational_committees']
+                # all committee options
+                committee_choices = [x for x,y in form.fields['standing_committees'].choices] + [x for x,y in form.fields['operational_committees'].choices]
+                for committee in committee_choices:
+                    # if the committee is one that the brother has been assigned to
+                    if committee in chosen_committees:
+                        # adds the brother to the committee's member list again
+                        committee_object = Committee.objects.get(committee=committee)
+                        committee_object.members.add(brother)
+                        committee_object.save()
+                        # if the brother was not previously a part of the committee
+                        if committee not in brother_committees:
+                            # iterates through all of the committee meetings after now
+                            for meeting in committee_object.meetings.exclude(date__lte=datetime.datetime.now(), eligible_attendees=brother):
+                                # if the meeting hasn't been previously added to the committee_map, adds it
+                                # adds brother: true to the dictionary associated with this meeting
+                                if meeting not in meeting_map:
+                                    meeting_map[meeting] = {brother: True}
+                                # if the meeting has been added, add the brother to the dictionary
+                                else:
+                                    meeting_map[meeting][brother] = True
+                    # if the brother wasn't added to this committee
+                    else:
+                        # if the the brother was previously part of this commitee
+                        if committee in brother_committees:
+                            # iterate through all of the committee meetings after now
+                            for meeting in Committee.objects.get(committee=committee).meetings.filter(date__gt=datetime.datetime.now(), eligible_attendees=brother):
+                                # same as above but false instead of true is assigned to the brother
+                                if meeting not in meeting_map:
+                                    meeting_map[meeting] = {brother: False}
+                                else:
+                                    meeting_map[meeting][brother] = False
+            # for every meeting in the mapping, add the brothers associated with that meeting to the
+            # eligible attendees list if true is assigned to the brother, and removes it if false
+            for meeting, brother_map in meeting_map.items():
+                add_list = [brother_face for brother_face, boo in brother_map.items() if boo is True]
+                remove_list = [brother_face for brother_face, boo in brother_map.items() if boo is False]
+                meeting.eligible_attendees.add(*add_list)
+                meeting.eligible_attendees.remove(*remove_list)
+                meeting.save()
             return HttpResponseRedirect(reverse('dashboard:committee_list'))
     context = {
         'brother_forms': brother_forms,
@@ -943,7 +1042,7 @@ class CommitteeEdit(UpdateView):
 def committee_event(request, event_id):
     event = CommitteeMeetingEvent.objects.get(pk=event_id)
 
-    brothers = event.committee.members.order_by('last_name')
+    brothers = event.eligible_attendees.all()
     brother_form_list = []
     current_brother = request.user.brother
 
@@ -958,29 +1057,29 @@ def committee_event(request, event_id):
                                          brother="- %s %s" % (brother.first_name, brother.last_name))
         brother_form_list.append(new_form)
 
+    form = EditBrotherAttendanceForm(request.POST or None, event=event_id)
+
     if request.method == 'POST':
-        if forms_is_valid(brother_form_list):
-            for counter, form in enumerate(brother_form_list):
+        if "update" in request.POST:
+            if forms_is_valid(brother_form_list):
+                mark_attendance_list(brother_form_list, brothers, event)
+        if "edit" in request.POST:
+            if form.is_valid():
                 instance = form.cleaned_data
-                if instance['present'] is True:
-                    event.attendees_brothers.add(brothers[counter])
-                    event.save()
-                if instance['present'] is False:
-                    event.attendees_brothers.remove(brothers[counter])
-                    event.save()
-            return HttpResponseRedirect(reverse('dashboard:committee_event', args=[event_id]))
+                update_eligible_brothers(instance, event)
+        return redirect(request.path_info, kwargs={'event_id': event_id})
 
     context = {
         'type': view_type,
         'brother_form_list': brother_form_list,
         'event': event,
-
+        'form': form,
     }
 
     return render(request, "committee_event.html", context)
 
 
-@verify_position(['Public Relations Chair', 'Vice President', 'President', 'Adviser'])
+@verify_position(['Public Relations Chair', 'Scholarship Chair', 'Service Chair', 'Philanthropy Chair', 'Alumni Relations Chair', 'Membership Development Chair', 'Social Chair', 'Vice President of Health and Safety', ' Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def committee_event_add(request, position):
     """ Renders the committee meeting add page """
     form = CommitteeMeetingForm(request.POST or None)
@@ -988,17 +1087,10 @@ def committee_event_add(request, position):
     if request.method == 'POST':
         if form.is_valid():
             instance = form.save(commit=False)
-
-            try:
-                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
-                                                   year=instance.date.year)[0]
-            except IndexError:
-                semester = Semester(season=get_season_from(instance.date.month),
-                                    year=instance.date.year)
-                semester.save()
-            instance.committee = Position.objects.get(title=position).committee
-            instance.semester = semester
-            instance.save()
+            committee = Position.objects.get(title=position).committee
+            eligible_attendees(committee.members.order_by('last_name'))
+            instance.committee = committee
+            save_event(instance, eligible_attendees)
             next = request.GET.get('next')
             return HttpResponseRedirect(next)
 
@@ -1050,27 +1142,13 @@ def vphs(request):
 @verify_position(['President', 'Adviser', 'Vice President', 'Vice President of Health and Safety'])
 def health_and_safety_event_add(request):
     """ Renders the VPHS adding an event """
-    form = HealthAndSafetyEventForm(request.POST or None)
+    form = HealthAndSafetyEventForm(request.POST or None, initial={'name': 'Sacred Purpose Event'})
 
     if form.is_valid():
         # TODO: add google calendar event adding
         instance = form.save(commit=False)
-        try:
-            semester = Semester.objects.filter(season=get_season_from(instance.date.month),
-                                               year=instance.date.year)[0]
-        except IndexError:
-            semester = Semester(season=get_season_from(instance.date.month),
-                                year=instance.date.year)
-            semester.save()
-        if instance.end_time is not None and instance.end_time < instance.start_time:
-            context = {
-                'position': 'Vice President of Health and Safety',
-                'form': form,
-                'error_message': "Start time after end time!",
-            }
-            return render(request, "event-add.html", context)
-        instance.semester = semester
-        instance.save()
+        eligible_attendees = Brother.objects.exclude(brother_status='2').order_by('last_name')
+        save_event(instance, eligible_attendees)
         return HttpResponseRedirect(reverse('dashboard:vphs'))
 
     context = {
@@ -1102,25 +1180,26 @@ class HealthAndSafetyDelete(DeleteView):
 
 def health_and_safety_event(request, event_id):
     """ Renders the vphs way of view events """
-    event = HealthAndSafetyEvent.objects.get(pk=event_id)
+    event = Event.objects.get(pk=event_id)
     brothers, brother_form_list = attendance_list(request, event)
 
+    form = EditBrotherAttendanceForm(request.POST or None, event=event_id)
+
     if request.method == 'POST':
-        if forms_is_valid(brother_form_list):
-            for counter, form in enumerate(brother_form_list):
+        if "update" in request.POST:
+            if forms_is_valid(brother_form_list):
+                mark_attendance_list(brother_form_list, brothers, event)
+        if "edit" in request.POST:
+            if form.is_valid():
                 instance = form.cleaned_data
-                if instance['present'] is True:
-                    event.attendees_brothers.add(brothers[counter])
-                    event.save()
-                if instance['present'] is False:
-                    event.attendees_brothers.remove(brothers[counter])
-                    event.save()
-            return HttpResponseRedirect(reverse('dashboard:vphs'))
+                update_eligible_brothers(instance, event)
+        return redirect(request.path_info, kwargs={'event_id': event_id})
 
     context = {
         'type': 'attendance',
         'brother_form_list': brother_form_list,
         'event': event,
+        'form': form,
     }
     return render(request, "hs-event.html", context)
 
@@ -1139,10 +1218,12 @@ def cleaned_brother_data(line):
 
     return stripped_data[0:3]
 
+
 def can_brother_be_added(first_name, last_name, caseid):
     data = [first_name, last_name, caseid]
 
     return all(value != "" for value in data) and not Brother.objects.filter(case_ID=caseid).exists()
+
 
 def create_brother_if_possible(semester, brother_status, first_name, last_name, caseid):
     if User.objects.filter(username=caseid).exists():
@@ -1167,6 +1248,7 @@ def create_brother_if_possible(semester, brother_status, first_name, last_name, 
         new_brother.brother_status = brother_status
         new_brother.save()
 
+
 def create_mass_entry_brothers(request, mass_entry_form):
     if mass_entry_form.is_valid():
         data = mass_entry_form.cleaned_data
@@ -1179,6 +1261,7 @@ def create_mass_entry_brothers(request, mass_entry_form):
 
     else:
         messages.error(request, "Mass entry form invalid")
+
 
 def staged_mass_entry_brothers(mass_entry_form):
     brothers = []
@@ -1200,10 +1283,11 @@ def staged_mass_entry_brothers(mass_entry_form):
 
     return brothers
 
+
 @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary(request):
     """ Renders the secretary page giving access to excuses and ChapterEvents """
-    excuses = Excuse.objects.filter(event__semester=get_semester(), status='0').order_by("event__date")
+    excuses = Excuse.objects.filter(event__semester=get_semester(), status='0').exclude(event__in=RecruitmentEvent.objects.all()).order_by("date_submitted", "event__date")
     events = ChapterEvent.objects.filter(semester=get_semester()).order_by("start_time").order_by("date")
     brothers = []
 
@@ -1270,59 +1354,43 @@ def secretary_attendance(request):
 @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_event(request, event_id):
     """ Renders the attendance sheet for any event """
-    event = ChapterEvent.objects.get(pk=event_id)
+    event = Event.objects.get(pk=event_id)
     brothers, brother_form_list = attendance_list(request, event)
 
+    form = EditBrotherAttendanceForm(request.POST or None, event=event_id)
+
     if request.method == 'POST':
-        if forms_is_valid(brother_form_list):
-            for counter, form in enumerate(brother_form_list):
+        if "update" in request.POST:
+            if forms_is_valid(brother_form_list):
+                mark_attendance_list(brother_form_list, brothers, event)
+        if "edit" in request.POST:
+            if form.is_valid():
                 instance = form.cleaned_data
-                if instance['present'] is True:
-                    event.attendees_brothers.add(brothers[counter])
-                    event.save()
-                if instance['present'] is False:
-                    event.attendees_brothers.remove(brothers[counter])
-                    event.save()
-            return HttpResponseRedirect(reverse('dashboard:secretary'))
+                update_eligible_brothers(instance, event)
+        return redirect(request.path_info, kwargs={'event_id': event_id})
 
     context = {
         'type': 'attendance',
         'brother_form_list': brother_form_list,
         'event': event,
+        'form': form,
     }
     return render(request, "chapter-event.html", context)
 
 
-@verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
-def secretary_excuse(request, excuse_id):
+@verify_position(['Recruitment Chair', 'Secretary', 'Vice President', 'President', 'Adviser'])
+def excuse(request, excuse_id):
     """ Renders Excuse response form """
     excuse = get_object_or_404(Excuse, pk=excuse_id)
-    form = ExcuseResponseForm(request.POST or None)
+    form = ExcuseResponseForm(request.POST or None, excuse=excuse)
 
     if request.method == 'POST':
         if form.is_valid():
             instance = form.save(commit=False)
-            if instance.status == '2' and instance.response_message == '':
-                context = {
-                    'type': 'response',
-                    'excuse': excuse,
-                    'form': form,
-                    'error_message': "Response message required for denial"
-                }
-                return render(request, "excuse.html", context)
-            if instance.status == '3' and excuse.event.mandatory:
-                context = {
-                    'type': 'response',
-                    'excuse': excuse,
-                    'form': form,
-                    'error_message': "Event is mandatory cannot mark excuse not mandatory"
-                }
-                return render(request, "excuse.html", context)
-            else:
-                excuse.status = instance.status
-                excuse.response_message = instance.response_message
-                excuse.save()
-                return HttpResponseRedirect(reverse('dashboard:secretary'))
+            excuse.status = instance.status
+            excuse.response_message = instance.response_message
+            excuse.save()
+            return HttpResponseRedirect(request.GET.get('next'))
 
     context = {
         'type': 'response',
@@ -1332,15 +1400,24 @@ def secretary_excuse(request, excuse_id):
     return render(request, "excuse.html", context)
 
 
+# accepts the excuse then immediately redirects you back to where you came from
+def excuse_quick_accept(request, excuse_id):
+    excuse = Excuse.objects.get(pk=excuse_id)
+    excuse.status = '1'
+    excuse.save()
+    return HttpResponseRedirect(request.GET.get('next'))
+
+
 @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_all_excuses(request):
-    """ Renders Excuse """
-    excuses = Excuse.objects.order_by('brother__last_name', 'event__date')
+    """ Renders Excuse archive """
+    excuses = Excuse.objects.exclude(status='0').exclude(event__in=RecruitmentEvent.objects.all()).order_by('brother__last_name', 'event__date')
 
     context = {
-        'excuses': excuses
+        'excuses': excuses,
+        'position': 'Secretary',
     }
-    return render(request, 'secretary_excuses.html', context)
+    return render(request, 'excuses_archive.html', context)
 
 
 @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
@@ -1436,28 +1513,13 @@ class SecretaryBrotherDelete(DeleteView):
 @verify_position(['Secretary', 'Vice President', 'President', 'Adviser'])
 def secretary_event_add(request):
     """ Renders the Secretary way of adding ChapterEvents """
-    form = ChapterEventForm(request.POST or None)
+    form = ChapterEventForm(request.POST or None, initial={'name': 'Chapter Event'})
 
     if request.method == 'POST':
         if form.is_valid():
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
-            try:
-                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
-                                                   year=instance.date.year)[0]
-            except IndexError:
-                semester = Semester(season=get_season_from(instance.date.month),
-                                    year=instance.date.year)
-                semester.save()
-            if instance.end_time is not None and instance.end_time < instance.start_time:
-                context = {
-                    'position': 'Secretary',
-                    'form': form,
-                    'error_message': "Start time after end time!",
-                }
-                return render(request, "event-add.html", context)
-            instance.semester = semester
-            instance.save()
+            save_event(instance)
             return HttpResponseRedirect(reverse('dashboard:secretary'))
 
     context = {
@@ -1904,27 +1966,17 @@ def study_table_event(request, event_id):
 @verify_position(['Scholarship Chair', 'President', 'Adviser'])
 def scholarship_c_event_add(request):
     """ Renders the scholarship chair way of adding StudyTableEvents """
-    form = StudyTableEventForm(request.POST or None)
+    form = StudyTableEventForm(request.POST or None, initial={'name': 'Scholarship Event'})
 
     if request.method == 'POST':
         if form.is_valid():
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
-            try:
-                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
-                                                   year=instance.date.year)[0]
-            except IndexError:
-                semester = Semester(season=get_season_from(instance.date.month),
-                                    year=instance.date.year)
-                semester.save()
-            if instance.end_time is not None and instance.end_time < instance.start_time:
-                context = {
-                    'position': 'Scholarship Chair',
-                    'form': form,
-                    'error_message': "Start time after end time!",
-                }
-                return render(request, "event-add.html", context)
+            semester, _ = Semester.objects.get_or_create(season=get_season_from(instance.date.month),
+                   year=instance.date.year)
             instance.semester = semester
+            instance.save()
+            instance.eligible_attendees.set(Brother.objects.exclude(brother_status='2').order_by('last_name'))
             instance.save()
             return HttpResponseRedirect(reverse('dashboard:scholarship_c'))
 
@@ -2020,8 +2072,11 @@ class ScholarshipReportEdit(UpdateView):
 @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def recruitment_c(request):
     """ Renders Recruitment chair page with events for the current and following semester """
+    events = RecruitmentEvent.objects.all()
+    excuses = Excuse.objects.filter(event__semester=get_semester(), status='0',
+        event__in=events).order_by("date_submitted", "event__date")
     current_season = get_season()
-    if current_season is '0':
+    if current_season == '0':
         semester_events = RecruitmentEvent.objects.filter(semester__season='0', semester__year=get_year())
         semester_events_next = RecruitmentEvent.objects.filter(semester__season='2', semester__year=get_year())
     else:
@@ -2037,8 +2092,21 @@ def recruitment_c(request):
         'events': semester_events,
         'events_future': semester_events_next,
         'potential_new_members': potential_new_members,
+        'excuses': excuses,
     })
     return render(request, 'recruitment-chair.html', context)
+
+
+@verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
+def recruitment_c_all_excuses(request):
+    """ Renders Excuse archive"""
+    excuses = Excuse.objects.exclude(status='0').filter(event__in=RecruitmentEvent.objects.all()).order_by('brother__last_name', 'event__date')
+
+    context = {
+        'excuses': excuses,
+        'position': 'Recruitment Chair',
+    }
+    return render(request, 'excuses_archive.html', context)
 
 
 def all_pnm_csv(request):
@@ -2149,6 +2217,8 @@ def recruitment_c_event(request, event_id):
 
     num_actives = len(brothers)
 
+    form = EditBrotherAttendanceForm(request.POST or None, event=event_id)
+
     for counter, pnm in enumerate(pnms):
         new_form = PnmAttendanceForm(request.POST or None, initial={'present': event.attendees_pnms.filter(pk=pnm.id).exists()},
                                      prefix=num_actives + counter,
@@ -2156,24 +2226,17 @@ def recruitment_c_event(request, event_id):
         pnm_form_list.append(new_form)
 
     if request.method == 'POST':
-        if forms_is_valid(pnm_form_list) and forms_is_valid(brother_form_list):
-            for counter, form in enumerate(pnm_form_list):
+        if "updatebrother" in request.POST:
+            if forms_is_valid(brother_form_list):
+                mark_attendance_list(brother_form_list, brothers, event)
+        if "updatepnm" in request.POST:
+            if forms_is_valid(pnm_form_list):
+                mark_attendance_list(pnm_form_list, pnms, event)
+        if "edit" in request.POST:
+            if form.is_valid():
                 instance = form.cleaned_data
-                if instance['present'] is True:
-                    event.attendees_pnms.add(pnms[counter])
-                    event.save()
-                if instance['present'] is False:
-                    event.attendees_pnms.remove(pnms[counter])
-                    event.save()
-            for counter, form in enumerate(brother_form_list):
-                instance = form.cleaned_data
-                if instance['present'] is True:
-                    event.attendees_brothers.add(brothers[counter])
-                    event.save()
-                if instance['present'] is False:
-                    event.attendees_brothers.remove(brothers[counter])
-                    event.save()
-            return HttpResponseRedirect(reverse('dashboard:recruitment_c_event', args=[event_id]))
+                update_eligible_brothers(instance, event)
+        return redirect(request.path_info, kwargs={'event_id': event_id})
 
     context = {
         'type': 'attendance',
@@ -2182,6 +2245,7 @@ def recruitment_c_event(request, event_id):
         'event': event,
         'media_root': settings.MEDIA_ROOT,
         'media_url': settings.MEDIA_URL,
+        'form': form,
     }
     return render(request, "recruitment-event.html", context)
 
@@ -2189,27 +2253,17 @@ def recruitment_c_event(request, event_id):
 @verify_position(['Recruitment Chair', 'Vice President', 'President', 'Adviser'])
 def recruitment_c_event_add(request):
     """ Renders the recruitment chair way of adding RecruitmentEvents """
-    form = RecruitmentEventForm(request.POST or None)
+    form = RecruitmentEventForm(request.POST or None, initial={'name': 'Recruitment Event'})
     if request.method == 'POST':
         form = RecruitmentEventForm(request.POST, request.FILES or None)
         if form.is_valid():
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
-            try:
-                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
-                                                   year=instance.date.year)[0]
-            except IndexError:
-                semester = Semester(season=get_season_from(instance.date.month),
-                                    year=instance.date.year)
-                semester.save()
-            if instance.end_time is not None and instance.end_time < instance.start_time:
-                context = {
-                    'position': 'Recruitment Chair',
-                    'form': form,
-                    'error_message': "Start time after end time!",
-                }
-                return render(request, "recruitment-event-add.html", context)
+            semester, _ = Semester.objects.get_or_create(season=get_season_from(instance.date.month),
+               year=instance.date.year)
             instance.semester = semester
+            instance.save()
+            instance.eligible_attendees.set(Brother.objects.exclude(brother_status='2').order_by('last_name'))
             instance.save()
             return HttpResponseRedirect(reverse('dashboard:recruitment_c'))
 
@@ -2273,27 +2327,25 @@ def service_c(request):
 @verify_position(['Service Chair', 'Adviser'])
 def service_c_event(request, event_id):
     """ Renders the service chair way of adding ServiceEvent """
-    event = ServiceEvent.objects.get(pk=event_id)
-    brothers_rsvp = event.rsvp_brothers.all()
+    event = Event.objects.get(pk=event_id)
     brothers, brother_form_list = attendance_list(request, event)
 
+    form = EditBrotherAttendanceForm(request.POST or None, event=event_id)
+
     if request.method == 'POST':
-        if forms_is_valid(brother_form_list):
-            for counter, form in enumerate(brother_form_list):
+        if "update" in request.POST:
+            mark_attendance_list(brother_form_list, brothers, event)
+        if "edit" in request.POST:
+            if form.is_valid():
                 instance = form.cleaned_data
-                if instance['present'] is True:
-                    event.attendees_brothers.add(brothers[counter])
-                    event.save()
-                if instance['present'] is False:
-                    event.attendees_brothers.remove(brothers[counter])
-                    event.save()
-            return HttpResponseRedirect(reverse('dashboard:service_c'))
+                update_eligible_brothers(instance, event)
+        return redirect(request.path_info, kwargs={'event_id': event_id})
 
     context = {
         'type': 'attendance',
         'brother_form_list': brother_form_list,
-        'brothers_rsvp': brothers_rsvp,
         'event': event,
+        'form': form,
     }
 
     return render(request, 'service-event.html', context)
@@ -2344,27 +2396,17 @@ def service_c_submission_response(request, submission_id):
 @verify_position(['Service Chair', 'Adviser'])
 def service_c_event_add(request):
     """ Renders the service chair way of adding ServiceEvent """
-    form = ServiceEventForm(request.POST or None)
+    form = ServiceEventForm(request.POST or None, initial={'name': 'Service Event'})
 
     if request.method == 'POST':
         if form.is_valid():
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
-            try:
-                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
-                                                   year=instance.date.year)[0]
-            except IndexError:
-                semester = Semester(season=get_season_from(instance.date.month),
-                                    year=instance.date.year)
-                semester.save()
-            if instance.end_time is not None and instance.end_time < instance.start_time:
-                context = {
-                    'position': 'Service Chair',
-                    'form': form,
-                    'error_message': "Start time after end time!",
-                }
-                return render(request, "event-add.html", context)
+            semester, _ = Semester.objects.get_or_create(season=get_season_from(instance.date.month),
+                   year=instance.date.year)
             instance.semester = semester
+            instance.save()
+            instance.eligible_attendees.set(Brother.objects.exclude(brother_status='2').order_by('last_name'))
             instance.save()
             return HttpResponseRedirect(reverse('dashboard:service_c'))
 
@@ -2427,11 +2469,26 @@ def philanthropy_c_event(request, event_id):
     """ Renders the philanthropy event view """
     event = PhilanthropyEvent.objects.get(pk=event_id)
     brothers_rsvp = event.rsvp_brothers.all()
+    brothers, brother_form_list = attendance_list(request, event)
+
+    form = EditBrotherAttendanceForm(request.POST or None, event=event_id)
+
+    if request.method == 'POST':
+        if "update" in request.POST:
+            if forms_is_valid(brother_form_list):
+                mark_attendance_list(brother_form_list, brothers, event)
+        if "edit" in request.POST:
+            if form.is_valid():
+                instance = form.cleaned_data
+                update_eligible_brothers(instance, event)
+        return redirect(request.path_info, kwargs={'event_id': event_id})
 
     context = {
-        'type': 'ec-view',
+        'type': 'attendance',
+        'brother_form_list': brother_form_list,
         'brothers_rsvp': brothers_rsvp,
         'event': event,
+        'form': form,
     }
 
     return render(request, 'philanthropy-event.html', context)
@@ -2440,27 +2497,17 @@ def philanthropy_c_event(request, event_id):
 @verify_position(['Philanthropy Chair', 'Adviser'])
 def philanthropy_c_event_add(request):
     """ Renders the philanthropy chair way of adding PhilanthropyEvent """
-    form = PhilanthropyEventForm(request.POST or None)
+    form = PhilanthropyEventForm(request.POST or None, initial={'name': 'Philanthropy Event'})
 
     if request.method == 'POST':
         if form.is_valid():
             # TODO: add google calendar event adding
             instance = form.save(commit=False)
-            try:
-                semester = Semester.objects.filter(season=get_season_from(instance.date.month),
-                                                   year=instance.date.year)[0]
-            except IndexError:
-                semester = Semester(season=get_season_from(instance.date.month),
-                                    year=instance.date.year)
-                semester.save()
-            if instance.end_time is not None and instance.end_time < instance.start_time:
-                context = {
-                    'position': 'Philanthropy Chair',
-                    'form': form,
-                    'error_message': "Start time after end time!",
-                }
-                return render(request, "event-add.html", context)
+            semester, _ = Semester.objects.get_or_create(season=get_season_from(instance.date.month),
+                   year=instance.date.year)
             instance.semester = semester
+            instance.save()
+            instance.eligible_attendees.set(Brother.objects.exclude(brother_status='2').order_by('last_name'))
             instance.save()
             return HttpResponseRedirect(reverse('dashboard:philanthropy_c'))
 

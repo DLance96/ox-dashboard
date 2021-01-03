@@ -3,25 +3,16 @@
 {% block model %}Excuse{% endblock %}
 
 {% block model_info %}
-    <table class="table table-event-information">
-        <tbody>
-        <tr>
-            <td>Event:</td>
-            <td>{{ form.instance.event }}</td>
-        </tr>
-        <tr>
-            <td>Date:</td>
-            <td>{{ form.instance.event.date }}</td>
-        </tr>
-        <tr>
-            <td>Date Submitted:</td>
-            <td>{{ form.instance.date_submitted }}</td>
-        </tr>
-        <tr>
-            <td>Start Time:</td>
-            <td>{{ form.instance.event.start_time }}</td>
-        </tr>
-        </tbody>
-    </table>
-
+    <div class="modellabel">Event:</div>
+    <div>{{ form.instance.event.name }}</div>
+    <div class="grayline"></div>
+    <div class="modellabel">Date of event:</div>
+    <div>{{ form.instance.event.date }}</div>
+    <div class="grayline"></div>
+    <div class="modellabel">Date Submitted:</div>
+    <div>{{ form.instance.date_submitted }}</div>
+    <div class="grayline"></div>
+    <div class="modellabel">Start Time:</div>
+    <div>{{ form.instance.event.start_time }}</div>
+    <div class="grayline"></div>
 {% endblock %}

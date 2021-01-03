@@ -148,11 +148,30 @@ class ExcuseForm(forms.ModelForm):
         model = Excuse
         fields = ['description']
 
+    def clean(self):
+        description = self.cleaned_data.get('description', None)
+        if description == "I will not be attending because" or description in EMPTY_VALUES:
+            self._errors['description'] = self.error_class(['"Please write a description"'])
+
 
 class ExcuseResponseForm(forms.ModelForm):
+    excuse = None
+
     class Meta:
         model = Excuse
         fields = ['status', 'response_message']
+
+    def __init__(self, *args, **kwargs):
+        self.excuse = kwargs.pop('excuse', None)
+        super(ExcuseResponseForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        status = self.cleaned_data.get('status', None)
+        response = self.cleaned_data.get('response_message', None)
+        if status == "2" and response in EMPTY_VALUES:
+            self._errors['status'] = self.error_class(["Response message required for denial"])
+        if status == "3" and self.excuse.event.mandatory:
+            self._errors['status'] = self.error_class(["Event is mandatory cannot mark excuse not mandatory"])
 
 
 class PotentialNewMemberForm(forms.ModelForm):
@@ -164,84 +183,62 @@ class PotentialNewMemberForm(forms.ModelForm):
         ]
 
 
-class StudyTableEventForm(forms.ModelForm):
+class EventForm(forms.ModelForm):
     class Meta:
+        model = Event
+        fields = ['name', 'mandatory', 'date', 'start_time', 'end_time', 'description']
+        widgets = {
+            'date': SelectDateWidget()
+        }
+
+    def clean(self):
+        start_time = self.cleaned_data.get('start_time', None)
+        end_time = self.cleaned_data.get('end_time', None)
+        if end_time is not None and end_time < start_time:
+            self._errors['end_time'] = self.error_class(['End time before start time'])
+        return self.cleaned_data
+
+
+class StudyTableEventForm(EventForm):
+    class Meta(EventForm.Meta):
         model = StudyTableEvent
-        fields = ['date', 'start_time', 'end_time', 'description']
-        widgets = {
-            'date': SelectDateWidget(),
-        }
 
 
-class ScholarshipEventForm(forms.ModelForm):
-    class Meta:
+class ScholarshipEventForm(EventForm):
+    class Meta(EventForm.Meta):
         model = ScholarshipEvent
-        fields = ['name', 'date', 'start_time', 'end_time', 'description']
-        widgets = {
-            'date': SelectDateWidget(),
-        }
 
 
-class HealthAndSafetyEventForm(forms.ModelForm):
-    class Meta:
+class HealthAndSafetyEventForm(EventForm):
+    class Meta(EventForm.Meta):
         model = HealthAndSafetyEvent
-        fields = ['name', 'date', 'start_time', 'end_time', 'description']
-        widgets = {
-            'date': SelectDateWidget(),
-        }
 
 
-class ChapterEventForm(forms.ModelForm):
-    class Meta:
+class ChapterEventForm(EventForm):
+    class Meta(EventForm.Meta):
         model = ChapterEvent
-        fields = [
-            'name', 'mandatory', 'date', 'start_time', 'end_time', 'minutes',
-            'description',
-        ]
-        widgets = {
-            'date': SelectDateWidget(),
-        }
+        fields = EventForm.Meta.fields + ['minutes']
 
 
-class CandidateEditForm(forms.ModelForm):
-    class Meta:
-        model = Brother
-        fields = ['first_name', 'last_name', 'roster_number', 'semester_joined',
-                  'school_status', 'brother_status', 'major', 'minor', 't_shirt_size',
-                  'case_ID', 'birthday', 'hometown', 'phone_number',
-                  'emergency_contact_phone_number', 'emergency_contact', 'room_number',
-                  'address'
-        ]
-        widgets = {
-            'birthday': SelectDateWidget(years=YEAR_RANGE),
-        }
-
-
-class RecruitmentEventForm(forms.ModelForm):
-    class Meta:
+class RecruitmentEventForm(EventForm):
+    class Meta(EventForm.Meta):
         model = RecruitmentEvent
-        fields = ['name', 'rush', 'date', 'start_time', 'end_time', 'picture', 'location', 'description']
-        widgets = {
-            'date': SelectDateWidget(),
-        }
+        fields = ['name', 'mandatory', 'rush', 'date', 'start_time', 'end_time', 'picture', 'location', 'description']
 
 
-class PhilanthropyEventForm(forms.ModelForm):
-    class Meta:
+class PhilanthropyEventForm(EventForm):
+    class Meta(EventForm.Meta):
         model = PhilanthropyEvent
-        fields = ['name', 'date', 'start_time', 'end_time']
-        widgets = {
-            'date': SelectDateWidget(),
-        }
 
 
-class ServiceEventForm(forms.ModelForm):
-    class Meta:
+class ServiceEventForm(EventForm):
+    class Meta(EventForm.Meta):
         model = ServiceEvent
-        fields = ['name', 'date', 'start_time', 'end_time', 'description']
-        widgets = {
-            'date': SelectDateWidget(),
-        }
+
+
+class CommitteeMeetingForm(EventForm):
+    class Meta(EventForm.Meta):
+        model = CommitteeMeetingEvent
 
 
 class ServiceSubmissionForm(forms.ModelForm):
@@ -259,12 +256,17 @@ class ServiceSubmissionResponseForm(forms.ModelForm):
         fields = ['status']
 
 
-class CommitteeMeetingForm(forms.ModelForm):
+class CandidateEditForm(forms.ModelForm):
     class Meta:
-        model = CommitteeMeetingEvent
-        fields = ['date', 'start_time', 'end_time', 'minutes']
+        model = Brother
+        fields = ['first_name', 'last_name', 'roster_number', 'semester_joined',
+                  'school_status', 'brother_status', 'major', 'minor', 't_shirt_size',
+                  'case_ID', 'birthday', 'hometown', 'phone_number',
+                  'emergency_contact_phone_number', 'emergency_contact', 'room_number',
+                  'address'
+        ]
         widgets = {
-            'date': SelectDateWidget(),
+            'birthday': SelectDateWidget(years=YEAR_RANGE),
         }
 
 
@@ -303,6 +305,41 @@ class MeetABrotherForm(forms.Form):
 
         if candidate:
             self.fields['randomize'].label = candidate
+
+
+class EditBrotherAttendanceForm(forms.Form):
+    """Form for adding or removing brothers from an event's eligible_attendees list
+        Accepts event_id to get the current list of eligible_attendees
+    
+    """
+    brothers_list = Brother.objects.exclude(brother_status='2').order_by('user__last_name', 'user__first_name')
+    # the default for the queryset is all non-alumni
+    add_brothers = forms.ModelMultipleChoiceField(
+        queryset=brothers_list,
+        widget=forms.SelectMultiple,
+        label="Add Brothers",
+        required=False,
+    )
+
+    remove_brothers = forms.ModelMultipleChoiceField(
+        queryset=brothers_list,
+        widget=forms.SelectMultiple,
+        label="Remove Brothers",
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        # gets the id of the event passed in when the form is initialized
+        event_id = kwargs.pop('event', "")
+        super(EditBrotherAttendanceForm, self).__init__(*args, **kwargs)
+
+        # if an event was passed in, sets queryset for add_brothers to non-alumni not in the event's eligible_attendees
+        # and queryset for remove_brothers to non-alumni that are in the event's eligible_attendees
+        if event_id:
+            brothers_list = Brother.objects.exclude(brother_status='2').order_by('user__last_name', 'user__first_name')
+            eligible_attendees = Event.objects.get(pk=event_id).eligible_attendees.values('pk')
+            self.fields['add_brothers'].queryset = brothers_list.exclude(id__in=eligible_attendees)
+            self.fields['remove_brothers'].queryset = brothers_list.filter(id__in=eligible_attendees)
 
 
 class BrotherAttendanceForm(forms.Form):
